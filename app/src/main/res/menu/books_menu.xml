@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/nav_chapter"
+        android:icon="@drawable/practice_drawable"
+
+        android:title="Quiz" />
+    <item
+        android:id="@+id/nav_revision"
+        android:icon="@drawable/books_drawable"
+
+        android:title="Books" />
+</menu>

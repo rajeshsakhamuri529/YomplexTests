@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/rl_grade">
+
+    <ImageView
+            android:id="@+id/iv_grade"
+            android:layout_width="@dimen/_85sdp"
+            android:layout_height="@dimen/_110sdp"
+            android:layout_centerHorizontal="true"/>
+
+    <RelativeLayout
+            android:layout_width="@dimen/_105sdp"
+            android:layout_height="@dimen/_40sdp"
+            android:layout_below="@id/iv_grade"
+            android:layout_marginTop="-25dp"
+            android:layout_centerHorizontal="true">
+
+        <ImageView
+                android:id="@+id/btnIcon"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+
+        <TextView
+                android:id="@+id/tv_grade_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/quicksand_bold"
+                android:textColor="@color/white"
+                android:textAllCaps="true"
+                android:text="Grade 6"
+                android:textSize="@dimen/_13ssp"
+                android:layout_centerInParent="true"/>
+
+    </RelativeLayout>
+
+
+
+</RelativeLayout>

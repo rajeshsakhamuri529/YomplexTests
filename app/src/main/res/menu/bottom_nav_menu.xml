@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/nav_home"
+        android:icon="@drawable/home_drawable"
+        android:title="Home" />
+    <item
+            android:id="@+id/nav_chapter"
+            android:icon="@drawable/practice_drawable"
+            
+            android:title="Quiz" />
+
+    <item
+        android:id="@+id/nav_dialy_challenge"
+        android:icon="@drawable/challenge_drawable"
+
+        android:title="Test" />
+    <item
+        android:id="@+id/nav_revision"
+        android:icon="@drawable/books_drawable"
+        android:title="Books" />
+
+
+    <item
+            android:id="@+id/nav_settings"
+            android:icon="@drawable/settings_drawable"
+            android:title="Settings" />
+
+</menu>

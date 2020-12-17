@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "773220899713",
+    "project_id": "yomplex-tests",
+    "storage_bucket": "yomplex-tests.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:773220899713:android:ad6354a6c8d317abfae680",
+        "android_client_info": {
+          "package_name": "com.yomplex.tests"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "773220899713-eldkksh3io3drq075cb3p3aecgls1tnh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAfJWIq_eUIAK4z_aryVNnYp3nFfsskj0Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "773220899713-eldkksh3io3drq075cb3p3aecgls1tnh.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

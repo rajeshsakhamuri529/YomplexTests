@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+
+    <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/_30sdp"
+            android:layout_marginRight="@dimen/_30sdp"
+            android:background="@drawable/white_curved_border">
+
+        <TextView
+                android:id="@+id/tv_message"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/lato_regular"
+                android:textColor="@color/black_text"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="@dimen/_20sdp"
+                android:layout_marginLeft="@dimen/_15sdp"
+                android:layout_marginRight="@dimen/_15sdp"
+                android:textSize="@dimen/_13ssp"
+                android:text="Are you sure you want to quit?"/>
+
+        <View
+                android:id="@+id/view"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/black"
+            android:visibility="gone"
+                android:layout_below="@id/tv_message"
+                android:layout_marginTop="@dimen/_15sdp"/>
+
+        <LinearLayout
+                android:layout_below="@id/tv_message"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_45sdp"
+            android:layout_marginLeft="@dimen/_15sdp"
+            android:layout_marginRight="@dimen/_15sdp"
+            android:layout_marginBottom="@dimen/_20sdp"
+
+                android:weightSum="2">
+
+            <TextView
+                    android:id="@+id/tv_quit"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Quit"
+                    android:visibility="gone"
+                    android:paddingTop="@dimen/_5sdp"
+                    android:paddingBottom="@dimen/_5sdp"
+                    android:layout_gravity="center"
+                    android:gravity="center_horizontal"
+                    android:textAllCaps="false"
+                    android:fontFamily="@font/quicksand_bold"
+                    android:textColor="@color/red_wrong_answer"
+                    android:textSize="@dimen/_12ssp"
+            />
+            <Button
+                android:layout_width="0dp"
+                android:layout_height="@dimen/_25sdp"
+                android:id="@+id/tv_quit1"
+                android:layout_weight="0.6"
+
+
+
+                android:textSize="@dimen/_11sdp"
+                android:letterSpacing="0.1"
+                android:fontFamily="@font/lato_bold"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:background="@drawable/close_button"
+                android:text="QUIT"
+                android:textColor="@color/red_wrong_answer"
+                />
+
+            <View android:layout_width="0.5dp"
+                  android:layout_height="match_parent"
+                  android:background="@color/black"
+                android:visibility="gone"
+            />
+
+            <TextView
+                    android:id="@+id/tv_return"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.9"
+                    android:text="Return to Quiz"
+                    android:paddingTop="@dimen/_5sdp"
+                    android:paddingBottom="@dimen/_5sdp"
+                    android:visibility="gone"
+                    android:layout_gravity="center"
+                    android:gravity="center_horizontal"
+                    android:textAllCaps="false"
+                    android:fontFamily="@font/quicksand_bold"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_12ssp"
+            />
+
+            <Button
+                android:id="@+id/tv_return1"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/_25sdp"
+                android:layout_weight="1.4"
+                android:paddingLeft="@dimen/_10sdp"
+                android:paddingRight="@dimen/_10sdp"
+               android:layout_marginLeft="@dimen/_20sdp"
+                android:layout_alignParentStart="true"
+                android:fontFamily="@font/lato_bold"
+                android:textSize="@dimen/_11sdp"
+                android:letterSpacing="0.1"
+                android:background="@drawable/submit_active_background"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:text="Return to Quiz"
+                android:layout_gravity="center_vertical"
+
+                android:textColor="@color/white"
+                />
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+
+</RelativeLayout>

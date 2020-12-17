@@ -1,0 +1,20 @@
+html,
+body {
+    height: 100%;
+    overflow: hidden;
+}
+@font-face {
+   font-family: 'MathJaxMainRegular';
+   src: url('file:///android_asset/fonts/MathJax_Main-Regular.otf');
+}
+body {
+    background-color: transparent;
+    font-size: 115%;
+    font-family: 'MathJaxMainRegular';
+    line-height: 30px;
+    margin-top:0px;
+    margin-bottom:0px;
+    padding-top:0px;
+    padding-bottom:0px;
+    color: #424242;
+}

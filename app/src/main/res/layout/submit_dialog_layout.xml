@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="40dp"
+        android:layout_marginRight="40dp"
+        android:background="@drawable/white_curved_border">
+
+        <LinearLayout
+            android:id="@+id/ll_answers"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="@dimen/_20sdp"
+            android:layout_below="@+id/titleLL"
+            android:layout_centerHorizontal="true"
+
+            />
+
+        <LinearLayout
+            android:id="@+id/messageLL"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/ll_answers"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="@dimen/_20sdp"
+            android:layout_marginLeft="@dimen/_15sdp"
+            android:layout_marginRight="@dimen/_15sdp">
+
+            <TextView
+                android:id="@+id/tv_message"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                android:fontFamily="@font/lato_regular"
+                android:textColor="@color/black_text"
+                android:textSize="@dimen/_13ssp"
+                android:text="Answered"/>
+
+            <TextView
+                android:id="@+id/tv_message1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/_5sdp"
+
+                android:fontFamily="@font/lato_bold"
+                android:textColor="@color/black_text"
+                android:textSize="@dimen/_13ssp"
+                android:text="3"/>
+
+            <TextView
+                android:id="@+id/tv_message2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/_5sdp"
+
+                android:fontFamily="@font/lato_regular"
+                android:textColor="@color/black_text"
+                android:textSize="@dimen/_13ssp"
+                android:text="of"/>
+
+            <TextView
+                android:id="@+id/tv_message3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/_5sdp"
+
+                android:fontFamily="@font/lato_bold"
+                android:textColor="@color/black_text"
+                android:textSize="@dimen/_13ssp"
+                android:text="4"/>
+            <TextView
+                android:id="@+id/tv_message4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/_5sdp"
+                android:fontFamily="@font/lato_regular"
+                android:textColor="@color/black_text"
+                android:textSize="@dimen/_13ssp"
+                android:text="questions."/>
+
+        </LinearLayout>
+
+
+
+
+        <TextView
+            android:id="@+id/tv_submit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/messageLL"
+            android:fontFamily="@font/lato_regular"
+            android:textColor="@color/black_text"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="@dimen/_20sdp"
+            android:layout_marginLeft="@dimen/_15sdp"
+            android:layout_marginRight="@dimen/_15sdp"
+            android:textSize="@dimen/_13ssp"
+            android:text="Submit your test?"/>
+
+
+
+        <LinearLayout
+            android:layout_below="@id/tv_submit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+            android:layout_marginTop="@dimen/_20sdp"
+            android:layout_marginLeft="@dimen/_25sdp"
+            android:layout_marginRight="@dimen/_25sdp"
+            android:layout_marginBottom="@dimen/_20sdp"
+
+            android:weightSum="2">
+
+
+            <Button
+                android:layout_width="0dp"
+                android:layout_height="@dimen/_25sdp"
+                android:id="@+id/btn_close"
+                android:layout_weight="1"
+
+
+
+                android:textSize="@dimen/_10sdp"
+                android:letterSpacing="0.1"
+                android:fontFamily="@font/lato_bold"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:background="@drawable/close_button"
+                android:text="CANCEL"
+
+                android:textColor="#424242"
+                />
+
+
+
+
+
+            <Button
+                android:id="@+id/btn_ok"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/_25sdp"
+                android:layout_weight="1"
+                android:paddingLeft="@dimen/_5sdp"
+                android:paddingRight="@dimen/_5sdp"
+                android:layout_marginLeft="@dimen/_20sdp"
+                android:layout_alignParentStart="true"
+                android:fontFamily="@font/lato_bold"
+                android:textSize="@dimen/_10sdp"
+                android:letterSpacing="0.1"
+                android:background="@drawable/submit_active_background"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:text="OK"
+                android:layout_gravity="center_vertical"
+
+                android:textColor="@color/white"
+                />
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+
+</RelativeLayout>

@@ -1,0 +1,55 @@
+<resources>
+    <string name="app_name">YomplexTests</string>
+    <string name="str_chapter">Chapters</string>
+    <string name="str_topics">Practice</string>
+    <string name="topics">Topics</string>
+    <string name="quiz">QUIZ</string>
+    <string name="tests">TESTS</string>
+    <string name="home">HOME</string>
+    <string name="str_daily_chanllenge">Daily Challenges</string>
+    <string name="str_textbooks">BOOKS</string>
+    <string name="str_classXcbse">CLASS X</string>
+    <string name="str_cbse">CBSE</string>
+    <string name="str_Quiz_1">Quiz I</string>
+    <string name="str_Quiz_2">Quiz II</string>
+    <string name="str_astra_card">Astra Cards</string>
+    <string name="str_astra_quiz">Super Quiz</string>
+    <string name="str_upgrade_to_all_chapters">Upgrade to Practice all Chapters</string>
+    <string name="str_topic_title">03 Pair of Linear Equations in Two Variables</string>
+    <string name="title_activity_bottom_navigation">BottomNavigationActivity</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
+    <string name="str_settings">SETTINGS</string>
+    <string name="login_register_settings">Login / Register</string>
+    <string name="welcome_guest">Welcome Guest</string>
+    <string name="upgrade">Upgrade</string>
+    <string name="restore">Restore</string>
+    <string name="set_reminders">Set Reminders</string>
+    <string name="sounds">Sounds</string>
+    <string name="notifications">Notifications</string>
+    <string name="share_apps">Share Apps</string>
+    <string name="rate_us">Rate Us</string>
+    <string name="more_apps">More Apps</string>
+    <string name="about">About</string>
+    <string name="help_amp_feedback"><![CDATA[Help & Feedback]]></string>
+    <string name="terms_amp_conditions"><![CDATA[Terms & Conditions]]></string>
+    <string name="notifications_admin_channel_name">adminChannelName</string>
+    <string name="notifications_admin_channel_description">adminChannelDescription</string>
+    <string name="t_amp_c_privacy">Privacy policy</string>
+    <string name="feedback">Feedback</string>
+    <string name="write_to_us">Write to us</string>
+    <string name="sign_out">Sign Out</string>
+    <string name="sign_in">Sign In</string>
+    <string name="rupee">₹</string>
+    <string name="exit_message">Are you sure you want to leave? Press the Back button again to exit.</string>
+
+    <string name="text1">Yomplex JEE Calculus provides carefully designed content from expert educators to help you revise, practice &amp; ace the JEE!</string>
+    <string name="text2">Short quizzes on each topic help you master important concepts from the JEE syllabus. Questions are frequently updated.</string>
+    <string name="text3">Short tests based on the JEE syllabus &amp; past papers help you master time-management &amp; accuracy. Detailed solutions are provided.</string>
+    <string name="text4">Tiny Textbooks, specially designed  by experts, contain reference formulas, difficult concepts, etc. More books are being added based on student and teacher suggestions. Save offline and study when you want.</string>
+
+    <string name="revision_practice">Revision &amp; Practice</string>
+
+    <string name="str_quiz">Score a <b>4</b> in one</string>
+</resources>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- START xml_defaults -->
+<defaultsMap>
+    <entry>
+        <key>upgrade</key>
+        <value>31</value>
+    </entry>
+    <entry>
+        <key>feedback</key>
+        <value>https://www.yomplex.com/#contact-us</value>
+    </entry>
+    <entry>
+        <key>writetous</key>
+        <value>https://www.yomplex.com/#contact-us</value>
+    </entry>
+    <entry>
+        <key>TestContentVersion</key>
+        <value>25</value>
+    </entry>
+    <entry>
+        <key>TestContentUrl</key>
+        <value>https://yomplex.s3.ap-south-1.amazonaws.com/appcontent/testv1.zip</value>
+    </entry>
+    <!--<entry>
+        <key>android_latest_version_name</key>
+        <value>3.1</value>
+    </entry>-->
+</defaultsMap>
+    <!-- END xml_defaults -->

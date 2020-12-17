@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/ll_quiz"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_below="@id/view"
+        android:layout_marginTop="@dimen/_5sdp"
+        android:layout_marginLeft="@dimen/_20sdp"
+        android:layout_marginRight="@dimen/_20sdp"
+        tools:context=".activity.TestQuestionActivity">
+
+    <WebView
+            android:id="@+id/webView_question"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:layout_alignParentTop="true"
+            android:layout_above="@id/wv_4100_ll"
+            android:scrollbars="none"
+            android:layout_gravity="center_horizontal"/>
+
+    <LinearLayout
+            android:id="@+id/wv_4100_ll"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_alignParentBottom="true">
+
+        <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_20sdp">
+
+            <WebView
+                    android:id="@+id/webView_option1"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_50sdp"
+                    android:clickable="true"
+                    android:scrollbars="none"
+                    android:layout_gravity="center"/>
+            <WebView
+                    android:visibility="gone"
+                    android:id="@+id/webView_option1_opacity"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_50sdp"
+                    android:clickable="true"
+                    android:scrollbars="none"
+                    android:layout_gravity="center"/>
+
+        </FrameLayout>
+
+        <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_5sdp">
+
+            <WebView
+                    android:id="@+id/webView_option2"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_50sdp"
+                    android:clickable="true"
+                    android:textAlignment="center"
+                    android:scrollbars="none"
+                    android:layout_gravity="center"/>
+
+            <WebView
+                    android:visibility="gone"
+                    android:id="@+id/webView_option2_opacity"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_50sdp"
+                    android:clickable="true"
+                    android:textAlignment="center"
+                    android:scrollbars="none"
+                    android:layout_gravity="center"/>
+
+        </FrameLayout>
+
+        <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_5sdp">
+
+            <WebView
+                    android:id="@+id/webView_option3"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_50sdp"
+                    android:clickable="true"
+                    android:textAlignment="center"
+                    android:scrollbars="none"
+                    android:layout_gravity="center"/>
+
+            <WebView
+                    android:visibility="gone"
+                    android:id="@+id/webView_option3_opacity"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_50sdp"
+                    android:clickable="true"
+                    android:textAlignment="center"
+                    android:scrollbars="none"
+                    android:layout_gravity="center"/>
+
+        </FrameLayout>
+
+        <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_5sdp">
+
+            <WebView
+                    android:id="@+id/webView_option4"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_50sdp"
+                    android:clickable="true"
+                    android:textAlignment="center"
+                    android:scrollbars="none"
+                    android:layout_gravity="center"/>
+
+            <WebView
+                    android:visibility="gone"
+                    android:id="@+id/webView_option4_opacity"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_50sdp"
+                    android:clickable="true"
+                    android:textAlignment="center"
+                    android:scrollbars="none"
+                    android:layout_gravity="center"/>
+
+        </FrameLayout>
+
+
+
+
+    </LinearLayout>
+
+    <!--<RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_30sdp">
+
+        <Button
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/_25sdp"
+                android:id="@+id/btn_next"
+                android:layout_alignParentRight="true"
+                android:fontFamily="@font/quicksand_bold"
+                android:background="@drawable/button_white_corner_border"
+                android:text="Next"
+                android:textColor="@color/dark_purple"/>
+
+        <Button
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/_25sdp"
+                android:id="@+id/btn_hint"
+                android:background="@drawable/hint_button_bg"
+                android:text="Hint"
+                android:fontFamily="@font/quicksand_bold"
+                android:textColor="@color/white"
+
+        />
+    </RelativeLayout>-->
+
+</RelativeLayout>

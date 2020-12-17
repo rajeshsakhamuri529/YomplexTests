@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/hint_curve_border"
+    >
+
+    <TextView
+        android:id="@+id/tv_hint"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/_14ssp"
+        android:text="Hint"
+        android:textColor="#424242"
+        android:layout_marginTop="@dimen/_15sdp"
+        android:fontFamily="@font/lato_bold"
+       android:layout_centerHorizontal="true"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:id="@+id/view"
+        android:background="@color/hint_title_text"
+        android:layout_below="@id/tv_hint"
+        android:layout_marginTop="@dimen/_15sdp"
+        />
+
+    <!--<ScrollView
+        android:id="@+id/scroll"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/view"
+        android:layout_above="@+id/btn_gotIt">-->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/view"
+        android:layout_above="@+id/view1"
+        android:layout_marginLeft="@dimen/_20sdp"
+        android:layout_marginRight="@dimen/_20sdp"
+        android:layout_marginTop="@dimen/_1sdp">
+        <WebView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+            android:id="@+id/webview_hint"
+            />
+        <!--<RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+
+            >
+
+            <WebView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+
+                android:id="@+id/webview_hint"
+                android:layout_marginLeft="@dimen/_10sdp"
+                android:layout_marginRight="@dimen/_10sdp"
+                android:layout_marginTop="@dimen/_10sdp"/>
+
+        </RelativeLayout>-->
+
+
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:id="@+id/view1"
+        android:layout_above="@+id/btnRL"
+        android:background="@color/hint_title_text"
+
+        android:layout_marginTop="@dimen/_1sdp"
+
+        />
+    <RelativeLayout
+        android:id="@+id/btnRL"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_45sdp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        >
+        <Button android:layout_width="@dimen/_50sdp"
+            android:layout_height="@dimen/_25sdp"
+            android:layout_centerInParent="true"
+            android:id="@+id/btn_gotIt"
+
+
+
+            android:background="@drawable/submit_active_background"
+            android:text="Ok"
+
+            android:letterSpacing="0.1"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:textColor="@color/white"
+            android:fontFamily="@font/lato_bold"
+            android:textSize="@dimen/_11ssp"
+
+            />
+
+    </RelativeLayout>
+
+
+
+    <!--</ScrollView>-->
+
+
+
+
+
+
+</RelativeLayout>

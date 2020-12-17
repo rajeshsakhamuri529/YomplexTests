@@ -1,0 +1,345 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:paddingBottom="@dimen/_15sdp"
+    tools:context=".activity.QuizSummaryActivity">
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/ll_summary_buttons">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:weightSum="3">
+
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="0.5">
+
+                <RelativeLayout
+                    android:id="@+id/titleRL"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_alignParentBottom="true">
+
+
+
+                    <LinearLayout
+                        android:id="@+id/titleLL"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/lato_light"
+                            android:textColor="@color/topic_text"
+                            android:id="@+id/title_no"
+                            android:textSize="@dimen/_18ssp"
+                            android:text="01"
+                            android:gravity="center"
+                            android:visibility="gone"
+                            android:layout_centerHorizontal="true"
+                            />
+
+
+                        <TextView
+                            android:id="@+id/tv_quiz_title"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="TINY TEST RESULTS"
+                            android:gravity="center"
+                            android:layout_centerHorizontal="true"
+                            android:textSize="@dimen/_18ssp"
+
+                            android:layout_marginLeft="@dimen/_11sdp"
+                            android:textColor="@color/topic_text"
+                            android:fontFamily="@font/lato_bold"/>
+                    </LinearLayout>
+
+
+
+
+
+
+
+
+
+                </RelativeLayout>
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="2">
+
+                <RelativeLayout
+                    android:id="@+id/successRL"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                   android:layout_centerInParent="true"
+                    android:layout_centerHorizontal="true"
+                    >
+                    <!--android:background="@drawable/quiz_time_success"-->
+                    <RelativeLayout
+                        android:id="@+id/totalLL"
+                        android:layout_width="@dimen/_35sdp"
+                        android:layout_height="@dimen/_35sdp"
+                        android:background="@drawable/test_summary_0"
+
+                        android:orientation="horizontal"
+                        android:layout_centerHorizontal="true">
+
+
+
+                        <TextView
+                            android:id="@+id/tv_correct"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="4"
+
+                            android:layout_centerInParent="true"
+                            android:layout_gravity="center"
+                            android:textSize="@dimen/_20ssp"
+
+                            android:textColor="@color/topic_text"
+                            android:fontFamily="@font/lato_black"/>
+
+                        <TextView
+                            android:id="@+id/tv_total1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="/"
+                            android:visibility="gone"
+                            android:gravity="center"
+                            android:layout_centerHorizontal="true"
+                            android:textSize="@dimen/_18ssp"
+
+                            android:layout_marginLeft="@dimen/_5sdp"
+                            android:textColor="@color/topic_text"
+                            android:fontFamily="@font/lato_regular"/>
+
+                        <TextView
+                            android:id="@+id/tv_total"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="4"
+                            android:visibility="gone"
+                            android:gravity="center"
+                            android:layout_centerHorizontal="true"
+                            android:textSize="@dimen/_18ssp"
+
+                            android:layout_marginLeft="@dimen/_5sdp"
+                            android:textColor="@color/topic_text"
+                            android:fontFamily="@font/lato_regular"/>
+                    </RelativeLayout>
+
+                    <LinearLayout
+                        android:id="@+id/ll_answers"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginTop="@dimen/_24sdp"
+                        android:layout_below="@+id/totalLL"
+                        android:layout_centerInParent="true"
+
+                        />
+
+                    <TextView
+                        android:id="@+id/tv_time"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="12 mins"
+                        android:gravity="center"
+                        android:layout_below="@+id/ll_answers"
+                        android:layout_centerHorizontal="true"
+                        android:textSize="@dimen/_20ssp"
+
+                        android:layout_marginTop="@dimen/_24sdp"
+                        android:textColor="@color/topic_text"
+                        android:fontFamily="@font/lato_light"/>
+
+
+                </RelativeLayout>
+
+                <LinearLayout
+
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_below="@+id/successRL"
+                    android:layout_marginTop="@dimen/_24sdp"
+                    android:layout_centerInParent="true">
+
+                    <Button
+                        android:id="@+id/btn_review"
+                        android:layout_width="wrap_content"
+                        android:layout_height="@dimen/_25sdp"
+                        android:layout_alignParentStart="true"
+                        android:letterSpacing="0.1"
+                        android:visibility="visible"
+                        android:gravity="center"
+                        android:fontFamily="@font/lato_bold"
+                        android:background="@drawable/submit_active_background"
+                        style="@style/Widget.AppCompat.Button.Borderless"
+                        android:text="Review"
+                        android:textSize="@dimen/_11ssp"
+                        android:textColor="@color/white"/>
+                </LinearLayout>
+
+
+            </RelativeLayout>
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="0.5">
+                <TextView
+                    android:id="@+id/summaryTxt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/lato_light"
+                    android:textColor="#0080ff"
+
+
+                    android:textSize="@dimen/_30ssp"
+                    android:text="ready?"
+                    android:gravity="center"
+
+                    android:layout_centerHorizontal="true"
+                    />
+
+            </RelativeLayout>
+
+        </LinearLayout>
+
+
+
+    </RelativeLayout>
+
+
+
+
+
+
+
+
+
+
+
+    <LinearLayout
+        android:id="@+id/ll_summary_buttons"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="3"
+        android:layout_marginLeft="@dimen/_10sdp"
+        android:layout_marginRight="@dimen/_10sdp"
+        android:layout_alignParentBottom="true">
+
+        <!--<Button
+            android:id="@+id/btn_play_again"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/_25sdp"
+            android:layout_weight="1"
+            android:text="Play Again"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:textSize="@dimen/_12ssp"
+            android:paddingRight="@dimen/_10sdp"
+            android:paddingLeft="@dimen/_10sdp"
+            android:textColor="@color/play_again_text"
+            android:fontFamily="@font/quicksand_bold"
+            android:background="@drawable/play_again"/>-->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/btn_topics"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/_25sdp"
+
+            android:layout_weight="0.9"
+
+            android:background="@drawable/close_button">
+
+            <TextView
+
+                android:id="@+id/txt_prev"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:fontFamily="@font/lato_bold"
+                android:gravity="center_vertical"
+                android:letterSpacing="0.1"
+                android:text="BACK"
+                android:textSize="@dimen/_11ssp"
+                android:textColor="#424242"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.2"
+                app:layout_constraintStart_toEndOf="@+id/left_arrow"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.5" />
+
+            <ImageView
+                android:id="@+id/left_arrow"
+                android:layout_width="11dp"
+                android:layout_height="11dp"
+
+
+                android:layout_marginStart="10dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.5"
+                app:srcCompat="@drawable/ic_left_arrow" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <Button
+            android:id="@+id/btn_new_test"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/_25sdp"
+            android:layout_weight="1.1"
+            android:text="NEW TEST"
+            android:visibility="visible"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:letterSpacing="0.1"
+            android:textSize="@dimen/_11ssp"
+            android:textColor="@color/white"
+            android:fontFamily="@font/lato_bold"
+            android:layout_marginLeft="@dimen/_15sdp"
+            android:layout_marginRight="@dimen/_8sdp"
+            android:background="@drawable/submit_active_background"/>
+
+        <Button
+            android:id="@+id/btn_play_next"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/_25sdp"
+            android:layout_weight="1"
+            android:textSize="@dimen/_11ssp"
+            android:letterSpacing="0.1"
+
+            android:visibility="gone"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:text="Play Next"
+            android:fontFamily="@font/quicksand_bold"
+            android:textColor="@color/white"
+            android:background="@drawable/submit_active_background"/>
+
+
+    </LinearLayout>
+
+</RelativeLayout>
