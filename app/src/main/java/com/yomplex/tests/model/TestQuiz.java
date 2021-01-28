@@ -5,6 +5,7 @@ public class TestQuiz {
     private String serialNo;
     private String title;
     private String lastplayed;
+    private String testtype;
 
     public String getSerialNo() {
         return serialNo;
@@ -28,5 +29,13 @@ public class TestQuiz {
 
     public void setLastplayed(String lastplayed) {
         this.lastplayed = lastplayed;
+    }
+
+    public String getTesttype() {
+        return testtype;
+    }
+
+    public void setTesttype(String testtype) {
+        this.testtype = testtype;
     }
 }

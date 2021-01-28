@@ -50,8 +50,11 @@ import com.yomplex.tests.BuildConfig
 import com.yomplex.tests.R
 import com.yomplex.tests.Service.JobService
 import com.yomplex.tests.database.QuizGameDataBase
+import com.yomplex.tests.fragment.ReviewFragment
 import com.yomplex.tests.fragment.SettingFragment
 import com.yomplex.tests.fragment.TestsFragment
+import com.yomplex.tests.fragment.VideoFragment
+import com.yomplex.tests.model.TestDownload
 import com.yomplex.tests.utils.ConstantPath
 import com.yomplex.tests.utils.ConstantPath.TITLE_TOPIC
 import com.yomplex.tests.utils.SharedPrefs
@@ -113,34 +116,69 @@ class DashBoardActivity : BaseActivity(),
         mTracker!!.setScreenName("Dashboard")
         mTracker!!.send(HitBuilders.ScreenViewBuilder().build())
 
-        var dburl = databaseHandler!!.gettesttopicurl()
-        if(dburl == null){
+        var testcontentlist: List<TestDownload>? = databaseHandler!!.gettestContent()
+        if(testcontentlist!!.size <= 0){
 
-            version = sharedPrefs!!.getPrefVal(this,"testversion")!!
+            /*version = sharedPrefs!!.getPrefVal(this,"testversion")!!
             url = sharedPrefs!!.getPrefVal(this,"testurl")!!
 
             Log.e("dashboard activity","version....."+version);
             Log.e("dashboard activity","url....."+url);
-            databaseHandler!!.insertTESTCONTENTDOWNLOAD(version,url,0)
-            downloadDataFromBackground(this@DashBoardActivity,url,version)
+            databaseHandler!!.insertTESTCONTENTDOWNLOAD(version,url,"",0)
+            downloadDataFromBackground(this@DashBoardActivity,url,version)*/
 
             val docRef = db.collection("testcontentdownload").document("nJUIWEtshPEmAXjqn7y4")
             docRef.get().addOnSuccessListener { document ->
                 if (document != null) {
                     Log.e("grade activity", "DocumentSnapshot data: ${document.data}")
-                    version = document.data!!.get("TestContentVersion").toString()
+                    /*version = document.data!!.get("TestContentVersion").toString()
                     url = document.data!!.get("TestContentUrl").toString()
 
 
-                    databaseHandler!!.insertTESTCONTENTDOWNLOAD(version,url,0)
+                    databaseHandler!!.insertTESTCONTENTDOWNLOAD(version,url,"",0)
                     //sharedPrefs.setBooleanPrefVal(this@GradeActivity, ConstantPath.IS_FIRST_TIME, true)
                     //if(hasPermissions(this@GradeActivity, *PERMISSIONS)){
                         // var url = databaseHandler!!.gettesttopicurl()
-                        downloadDataFromBackground(this@DashBoardActivity,url,version)
+                        downloadDataFromBackground(this@DashBoardActivity,url,version)*/
+                    for(i in 0 until (document.data!!.size - 4)){
+                        if(i == 0){
+                            var version = document.data!!.get("BasicVersion").toString()
+                            var url = document.data!!.get("BasicUrl").toString()
 
+                            Log.e("grade activity","version......."+version)
+                            Log.e("grade activity","url......."+url)
 
+                            databaseHandler!!.insertTESTCONTENTDOWNLOAD(version,url,"basic",0)
+                            downloadDataFromBackground(this@DashBoardActivity,url,version,"basic")
+                        }else if(i == 1){
+                            var version = document.data!!.get("AlgebraVersion").toString()
+                            var url = document.data!!.get("AlgebraUrl").toString()
 
+                            Log.e("grade activity","version......."+version)
+                            Log.e("grade activity","url......."+url)
 
+                            databaseHandler!!.insertTESTCONTENTDOWNLOAD(version,url,"algebra",0)
+                            downloadDataFromBackground(this@DashBoardActivity,url,version,"algebra")
+                        }else if(i == 2){
+                            var version = document.data!!.get("CalculusVersion").toString()
+                            var url = document.data!!.get("CalculusUrl").toString()
+
+                            Log.e("grade activity","version......."+version)
+                            Log.e("grade activity","url......."+url)
+
+                            databaseHandler!!.insertTESTCONTENTDOWNLOAD(version,url,"calculus",0)
+                            downloadDataFromBackground(this@DashBoardActivity,url,version,"calculus")
+                        }else if(i == 3){
+                            var version = document.data!!.get("GeometryVersion").toString()
+                            var url = document.data!!.get("GeometryUrl").toString()
+
+                            Log.e("grade activity","version......."+version)
+                            Log.e("grade activity","url......."+url)
+
+                            databaseHandler!!.insertTESTCONTENTDOWNLOAD(version,url,"geometry",0)
+                            downloadDataFromBackground(this@DashBoardActivity,url,version,"geometry")
+                        }
+                    }
 
                 } else {
                     Log.e("grade activity", "No such document")
@@ -229,7 +267,7 @@ class DashBoardActivity : BaseActivity(),
             }
             else if(fragment == "Settings"){
                 loadFragment(SettingFragment())
-                val revisionItem = navigation.getMenu().getItem(1)
+                val revisionItem = navigation.getMenu().getItem(4)
                 // Select home item
                 navigation.setSelectedItemId(revisionItem.getItemId());
             }else{
@@ -273,9 +311,9 @@ class DashBoardActivity : BaseActivity(),
 
     private fun downloadDataFromBackground(
         mainActivity: DashBoardActivity,
-        url: String,version:String
+        url: String,version:String,type:String
     ) {
-        JobService.enqueueWork(mainActivity, url,version)
+        JobService.enqueueWork(mainActivity, url,version,type)
     }
 
 
@@ -391,6 +429,52 @@ class DashBoardActivity : BaseActivity(),
                 }else{
 
                     fragment = TestsFragment()
+
+                }
+
+
+            }
+            R.id.nav_review -> {
+                val fragmentManager = supportFragmentManager
+                val currentFragment = fragmentManager.findFragmentById(R.id.fragment_container)
+                sound = sharedPrefs?.getBooleanPrefVal(this!!, ConstantPath.SOUNDS) ?: true
+                if(!sound) {
+                    //MusicManager.getInstance().play(context, R.raw.amount_low);
+                    // Is the sound loaded already?
+                    if (Utils.loaded) {
+                        Utils.soundPool.play(Utils.soundID, Utils.volume, Utils.volume, 1, 0, 1f);
+                        Log.e("Test", "Played sound...volume..." + Utils.volume);
+                        //Toast.makeText(context,"end",Toast.LENGTH_SHORT).show()
+                    }
+                }
+                if(currentFragment!! is ReviewFragment){
+                    fragment = currentFragment
+                }else{
+
+                    fragment = ReviewFragment()
+
+                }
+
+
+            }
+            R.id.nav_videos -> {
+                val fragmentManager = supportFragmentManager
+                val currentFragment = fragmentManager.findFragmentById(R.id.fragment_container)
+                sound = sharedPrefs?.getBooleanPrefVal(this!!, ConstantPath.SOUNDS) ?: true
+                if(!sound) {
+                    //MusicManager.getInstance().play(context, R.raw.amount_low);
+                    // Is the sound loaded already?
+                    if (Utils.loaded) {
+                        Utils.soundPool.play(Utils.soundID, Utils.volume, Utils.volume, 1, 0, 1f);
+                        Log.e("Test", "Played sound...volume..." + Utils.volume);
+                        //Toast.makeText(context,"end",Toast.LENGTH_SHORT).show()
+                    }
+                }
+                if(currentFragment!! is VideoFragment){
+                    fragment = currentFragment
+                }else{
+
+                    fragment = VideoFragment()
 
                 }
 

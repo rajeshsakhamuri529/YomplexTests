@@ -403,7 +403,7 @@ class SettingFragment : Fragment(), View.OnClickListener {
             bundle.putString(FirebaseAnalytics.Param.ITEM_ID, "Settings")
             firebaseAnalytics?.logEvent("SignOut", bundle)
 
-            databaseHandler!!.deleteAllQuizTopicsLatPlayed()
+            databaseHandler!!.deleteAllQuizTopicsLatPlayed("")
             databaseHandler!!.deleteAllQuizPlayFinal()
             databaseHandler1!!.deleteAllRevisions()
             databaseHandler1!!.deleteAllBookStatus()

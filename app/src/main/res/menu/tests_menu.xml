@@ -8,7 +8,17 @@
 
         android:title="Test" />
 
+    <item
+        android:id="@+id/nav_review"
+        android:icon="@drawable/challenge_drawable"
 
+        android:title="Review" />
+
+    <item
+        android:id="@+id/nav_videos"
+        android:icon="@drawable/challenge_drawable"
+
+        android:title="Videos" />
 
     <item
         android:id="@+id/nav_settings"

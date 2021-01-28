@@ -8,12 +8,10 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageInfo
 import android.content.res.ColorStateList
-import android.graphics.Color
-import android.graphics.PorterDuff
-import android.graphics.Rect
-import android.graphics.Typeface
+import android.graphics.*
 import android.graphics.drawable.ColorDrawable
 import android.media.MediaPlayer
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.CountDownTimer
@@ -51,11 +49,13 @@ import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.FileProvider
 import androidx.lifecycle.ViewModelProviders
 
 
 
 import com.google.firebase.analytics.FirebaseAnalytics
+import com.yomplex.tests.BuildConfig
 import com.yomplex.tests.R
 import com.yomplex.tests.database.QuizGameDataBase
 import com.yomplex.tests.model.*
@@ -108,6 +108,17 @@ class TestQuizActivity : BaseActivity(), View.OnClickListener {
     var webView_option2_opacity: WebView? = null
     var webView_option3_opacity: WebView? = null
     var webView_option4_opacity: WebView? = null
+    var report_rl: RelativeLayout? = null
+    var share_rl: RelativeLayout? = null
+
+    var webView_share_question: WebView? = null
+    var webView_share_option1: WebView? = null
+    var webView_share_option2: WebView? = null
+    var webView_share_option3: WebView? = null
+    var webView_share_option4: WebView? = null
+    var share_ll_inflate: LinearLayout? = null
+    var sharechild: View? = null
+
     var startClickTime: Long? = null
     private val MAX_CLICK_DURATION = 200
     private var isLevelCompleted: Boolean = false
@@ -166,6 +177,7 @@ class TestQuizActivity : BaseActivity(), View.OnClickListener {
 
     var alertDialog : AlertDialog? = null
     var dialog: Dialog? = null;
+    var sharedialog: Dialog? = null;
     var animFadeIn: Animation? = null
     var animFadeOut: Animation? = null
 
@@ -268,6 +280,7 @@ class TestQuizActivity : BaseActivity(), View.OnClickListener {
         dbTrackingHintStatus = FirebaseDatabase.getInstance().getReference("hint_tracking")
         dbRStatus!!.keepSynced(true)*/
         //databaseHandler!!.deleteAlltime()
+        showDialogForShare()
         testStartTime = System.currentTimeMillis();
 
         firebaseAnalytics = FirebaseAnalytics.getInstance(this)
@@ -385,148 +398,8 @@ class TestQuizActivity : BaseActivity(), View.OnClickListener {
         minutescountDownTimer.start()
     }
 
-    override fun onPause() {
-        super.onPause()
-        Log.e("test quiz","on pause....")
-        /*if(isTimerRunning){
-            if(minutescountDownTimer != null){
-
-                Log.e("test quiz","on pause....if....first")
-                minutescountDownTimer.cancel()
-
-            }
-        }
-
-        if(isTimerRunning1){
-            if(secondscountDownTimer != null){
-                //if(timer1 != null){
-                Log.e("test quiz","on pause...if....second")
-                secondscountDownTimer.cancel()
-                //}
-            }
-        }*/
 
 
-    }
-
-    override fun onResume() {
-        super.onResume()
-        Log.e("test quiz","on resume...is timer running..."+isTimerRunning)
-
-        /*testResumeTime = System.currentTimeMillis();
-
-        Log.e("test quiz","on resume...testResumeTime..."+testResumeTime)
-
-        testDiffTime =  testResumeTime - testStartTime;
-
-        Log.e("test quiz","on resume...testDiffTime..."+testDiffTime)
-
-        var f = (testDiffTime / 1000).toFloat()
-        var f1 = (f / 60.0).toDouble()
-        timetaken = Math.floor(f1).toInt();
-        //timetaken = timeCountInMilliSeconds - timeuntilfinish;
-        Log.e("test quiz","on resume...timetaken..."+timetaken)
-        var timeleft = (timeCountInMilliSeconds * 60 * 1000).toLong() - testDiffTime
-        startTime = timetaken
-
-        Log.e("test quiz","on resume...startTime..."+startTime)
-        if(startTime < timeCountInMilliSeconds){
-            if(startTime == (timeCountInMilliSeconds - 1)){
-                progressBarCircle.visibility = View.GONE
-                iv_progress_icon.visibility = View.VISIBLE
-                if(secondsTime <= 9){
-                    textViewTime.text = "0"+secondsTime
-                }else{
-                    textViewTime.text = ""+secondsTime
-                }
-
-                textViewTime.setTextColor(resources.getColor(R.color.white))
-                startCountDownTimerForSeconds(timeleft)
-            }else if(startTime >= (timeCountInMilliSeconds - 3)){
-                setProgress1(startTime,timeCountInMilliSeconds)
-                textViewTime.text = ""+(timeCountInMilliSeconds - startTime)
-
-                startCountDownTimerForMinutes(timeleft)
-            }else{
-                setProgress(startTime,timeCountInMilliSeconds)
-                textViewTime.text = ""+(timeCountInMilliSeconds - startTime)
-                if(isfirsttime){
-                    isfirsttime = false
-                    startCountDownTimerForMinutes((timeCountInMilliSeconds * 60 * 1000).toLong())
-                }else{
-                    startCountDownTimerForMinutes(timeleft)
-                }
-
-            }
-        }else if(startTime == timeCountInMilliSeconds){
-            Log.e("test quiz","on resume.....startTime == timeCountInMilliSeconds.....")
-            progressBarCircle.visibility = View.GONE
-            iv_progress_icon.visibility = View.VISIBLE
-            textViewTime.text = "00"
-            timeupDialog()
-        }*/
-
-
-        /*if(isTimerRunning){
-            var f = (millisUntil / 1000).toFloat()
-            var f1 = (f / 60.0).toDouble()
-            timeuntilfinish = Math.ceil(f1).toInt();
-            timetaken = timeCountInMilliSeconds - timeuntilfinish;
-            //Log.e("test quiz","onresume.....progress1....."+progress1)
-            //progress1 = progress1 - 1
-            if (Math.ceil(f1).toInt() <= 3) {
-                setProgress1(timetaken,timeCountInMilliSeconds)
-              //  progress1 = progress1 + 1
-            }else{
-                setProgress(timetaken,timeCountInMilliSeconds)
-                //progress1 = progress1 + 1
-            }
-        }
-
-        //var startTime: Int = databaseHandler!!.gettesttime()
-        Toast.makeText(this@TestQuizActivity,"starttime...."+startTime,Toast.LENGTH_LONG).show();
-        Log.e("test quiz","onresume......start time...."+startTime)
-        if(startTime == (timeCountInMilliSeconds - 1)){
-            progressBarCircle.visibility = View.GONE
-            iv_progress_icon.visibility = View.VISIBLE
-            if(secondsTime <= 9){
-                textViewTime.text = "0"+secondsTime
-            }else{
-                textViewTime.text = ""+secondsTime
-            }
-
-            textViewTime.setTextColor(resources.getColor(R.color.white))
-        }else if(startTime >= (timeCountInMilliSeconds - 3)){
-            setProgress1(startTime,timeCountInMilliSeconds)
-        }else{
-            setProgress(startTime,timeCountInMilliSeconds)
-        }*/
-
-    }
-
-    private fun startCountDownTimerForSeconds(millisTime:Long){
-        secondscountDownTimer = object: CountDownTimer(millisTime, 1000) {
-            override fun onTick(millisUntilFinished:Long) {
-
-                Log.e("test quiz activity","millisUntilFinished.........."+millisUntilFinished)
-               // var f = (millisUntilFinished / 1000).toFloat()
-               // var f1 = (f / 60.0).toDouble()
-                isTimerRunning = false
-                isTimerRunning1 = true
-                textViewTime.text = hmsTimeFormatter(millisUntilFinished)
-
-                timetaken = 12;
-                //progress1 = progress1 + 1
-
-            }
-            override fun onFinish() {
-                Log.e("startCountDownTimerFor","onFinish.......");
-                isTimerRunning1 = false
-                timeupDialog()
-            }
-        }
-        secondscountDownTimer.start()
-    }
 
     private fun hmsTimeFormatter(milliSeconds:Long):String {
         val hms = String.format("%02d",
@@ -551,8 +424,8 @@ class TestQuizActivity : BaseActivity(), View.OnClickListener {
         alertDialog.setCancelable(false)
         view_result_btn.setOnClickListener {
             //navigateToSummaryScreenNew()
-            var status:Int = databaseHandler!!.updatequizplayFinalstatus(testQuiz.title,"1",currentDate,testQuiz.lastplayed);
-            var answers:Int = databaseHandler!!.updatequizplayFinalTimeTaken(testQuiz.title,timetaken.toString(),currentDate,testQuiz.lastplayed);
+            var status:Int = databaseHandler!!.updatequizplayFinalstatus(testQuiz.title,"1",currentDate,testQuiz.lastplayed,testQuiz.testtype);
+            var answers:Int = databaseHandler!!.updatequizplayFinalTimeTaken(testQuiz.title,timetaken.toString(),currentDate,testQuiz.lastplayed,testQuiz.testtype);
             navigateToSummaryScreenNew()
         }
 
@@ -566,6 +439,16 @@ class TestQuizActivity : BaseActivity(), View.OnClickListener {
 
     }
 
+    @SuppressLint("ClickableViewAccessibility")
+    private fun initializeShareView(view: View) {
+        webView_share_question = view.findViewById(R.id.webView_share_question)
+        webView_share_option1 = view.findViewById(R.id.webView_option1)
+        webView_share_option2 = view.findViewById(R.id.webView_option2)
+        webView_share_option3 = view.findViewById(R.id.webView_option3)
+        webView_share_option4 = view.findViewById(R.id.webView_option4)
+
+
+    }
 
     @SuppressLint("ClickableViewAccessibility")
     private fun initializeView(view: View) {
@@ -579,10 +462,15 @@ class TestQuizActivity : BaseActivity(), View.OnClickListener {
         webView_option2_opacity = view.findViewById(R.id.webView_option2_opacity)
         webView_option3_opacity = view.findViewById(R.id.webView_option3_opacity)
         webView_option4_opacity = view.findViewById(R.id.webView_option4_opacity)
+
+        report_rl = view.findViewById(R.id.report_rl)
+        share_rl = view.findViewById(R.id.share_rl)
         /*webView_option2?.setInitialScale(1);
         webView_option2?.getSettings()?.setLoadWithOverviewMode(true)
         webView_option2?.getSettings()?.setUseWideViewPort(true)*/
         //webView_option2?.getSettings()?.setDefaultZoom(WebSettings.ZoomDensity.FAR);
+        report_rl!!.setOnClickListener(this)
+        share_rl!!.setOnClickListener(this)
 
         btn_next!!.setOnClickListener(this)
         btn_hint!!.setOnClickListener(this)
@@ -767,6 +655,43 @@ class TestQuizActivity : BaseActivity(), View.OnClickListener {
 
                 //navigateToSummaryScreenNew()
             }
+            R.id.report_rl -> {
+                sound = sharedPrefs?.getBooleanPrefVal(this, SOUNDS) ?: true
+                if(!sound){
+                    // mediaPlayer = MediaPlayer.create(this,R.raw.amount_low)
+                    //  mediaPlayer.start()
+                    if (Utils.loaded) {
+                        Utils.soundPool.play(Utils.soundID, Utils.volume, Utils.volume, 1, 0, 1f);
+                        Log.e("Test", "Played sound...volume..."+ Utils.volume);
+                        //Toast.makeText(context,"end",Toast.LENGTH_SHORT).show()
+                    }
+                }
+
+                //Toast.makeText(this, "report clicked...", Toast.LENGTH_LONG).show()
+                showDialogForReport()
+
+                //navigateToSummaryScreenNew()
+            }
+            R.id.share_rl -> {
+                sound = sharedPrefs?.getBooleanPrefVal(this, SOUNDS) ?: true
+                if(!sound){
+                    // mediaPlayer = MediaPlayer.create(this,R.raw.amount_low)
+                    //  mediaPlayer.start()
+                    if (Utils.loaded) {
+                        Utils.soundPool.play(Utils.soundID, Utils.volume, Utils.volume, 1, 0, 1f);
+                        Log.e("Test", "Played sound...volume..."+ Utils.volume);
+                        //Toast.makeText(context,"end",Toast.LENGTH_SHORT).show()
+                    }
+                }
+
+                Toast.makeText(this, "share clicked....", Toast.LENGTH_LONG).show()
+                //var rootView = findViewById(android.R.id.content);
+                /**/
+                sharedialog!!.show()
+
+
+                //navigateToSummaryScreenNew()
+            }
         }
     }
 
@@ -788,7 +713,7 @@ class TestQuizActivity : BaseActivity(), View.OnClickListener {
 //Typeface face=Typeface.createFromAsset(getAssets(), "fonts/HandmadeTypewriter.ttf");
         val face: Typeface = Typeface.createFromAsset(assets,"fonts/lato_bold.ttf")
 
-        var answers:String = databaseHandler!!.getQuizAnswerStatus(testQuiz.title,currentDate,testQuiz.lastplayed);
+        var answers:String = databaseHandler!!.getQuizAnswerStatus(testQuiz.title,currentDate,testQuiz.lastplayed,testQuiz.testtype);
         var finalans:List<String> = answers.split(",")
         circles = arrayOfNulls<TextView>(totalQuestion!!)
         ll_answers.removeAllViews()
@@ -852,8 +777,8 @@ class TestQuizActivity : BaseActivity(), View.OnClickListener {
                 minutescountDownTimer.cancel()
             }
             alertDialog.dismiss()
-            var status:Int = databaseHandler!!.updatequizplayFinalstatus(testQuiz.title,"1",currentDate,testQuiz.lastplayed);
-            var answers:Int = databaseHandler!!.updatequizplayFinalTimeTaken(testQuiz.title,timetaken.toString(),currentDate,testQuiz.lastplayed);
+            var status:Int = databaseHandler!!.updatequizplayFinalstatus(testQuiz.title,"1",currentDate,testQuiz.lastplayed,testQuiz.testtype);
+            var answers:Int = databaseHandler!!.updatequizplayFinalTimeTaken(testQuiz.title,timetaken.toString(),currentDate,testQuiz.lastplayed,testQuiz.testtype);
 
             /*val bundle = Bundle()
             bundle.putString("Category", "Test")
@@ -1015,6 +940,102 @@ class TestQuizActivity : BaseActivity(), View.OnClickListener {
         }
         noBtn.setOnClickListener { dialog .dismiss() }
         dialog .show()*/
+
+    }
+
+    private fun showDialogForReport() {
+        dialog = Dialog(this)
+        dialog!!.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog!!.setCancelable(false)
+        dialog!!.setContentView(R.layout.layout_report)
+        // val webview = dialog!!.findViewById(R.id.webview_hint) as WebView
+        val close = dialog!!.findViewById(R.id.btn_cancel) as Button
+
+
+
+
+
+        //buttonEffect(btn_gotIt,false)
+        // alertDialog = dialogBuilder.create()
+        close.setOnClickListener {
+            sound = sharedPrefs?.getBooleanPrefVal(this, SOUNDS) ?: true
+            if(!sound){
+                // mediaPlayer = MediaPlayer.create(this,R.raw.amount_low)
+                //  mediaPlayer.start()
+                if (Utils.loaded) {
+                    Utils.soundPool.play(Utils.soundID, Utils.volume, Utils.volume, 1, 0, 1f);
+                    Log.e("Test", "Played sound...volume..."+ Utils.volume);
+                    //Toast.makeText(context,"end",Toast.LENGTH_SHORT).show()
+                }
+            }
+            dialog!!.dismiss()
+        }
+        dialog!!.show()
+
+
+    }
+    private fun showDialogForShare() {
+        sharedialog = Dialog(this,android.R.style.Theme_Black_NoTitleBar_Fullscreen)
+        sharedialog!!.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        sharedialog!!.setCancelable(false)
+        sharedialog!!.setContentView(R.layout.layout_share)
+        // val webview = dialog!!.findViewById(R.id.webview_hint) as WebView
+        val close = sharedialog!!.findViewById(R.id.btn_done) as Button
+        val share = sharedialog!!.findViewById(R.id.btn_share) as Button
+        share_ll_inflate = sharedialog!!.findViewById(R.id.ll_share_inflate) as LinearLayout
+        val sharelayout = sharedialog!!.findViewById(R.id.sharelayout) as RelativeLayout
+
+        //image.setImageBitmap(bitmap)
+        //buttonEffect(btn_gotIt,false)
+        // alertDialog = dialogBuilder.create()
+        close.setOnClickListener {
+            sound = sharedPrefs?.getBooleanPrefVal(this, SOUNDS) ?: true
+            if(!sound){
+                // mediaPlayer = MediaPlayer.create(this,R.raw.amount_low)
+                //  mediaPlayer.start()
+                if (Utils.loaded) {
+                    Utils.soundPool.play(Utils.soundID, Utils.volume, Utils.volume, 1, 0, 1f);
+                    Log.e("Test", "Played sound...volume..."+ Utils.volume);
+                    //Toast.makeText(context,"end",Toast.LENGTH_SHORT).show()
+                }
+            }
+            sharedialog!!.dismiss()
+        }
+        share.setOnClickListener {
+            sound = sharedPrefs?.getBooleanPrefVal(this, SOUNDS) ?: true
+            if(!sound){
+                // mediaPlayer = MediaPlayer.create(this,R.raw.amount_low)
+                //  mediaPlayer.start()
+                if (Utils.loaded) {
+                    Utils.soundPool.play(Utils.soundID, Utils.volume, Utils.volume, 1, 0, 1f);
+                    Log.e("Test", "Played sound...volume..."+ Utils.volume);
+                    //Toast.makeText(context,"end",Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            var v1 = sharelayout;
+            v1.setDrawingCacheEnabled(true);
+            var bitmap: Bitmap = Bitmap.createBitmap(v1.getDrawingCache());
+            v1.setDrawingCacheEnabled(false);
+            Utils.saveBitmap(bitmap,this@TestQuizActivity)
+            val dirFile = File(getExternalFilesDir(null), "/screenshot.png")
+
+            //var uri = Uri.fromFile(dirFile);
+            var photoURI = FileProvider.getUriForFile(this@TestQuizActivity,
+        BuildConfig.APPLICATION_ID + ".files",dirFile);
+            var sharingIntent = Intent(android.content.Intent.ACTION_SEND);
+            sharingIntent.setType("image/*");
+            //var shareBody = "My highest score with screen shot";
+            sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "My Catch score");
+            //sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
+            sharingIntent.putExtra(Intent.EXTRA_STREAM, photoURI);
+
+            startActivity(Intent.createChooser(sharingIntent, "Share via"));
+            sharedialog!!.dismiss()
+
+        }
+        //sharedialog!!.show()
+
 
     }
     private fun hintAlertDialog() {
@@ -1326,7 +1347,7 @@ class TestQuizActivity : BaseActivity(), View.OnClickListener {
         pathsbuilder = StringBuilder()
         typebuilder = StringBuilder()
         optionsbuilder = StringBuilder()
-        val dirFile = File(getExternalFilesDir(null),"test/")
+        val dirFile = File(getExternalFilesDir(null),topicName!!.toLowerCase()+"/"+"test/")
         for (i in 0 until totalQuestion!!)
         {
             questionsItem = arrayMap!!.get(listWithUniqueString!!.get(positionList!![i]))
@@ -1430,7 +1451,7 @@ class TestQuizActivity : BaseActivity(), View.OnClickListener {
         Log.e("test question activity","questionsbuilder....."+questionsbuilder.toString());
         Log.e("test question activity","answerbuilder....."+answerbuilder.toString());
         Log.e("test question activity","questionanswerbuilder....."+questionanswerbuilder.toString());
-        testQuiz = databaseHandler!!.getQuizTopicsForTimerLastPlayed()
+        testQuiz = databaseHandler!!.getQuizTopicsForTimerLastPlayed(topicName!!.toLowerCase())
 
 
         val sdf = SimpleDateFormat("dd-MM-yyyy")
@@ -1438,7 +1459,7 @@ class TestQuizActivity : BaseActivity(), View.OnClickListener {
 
 
         var testquizfinal:TestQuizFinal
-        testquizfinal = TestQuizFinal(testQuiz.serialNo,testQuiz.title,testQuiz.lastplayed,totalQuestion!!,answerbuilder.toString(),questionanswerbuilder.toString(),pathsbuilder.toString(),currentDate,"",optionsbuilder.toString(),"0")
+        testquizfinal = TestQuizFinal(testQuiz.serialNo,testQuiz.title,testQuiz.lastplayed,totalQuestion!!,answerbuilder.toString(),questionanswerbuilder.toString(),pathsbuilder.toString(),currentDate,"",optionsbuilder.toString(),"0",testQuiz.testtype)
         databaseHandler!!.insertquizplayFinal(testquizfinal);
 
 
@@ -1468,6 +1489,9 @@ class TestQuizActivity : BaseActivity(), View.OnClickListener {
         handler.removeCallbacksAndMessages(null)
         if (child != null) {
             ll_inflate.removeView(child!!)
+        }
+        if(sharechild != null){
+            share_ll_inflate!!.removeView(sharechild)
         }
         if (bank != null) {
             addBankData()
@@ -1514,7 +1538,7 @@ class TestQuizActivity : BaseActivity(), View.OnClickListener {
             val sdf = SimpleDateFormat("dd-MM-yyyy")
             val currentDate = sdf.format(Date())
 
-            val paths: String = databaseHandler!!.getQuizQuestionPathFinal(testQuiz.title,currentDate,testQuiz.lastplayed)
+            val paths: String = databaseHandler!!.getQuizQuestionPathFinal(testQuiz.title,currentDate,testQuiz.lastplayed,testQuiz.testtype)
             var ans:List<String> = paths.split(",")
             var ans1:List<String> = ans.get((countInt - 1)).split("~")
             type = ans1[1].toInt()
@@ -1566,6 +1590,10 @@ class TestQuizActivity : BaseActivity(), View.OnClickListener {
         handler.removeCallbacksAndMessages(null)
         if (child != null) {
             ll_inflate.removeView(child!!)
+
+        }
+        if(sharechild != null){
+            share_ll_inflate!!.removeView(sharechild)
         }
         if (bank != null) {
             addBankData()
@@ -1612,7 +1640,7 @@ class TestQuizActivity : BaseActivity(), View.OnClickListener {
             val sdf = SimpleDateFormat("dd-MM-yyyy")
             val currentDate = sdf.format(Date())
 
-            val paths: String = databaseHandler!!.getQuizQuestionPathFinal(testQuiz.title,currentDate,testQuiz.lastplayed)
+            val paths: String = databaseHandler!!.getQuizQuestionPathFinal(testQuiz.title,currentDate,testQuiz.lastplayed,testQuiz.testtype)
             var ans:List<String> = paths.split(",")
             var ans1:List<String> = ans.get((countInt - 1)).split("~")
             type = ans1[1].toInt()
@@ -1914,7 +1942,7 @@ class TestQuizActivity : BaseActivity(), View.OnClickListener {
         //val paths: String = databaseHandler!!.getQuizQuestionPathFinal(testQuiz.title,currentDate,testQuiz.lastplayed)
         //var ans:List<String> = paths.split(",")
 
-        var answers:String = databaseHandler!!.getQuizAnswerStatus(testQuiz.title,currentDate,testQuiz.lastplayed);
+        var answers:String = databaseHandler!!.getQuizAnswerStatus(testQuiz.title,currentDate,testQuiz.lastplayed,testQuiz.testtype);
 
 
         var ans:List<String> = answers.split(",")
@@ -1923,7 +1951,7 @@ class TestQuizActivity : BaseActivity(), View.OnClickListener {
 
         if(ans.get((countInt - 1)).equals("1")){
             listOfOptions!!.clear()
-            var optionString:String = databaseHandler!!.getQuizFinalOptions(testQuiz.title,currentDate,testQuiz.lastplayed)
+            var optionString:String = databaseHandler!!.getQuizFinalOptions(testQuiz.title,currentDate,testQuiz.lastplayed,testQuiz.testtype)
 
             var queans:List<String> = optionString.split(",")
             var optionsmutanslist = queans.toMutableList()
@@ -2050,6 +2078,7 @@ class TestQuizActivity : BaseActivity(), View.OnClickListener {
 
         }
         webView_question!!.setBackgroundColor(0)
+        //webView_share_question!!.setBackgroundColor(0)
         //setWebViewBGDefault()
 
         val qa = object : WebViewClient() {
@@ -2092,6 +2121,7 @@ class TestQuizActivity : BaseActivity(), View.OnClickListener {
         }*/
 
         webView_question!!.loadUrl(WEBVIEW_FILE_PATH + questionPath)
+        webView_share_question!!.loadUrl(WEBVIEW_FILE_PATH + questionPath)
 
     }
 
@@ -2128,7 +2158,7 @@ class TestQuizActivity : BaseActivity(), View.OnClickListener {
         //val paths: String = databaseHandler!!.getQuizQuestionPathFinal(testQuiz.title,currentDate,testQuiz.lastplayed)
         //var ans:List<String> = paths.split(",")
 
-        var answers:String = databaseHandler!!.getQuizAnswerStatus(testQuiz.title,currentDate,testQuiz.lastplayed);
+        var answers:String = databaseHandler!!.getQuizAnswerStatus(testQuiz.title,currentDate,testQuiz.lastplayed,testQuiz.testtype);
 
 
         var ans:List<String> = answers.split(",")
@@ -2136,7 +2166,7 @@ class TestQuizActivity : BaseActivity(), View.OnClickListener {
         Log.e("test question activity","next.....ans..."+ans);
 
         if(ans.get((countInt - 1)).equals("1")){
-            var questionanswers:String = databaseHandler!!.getQuizQuestionAnswersFinal(testQuiz.title,currentDate,testQuiz.lastplayed);
+            var questionanswers:String = databaseHandler!!.getQuizQuestionAnswersFinal(testQuiz.title,currentDate,testQuiz.lastplayed,testQuiz.testtype);
             var queans:List<String> = questionanswers.split(",")
             var ans1:List<String> = queans.get((countInt - 1)).split("~")
             Log.e("test question activity","next.....ans1..."+ans1);
@@ -2156,7 +2186,7 @@ class TestQuizActivity : BaseActivity(), View.OnClickListener {
         val sdf = SimpleDateFormat("dd-MM-yyyy")
         val currentDate = sdf.format(Date())
 
-        var optionString:String = databaseHandler!!.getQuizFinalOptions(testQuiz.title,currentDate,testQuiz.lastplayed)
+        var optionString:String = databaseHandler!!.getQuizFinalOptions(testQuiz.title,currentDate,testQuiz.lastplayed,testQuiz.testtype)
 
         var queans:List<String> = optionString.split(",")
         var optionsmutanslist = queans.toMutableList()
@@ -2194,7 +2224,7 @@ class TestQuizActivity : BaseActivity(), View.OnClickListener {
             }
         }
 
-        databaseHandler!!.updatequizplayFinaloptions(testQuiz.title,optionstringBuilder.toString(),currentDate,testQuiz.lastplayed)
+        databaseHandler!!.updatequizplayFinaloptions(testQuiz.title,optionstringBuilder.toString(),currentDate,testQuiz.lastplayed,testQuiz.testtype)
 
 
         webView_option1!!.settings.javaScriptEnabled = true
@@ -2205,6 +2235,11 @@ class TestQuizActivity : BaseActivity(), View.OnClickListener {
         webView_option2_opacity!!.settings.javaScriptEnabled = true
         webView_option3_opacity!!.settings.javaScriptEnabled = true
         webView_option4_opacity!!.settings.javaScriptEnabled = true
+
+        webView_share_option1!!.settings.javaScriptEnabled = true
+        webView_share_option2!!.settings.javaScriptEnabled = true
+        webView_share_option3!!.settings.javaScriptEnabled = true
+        webView_share_option4!!.settings.javaScriptEnabled = true
 
         /* webView_option1.setInitialScale(1);
          x.getSettings().setLoadWithOverviewMode(true);
@@ -2235,6 +2270,11 @@ class TestQuizActivity : BaseActivity(), View.OnClickListener {
             webView_option3_opacity!!.webViewClient = webviewopacity
             webView_option4_opacity!!.webViewClient = webviewopacity
 
+            webView_share_option2!!.webViewClient = webview
+            webView_share_option3!!.webViewClient = webview
+            webView_share_option4!!.webViewClient = webview
+            webView_share_option1!!.webViewClient = webview
+
         }
         /*webView_option1!!.webViewClient = object : WebViewClient() {
             override fun onPageFinished(view: WebView?, url: String?) {
@@ -2261,6 +2301,11 @@ class TestQuizActivity : BaseActivity(), View.OnClickListener {
         webView_option2!!.loadUrl(opt2Path!!)
         webView_option3!!.loadUrl(opt3Path!!)
         webView_option4!!.loadUrl(opt4Path!!)
+
+        webView_share_option1!!.loadUrl(opt1Path!!)
+        webView_share_option2!!.loadUrl(opt2Path!!)
+        webView_share_option3!!.loadUrl(opt3Path!!)
+        webView_share_option4!!.loadUrl(opt4Path!!)
         // Log.d("url1",webView_option1!!.url+"!")
 
 
@@ -2306,8 +2351,11 @@ class TestQuizActivity : BaseActivity(), View.OnClickListener {
 
     private fun inflateView4100() {
         child = layoutInflater.inflate(R.layout.webview_4100_layout, null)
+        sharechild = layoutInflater.inflate(R.layout.webview_4100_share_layout, null)
         ll_inflate.addView(child)
+        share_ll_inflate!!.addView(sharechild)
         initializeView(child!!)
+        initializeShareView(sharechild!!)
     }
 
     private fun inflateView2201() {
@@ -2333,17 +2381,23 @@ class TestQuizActivity : BaseActivity(), View.OnClickListener {
 
         webView_option1!!.setBackgroundResource(R.drawable.option_curved_border)
         webView_option2!!.setBackgroundResource(R.drawable.option_curved_border)
+        webView_share_option1!!.setBackgroundResource(R.drawable.option_curved_border)
+        webView_share_option2!!.setBackgroundResource(R.drawable.option_curved_border)
         if (webView_option3 != null) {
             webView_option3!!.setBackgroundResource(R.drawable.option_curved_border)
             webView_option3!!.setBackgroundColor(0x00000000)
             webView_option3_opacity!!.setBackgroundResource(R.drawable.inactive_answer_overlay)
             webView_option3_opacity!!.setBackgroundColor(0x00000000)
+            webView_share_option3!!.setBackgroundResource(R.drawable.option_curved_border)
+            webView_share_option3!!.setBackgroundColor(0x00000000)
         }
         if (webView_option4 != null) {
             webView_option4!!.setBackgroundResource(R.drawable.option_curved_border)
             webView_option4!!.setBackgroundColor(0x00000000)
             webView_option4_opacity!!.setBackgroundResource(R.drawable.inactive_answer_overlay)
             webView_option4_opacity!!.setBackgroundColor(0x00000000)
+            webView_share_option4!!.setBackgroundResource(R.drawable.option_curved_border)
+            webView_share_option4!!.setBackgroundColor(0x00000000)
         }
 
         webView_option1!!.setBackgroundColor(0x00000000)
@@ -2352,6 +2406,8 @@ class TestQuizActivity : BaseActivity(), View.OnClickListener {
         webView_option1_opacity!!.setBackgroundColor(0x00000000)
         webView_option2_opacity!!.setBackgroundResource(R.drawable.inactive_answer_overlay)
         webView_option2_opacity!!.setBackgroundColor(0x00000000)
+        webView_share_option1!!.setBackgroundColor(0x00000000)
+        webView_share_option2!!.setBackgroundColor(0x00000000)
 
 
 
@@ -2391,8 +2447,8 @@ class TestQuizActivity : BaseActivity(), View.OnClickListener {
         //var ans:List<String> = paths.split(",")
 
 
-        var answers:String = databaseHandler!!.getQuizAnswerStatus(testQuiz.title,currentDate,testQuiz.lastplayed);
-        var questionanswers:String = databaseHandler!!.getQuizQuestionAnswersFinal(testQuiz.title,currentDate,testQuiz.lastplayed);
+        var answers:String = databaseHandler!!.getQuizAnswerStatus(testQuiz.title,currentDate,testQuiz.lastplayed,testQuiz.testtype);
+        var questionanswers:String = databaseHandler!!.getQuizQuestionAnswersFinal(testQuiz.title,currentDate,testQuiz.lastplayed,testQuiz.testtype);
 
         var ans:List<String> = answers.split(",")
         Log.e("test question activity","check answer new.....countInt..."+countInt);
@@ -2453,8 +2509,8 @@ class TestQuizActivity : BaseActivity(), View.OnClickListener {
 
         Log.e("test question activity","check answer new.....queansstringBuilder..."+queansstringBuilder.toString());
 
-        databaseHandler!!.updatequizplayFinalanswers(testQuiz.title,ansstringBuilder.toString(),currentDate,testQuiz.lastplayed)
-        databaseHandler!!.updatequizplayquestionanswersFinal(testQuiz.title,queansstringBuilder.toString(),currentDate,testQuiz.lastplayed)
+        databaseHandler!!.updatequizplayFinalanswers(testQuiz.title,ansstringBuilder.toString(),currentDate,testQuiz.lastplayed,testQuiz.testtype)
+        databaseHandler!!.updatequizplayquestionanswersFinal(testQuiz.title,queansstringBuilder.toString(),currentDate,testQuiz.lastplayed,testQuiz.testtype)
 
         //var answers1:String = databaseHandler!!.getQuizAnswers(topicName);
 
@@ -3025,14 +3081,15 @@ class TestQuizActivity : BaseActivity(), View.OnClickListener {
 
         val testModel = TestsModel()
         var userid = sharedPrefs!!.getPrefVal(this, ConstantPath.UID)
+        var email = sharedPrefs!!.getPrefVal(this, "email")
         Log.e("test quiz activity","userid......."+userid)
-        testQuiz = databaseHandler!!.getQuizTopicsForTimerLastPlayed()
+        testQuiz = databaseHandler!!.getQuizTopicsForTimerLastPlayed(topicName!!.toLowerCase())
         var count:Int = 0
 
         val sdf = SimpleDateFormat("dd-MM-yyyy")
         val currentDate = sdf.format(Date())
 
-        var questionanswers:String = databaseHandler!!.getQuizQuestionAnswersFinal(testQuiz.title,currentDate,testQuiz.lastplayed);
+        var questionanswers:String = databaseHandler!!.getQuizQuestionAnswersFinal(testQuiz.title,currentDate,testQuiz.lastplayed,testQuiz.testtype);
         var queans:List<String> = questionanswers.split(",")
         for(i in 0 until totalQuestion!!){
             var ans1:List<String> = queans.get(i).split("~")
@@ -3052,6 +3109,8 @@ class TestQuizActivity : BaseActivity(), View.OnClickListener {
         }
         testModel.testPlayedDate = currentDate
         testModel.userId = userid
+        testModel.testname = testQuiz.testtype
+        testModel.useremail = email
         if(timetaken == 0){
             testModel.timeTakenToComplete = "< 1 min"
         }else{

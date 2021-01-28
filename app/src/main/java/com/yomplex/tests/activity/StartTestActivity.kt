@@ -90,7 +90,7 @@ class StartTestActivity : BaseActivity(), View.OnClickListener {
 
 
 
-        //tv_quiz_title.text = topic.title
+        tv_quiz_title.text = topicName
 
         circles = arrayOfNulls<ImageView>(totalQuestion!!)
         ll_answers.removeAllViews()
@@ -161,7 +161,7 @@ class StartTestActivity : BaseActivity(), View.OnClickListener {
 
                 val intent = Intent(this!!, TestQuizActivity::class.java)
                 intent.putExtra(ConstantPath.TOPIC, topic)
-                intent.putExtra(ConstantPath.TOPIC_NAME, topic.title)
+                intent.putExtra(ConstantPath.TOPIC_NAME, topicName)
                 intent.putExtra(ConstantPath.FOLDER_NAME, topic.folderName)
                 intent.putExtra(ConstantPath.DYNAMIC_PATH, dynamicPath)
                 intent.putExtra(ConstantPath.COURSE_ID, courseId)

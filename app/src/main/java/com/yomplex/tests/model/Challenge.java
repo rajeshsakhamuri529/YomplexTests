@@ -7,14 +7,16 @@ public class Challenge {
     private int challengeTestCorrectAnswers;
     private int challengeQuizStatus;
     private int challengeTestStatus;
+    private String testtype;
 
 
-    public Challenge(String date, int quizanswers, int quizstatus, int testanswers, int teststatus){
+    public Challenge(String date, int quizanswers, int quizstatus, int testanswers, int teststatus,String testtype){
         this.date = date;
         this.challengeQuizCorrectAnswers = quizanswers;
         this.challengeTestCorrectAnswers = testanswers;
         this.challengeQuizStatus = quizstatus;
         this.challengeTestStatus = teststatus;
+        this.testtype = testtype;
     }
 
     public Challenge() {
@@ -59,5 +61,13 @@ public class Challenge {
 
     public void setChallengeTestStatus(int challengeTestStatus) {
         this.challengeTestStatus = challengeTestStatus;
+    }
+
+    public String getTesttype() {
+        return testtype;
+    }
+
+    public void setTesttype(String testtype) {
+        this.testtype = testtype;
     }
 }

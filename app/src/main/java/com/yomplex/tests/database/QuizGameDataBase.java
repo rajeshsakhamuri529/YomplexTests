@@ -9,6 +9,7 @@ import android.util.Log;
 
 
 import com.yomplex.tests.model.Challenge;
+import com.yomplex.tests.model.TestDownload;
 import com.yomplex.tests.model.TestQuiz;
 import com.yomplex.tests.model.TestQuizFinal;
 import com.yomplex.tests.utils.Utils;
@@ -28,7 +29,8 @@ public class QuizGameDataBase extends SQLiteOpenHelper {
     private static final String TABLE_TEST_CONTENT_DOWNLOAD = "testcontentdownload";
     private static final String KEY_TEST_CONTENT_VERSION = "TestContentVersion";
     private static final String KEY_TEST_CONTENT_URL = "TestContentUrl";
-    private static final String KEY_TEST_DOWNLOAD_STATUS = "doenloadstatus";
+    private static final String KEY_TEST_TYPE = "testtype";
+    private static final String KEY_TEST_DOWNLOAD_STATUS = "downloadstatus";
 
     private static final String TABLE_QUIZ_PLAY = "quizplay";
     private static final String KEY_TOTAL_QUESTIONS = "totalquestions";
@@ -85,7 +87,8 @@ public class QuizGameDataBase extends SQLiteOpenHelper {
             + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
             + KEY_CHALLENGE_DATE_FROM + " TEXT, "
             + KEY_CHALLENGE_DATE_TO + " TEXT, "
-            + KEY_CHALLENGE_TEST_PASS_COUNT + " INTEGER)";
+            + KEY_CHALLENGE_TEST_PASS_COUNT + " INTEGER,"
+            + KEY_TEST_TYPE + " TEXT)";
 
     String CREATE_TABLE_CHALLENGE = "CREATE TABLE " + TABLE_CHALLENGE + "("
             + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
@@ -93,7 +96,8 @@ public class QuizGameDataBase extends SQLiteOpenHelper {
             + KEY_CHALLENGE_QUIZ_CORRECT_ANSWERS + " INTEGER, "
             + KEY_CHALLENGE_QUIZ_STATUS + " INTEGER, "
             + KEY_CHALLENGE_TEST_CORRECT_ANSWERS + " INTEGER, "
-            + KEY_CHALLENGE_TEST_STATUS + " INTEGER)";
+            + KEY_CHALLENGE_TEST_STATUS + " INTEGER,"
+            + KEY_TEST_TYPE + " TEXT)";
 
 
     String CREATE_QUIZ_TABLE_WITH_TIMER = "CREATE TABLE " + TABLE_QUIZ_WITH_TIMER_FINAL + "("
@@ -108,13 +112,14 @@ public class QuizGameDataBase extends SQLiteOpenHelper {
             + KEY_TIME_TAKEN + " TEXT, "
             + KEY_OPTIONS + " TEXT, "
             + KEY_STATUS + " TEXT, "
-            + KEY_PRESENT_DATE + " TEXT)";
+            + KEY_PRESENT_DATE + " TEXT,"
+            + KEY_TEST_TYPE + " TEXT)";
 
     String CREATE_TABLE_TEST_CONTENT_DOWNLOAD = "CREATE TABLE " + TABLE_TEST_CONTENT_DOWNLOAD + "("
-            + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + KEY_TEST_CONTENT_VERSION + " TEXT, " + KEY_TEST_CONTENT_URL + " TEXT, " + KEY_TEST_DOWNLOAD_STATUS + " INTEGER)";
+            + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + KEY_TEST_CONTENT_VERSION + " TEXT, " + KEY_TEST_CONTENT_URL + " TEXT, "+ KEY_TEST_TYPE + " TEXT, " + KEY_TEST_DOWNLOAD_STATUS + " INTEGER)";
 
     String CREATE_QUIZ_PLAY_TABLE_WITH_TIMER = "CREATE TABLE " + TABLE_QUIZ_PLAY_WITH_TIME + "("
-            + KEY_SERIAL_NUMBER + " TEXT, " + KEY_TITLE + " TEXT, " + KEY_LAST_PLAYED + " TEXT)";
+            + KEY_SERIAL_NUMBER + " TEXT, " + KEY_TITLE + " TEXT, " + KEY_LAST_PLAYED + " TEXT,"+ KEY_TEST_TYPE + " TEXT )";
 
 
     String CREATE_TABLE_TEST_TIMER = "CREATE TABLE " + TABLE_TEST_TIMER + "("
@@ -168,7 +173,7 @@ public class QuizGameDataBase extends SQLiteOpenHelper {
     }
 
 
-    public void insertChallengeWeekly(String fromdate, String todate, int testpasscount) {
+    public void insertChallengeWeekly(String fromdate, String todate, int testpasscount,String type) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
@@ -176,6 +181,7 @@ public class QuizGameDataBase extends SQLiteOpenHelper {
         values.put(KEY_CHALLENGE_DATE_FROM, fromdate);
         values.put(KEY_CHALLENGE_DATE_TO, todate);
         values.put(KEY_CHALLENGE_TEST_PASS_COUNT, testpasscount);
+        values.put(KEY_TEST_TYPE, type);
 
 
         // Inserting Row
@@ -184,13 +190,13 @@ public class QuizGameDataBase extends SQLiteOpenHelper {
         db.close(); // Closing database connection
     }
 
-    public int getChallengeForWEEKLY(String fromdate, String todate) {
+    public int getChallengeForWEEKLY(String fromdate, String todate,String type) {
         //DailyChallenge dailyChallenge=new DailyChallenge();
         Log.e("quiz database","getChallengeForDate....fromdate..."+fromdate);
         int count = 0;
 
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cur = db.rawQuery("SELECT * FROM " + TABLE_CHALLENGE_WEEKLY + " WHERE " + KEY_CHALLENGE_DATE_FROM + "='" + fromdate+"' AND "+KEY_CHALLENGE_DATE_TO+"='"+todate+"'", new String[]{});
+        Cursor cur = db.rawQuery("SELECT * FROM " + TABLE_CHALLENGE_WEEKLY + " WHERE " + KEY_CHALLENGE_DATE_FROM + "='" + fromdate+"' AND "+KEY_CHALLENGE_DATE_TO+"='"+todate+"' AND "+KEY_TEST_TYPE+"='"+type+"'", new String[]{});
 
         //Cursor cur = db.rawQuery("SELECT * FROM " + TABLE_QUIZ_WITH_TIMER_FINAL + " WHERE " + KEY_TITLE + "='" + title+"' AND "+KEY_PRESENT_DATE + " ='"+pdate+"' AND "+KEY_TYPE_OF_PLAY +"= '"+typeofplay+"'", new String[]{});
         count = cur.getCount();
@@ -202,7 +208,7 @@ public class QuizGameDataBase extends SQLiteOpenHelper {
         return count;
     }
 
-    public int updateChallengeweeklystatus(String fromdate, String todate, int status) {
+    public int updateChallengeweeklystatus(String fromdate, String todate, int status,String type) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
@@ -210,15 +216,15 @@ public class QuizGameDataBase extends SQLiteOpenHelper {
         values.put(KEY_CHALLENGE_TEST_PASS_COUNT, status);
 
         // updating row
-        return db.update(TABLE_CHALLENGE_WEEKLY, values, KEY_CHALLENGE_DATE_FROM + " = ? AND "+KEY_CHALLENGE_DATE_TO + " = ?",
-                new String[] { String.valueOf(fromdate),todate });
+        return db.update(TABLE_CHALLENGE_WEEKLY, values, KEY_CHALLENGE_DATE_FROM + " = ? AND "+KEY_CHALLENGE_DATE_TO + " = ? AND "+KEY_TEST_TYPE+" =?",
+                new String[] { String.valueOf(fromdate),todate,type });
     }
 
-    public int getChallengeWeeklystatus(String fromdate, String todate) {
+    public int getChallengeWeeklystatus(String fromdate, String todate,String type) {
         //DailyChallenge dailyChallenge=new DailyChallenge();
         int count = -1;
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cur = db.rawQuery("SELECT * FROM " + TABLE_CHALLENGE_WEEKLY + " WHERE " + KEY_CHALLENGE_DATE_FROM + "='" + fromdate+"' AND "+KEY_CHALLENGE_DATE_TO + " ='"+todate+"'", new String[]{});
+        Cursor cur = db.rawQuery("SELECT * FROM " + TABLE_CHALLENGE_WEEKLY + " WHERE " + KEY_CHALLENGE_DATE_FROM + "='" + fromdate+"' AND "+KEY_CHALLENGE_DATE_TO + " ='"+todate+"' AND "+KEY_TEST_TYPE+"='"+type+"'", new String[]{});
         /*Cursor cursor = db.query(TABLE_DAILY_CHALLENGE, new String[] { KEY_ID,
                         KEY_VERSION }, KEY_ID + "=?",
                 new String[] { String.valueOf(id) }, null, null, null, null);*/
@@ -250,6 +256,7 @@ public class QuizGameDataBase extends SQLiteOpenHelper {
         values.put(KEY_CHALLENGE_QUIZ_STATUS, challenge.getChallengeQuizStatus());
         values.put(KEY_CHALLENGE_TEST_CORRECT_ANSWERS, challenge.getChallengeTestCorrectAnswers());
         values.put(KEY_CHALLENGE_TEST_STATUS, challenge.getChallengeTestStatus());
+        values.put(KEY_TEST_TYPE, challenge.getTesttype());
 
         // Inserting Row
         db.insert(TABLE_CHALLENGE, null, values);
@@ -292,13 +299,14 @@ public class QuizGameDataBase extends SQLiteOpenHelper {
         return challengeList;
     }
 
-    public int getChallengeForDate(String date) {
+    public int getChallengeForDate(String date,String type) {
         //DailyChallenge dailyChallenge=new DailyChallenge();
         Log.e("quiz database","getChallengeForDate....date..."+date);
         int count = 0;
         Challenge challenge =new Challenge();
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cur = db.rawQuery("SELECT * FROM " + TABLE_CHALLENGE + " WHERE " + KEY_DATE + "='" + date+"'", new String[]{});
+        Cursor cur = db.rawQuery("SELECT * FROM " + TABLE_CHALLENGE + " WHERE " + KEY_DATE + "='" + date+"' AND "+KEY_TEST_TYPE+"= '"+type+"'", new String[]{});
+
         /*Cursor cursor = db.query(TABLE_DAILY_CHALLENGE, new String[] { KEY_ID,
                         KEY_VERSION }, KEY_ID + "=?",
                 new String[] { String.valueOf(id) }, null, null, null, null);*/
@@ -348,11 +356,11 @@ public class QuizGameDataBase extends SQLiteOpenHelper {
         return status;
     }
 
-    public int getChallengeForTestStatus(String date) {
+    public int getChallengeForTestStatus(String date,String type) {
         //DailyChallenge dailyChallenge=new DailyChallenge();
         int status = -1;
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cur = db.rawQuery("SELECT * FROM " + TABLE_CHALLENGE + " WHERE " + KEY_DATE + "='" + date+"'", new String[]{});
+        Cursor cur = db.rawQuery("SELECT * FROM " + TABLE_CHALLENGE + " WHERE " + KEY_DATE + "='" + date+"' AND "+KEY_TEST_TYPE+"= '"+type+"'", new String[]{});
         /*Cursor cursor = db.query(TABLE_DAILY_CHALLENGE, new String[] { KEY_ID,
                         KEY_VERSION }, KEY_ID + "=?",
                 new String[] { String.valueOf(id) }, null, null, null, null);*/
@@ -397,7 +405,7 @@ public class QuizGameDataBase extends SQLiteOpenHelper {
 
     public boolean updateChallengeTest(String date,
                                        int correctanswers,
-                                       int status) {
+                                       int status,String type) {
 
         boolean isUpdateCustomer;
         SQLiteDatabase db = this.getWritableDatabase();
@@ -408,9 +416,9 @@ public class QuizGameDataBase extends SQLiteOpenHelper {
         initialValues.put(KEY_CHALLENGE_TEST_STATUS, status);
 
 
-        String args[] = {date};
+        String args[] = {date,type};
 
-        isUpdateCustomer = db.update(TABLE_CHALLENGE, initialValues, KEY_DATE + "=?", args) > 0;
+        isUpdateCustomer = db.update(TABLE_CHALLENGE, initialValues, KEY_DATE + "=? AND "+KEY_TEST_TYPE+ "= ?", args) > 0;
         db.close();
         return isUpdateCustomer;
     }
@@ -529,12 +537,13 @@ public class QuizGameDataBase extends SQLiteOpenHelper {
     }*/
 
 
-    public void insertTESTCONTENTDOWNLOAD(String version, String URL, int status) {
+    public void insertTESTCONTENTDOWNLOAD(String version, String URL,String type, int status) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
         values.put(KEY_TEST_CONTENT_VERSION, version); // Contact Name
         values.put(KEY_TEST_CONTENT_URL, URL); // Contact Phone
+        values.put(KEY_TEST_TYPE, type); // Contact Phone
         values.put(KEY_TEST_DOWNLOAD_STATUS, status);
 
         // Inserting Row
@@ -550,7 +559,7 @@ public class QuizGameDataBase extends SQLiteOpenHelper {
     }
 
     // code to update the single contact
-    public int updatetestcontentdownloadstatus(int status) {
+    public int updatetestcontentdownloadstatus(int status,String type) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
@@ -558,22 +567,28 @@ public class QuizGameDataBase extends SQLiteOpenHelper {
         values.put(KEY_TEST_DOWNLOAD_STATUS, status);
 
         // updating row
-        return db.update(TABLE_TEST_CONTENT_DOWNLOAD, values, KEY_ID + " = ?",
-                new String[] { String.valueOf(1) });
+        return db.update(TABLE_TEST_CONTENT_DOWNLOAD, values, KEY_TEST_TYPE + " = ?",
+                new String[] { String.valueOf(type) });
     }
 
-    public int gettesttopicdownloadstatus() {
+    public List<Integer> gettesttopicdownloadstatus() {
         //DailyChallenge dailyChallenge=new DailyChallenge();
         int version = 0;
+        List<Integer> statusList = new ArrayList<Integer>();
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cur = db.rawQuery("SELECT * FROM " + TABLE_TEST_CONTENT_DOWNLOAD + " WHERE " + KEY_ID + "='" + 1+"'", new String[]{});
+        Cursor cur = db.rawQuery("SELECT * FROM " + TABLE_TEST_CONTENT_DOWNLOAD, new String[]{});
         /*Cursor cursor = db.query(TABLE_DAILY_CHALLENGE, new String[] { KEY_ID,
                         KEY_VERSION }, KEY_ID + "=?",
                 new String[] { String.valueOf(id) }, null, null, null, null);*/
         if (cur.moveToFirst()) {
             do {
+                /*TestDownload testDownload=new TestDownload();
+                testDownload.setTestdownloadstatus((cur.getInt(cur.getColumnIndex(KEY_TEST_DOWNLOAD_STATUS))));
+                testDownload.setTesturl((cur.getString(cur.getColumnIndex(KEY_TEST_CONTENT_URL))));
+                testDownload.setTesttype((cur.getString(cur.getColumnIndex(KEY_TEST_TYPE))));
+                testDownload.setTestversion((cur.getString(cur.getColumnIndex(KEY_TEST_CONTENT_VERSION))));*/
 
-                version = (cur.getInt(cur.getColumnIndex(KEY_TEST_DOWNLOAD_STATUS)));
+                statusList.add((cur.getInt(cur.getColumnIndex(KEY_TEST_DOWNLOAD_STATUS))));
 
 
 
@@ -582,13 +597,44 @@ public class QuizGameDataBase extends SQLiteOpenHelper {
         cur.close();
         db.close();
 
-        Log.e("quiz game database","version.........."+version);
+        Log.e("quiz game database","statusList.size.........."+statusList.size());
         // return contact
-        return version;
+        return statusList;
+    }
+
+    public List<TestDownload> gettestContent() {
+        //DailyChallenge dailyChallenge=new DailyChallenge();
+        int version = 0;
+        List<TestDownload> statusList = new ArrayList<TestDownload>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cur = db.rawQuery("SELECT * FROM " + TABLE_TEST_CONTENT_DOWNLOAD, new String[]{});
+        /*Cursor cursor = db.query(TABLE_DAILY_CHALLENGE, new String[] { KEY_ID,
+                        KEY_VERSION }, KEY_ID + "=?",
+                new String[] { String.valueOf(id) }, null, null, null, null);*/
+        if (cur.moveToFirst()) {
+            do {
+                TestDownload testDownload=new TestDownload();
+                testDownload.setTestdownloadstatus((cur.getInt(cur.getColumnIndex(KEY_TEST_DOWNLOAD_STATUS))));
+                testDownload.setTesturl((cur.getString(cur.getColumnIndex(KEY_TEST_CONTENT_URL))));
+                testDownload.setTesttype((cur.getString(cur.getColumnIndex(KEY_TEST_TYPE))));
+                testDownload.setTestversion((cur.getString(cur.getColumnIndex(KEY_TEST_CONTENT_VERSION))));
+
+                statusList.add(testDownload);
+
+
+
+            } while (cur.moveToNext());
+        }
+        cur.close();
+        db.close();
+
+        Log.e("quiz game database","statusList.size.........."+statusList.size());
+        // return contact
+        return statusList;
     }
 
     // code to update the single contact
-    public int updatetestcontentversion(String version) {
+    public int updatetestcontentversion(String version,String type) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
@@ -596,8 +642,8 @@ public class QuizGameDataBase extends SQLiteOpenHelper {
         values.put(KEY_TEST_CONTENT_VERSION, version);
 
         // updating row
-        return db.update(TABLE_TEST_CONTENT_DOWNLOAD, values, KEY_ID + " = ?",
-                new String[] { String.valueOf(1) });
+        return db.update(TABLE_TEST_CONTENT_DOWNLOAD, values, KEY_TEST_TYPE + " = ?",
+                new String[] { String.valueOf(type) });
     }
 
     public String gettesttopicversion() {
@@ -649,31 +695,32 @@ public class QuizGameDataBase extends SQLiteOpenHelper {
         return url;
     }
 
-    public void insertquiztopiclastplayed(String title, int serialno, String lastplayed) {
+    public void insertquiztopiclastplayed(String title, int serialno, String lastplayed,String type) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
         values.put(KEY_SERIAL_NUMBER, serialno); // Contact Name
         values.put(KEY_TITLE, title); // Contact Phone
         values.put(KEY_LAST_PLAYED, lastplayed); // Contact Name
+        values.put(KEY_TEST_TYPE, type); // Contact Name
 
         // Inserting Row
         db.insert(TABLE_QUIZ_PLAY_WITH_TIME, KEY_SERIAL_NUMBER, values);
         //2nd argument is String containing nullColumnHack
         db.close(); // Closing database connection
     }
-    public void deleteAllQuizTopicsLatPlayed() {
+    public void deleteAllQuizTopicsLatPlayed(String type) {
         SQLiteDatabase db = getWritableDatabase();
-        db.execSQL("DELETE FROM " + TABLE_QUIZ_PLAY_WITH_TIME);
+        db.execSQL("DELETE FROM " + TABLE_QUIZ_PLAY_WITH_TIME+ " WHERE "+KEY_TEST_TYPE + " ='"+type+"'");
         db.close();
     }
 
-    public TestQuiz getQuizTopicsForTimerLastPlayed() {
+    public TestQuiz getQuizTopicsForTimerLastPlayed(String type) {
         //DailyChallenge dailyChallenge=new DailyChallenge();
         String answers = null;
         TestQuiz testQuiz =new TestQuiz();
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cur = db.rawQuery("SELECT * FROM " + TABLE_QUIZ_PLAY_WITH_TIME, new String[]{});
+        Cursor cur = db.rawQuery("SELECT * FROM " + TABLE_QUIZ_PLAY_WITH_TIME+ " WHERE "+KEY_TEST_TYPE + " ='"+type+"'", new String[]{});
         /*Cursor cursor = db.query(TABLE_DAILY_CHALLENGE, new String[] { KEY_ID,
                         KEY_VERSION }, KEY_ID + "=?",
                 new String[] { String.valueOf(id) }, null, null, null, null);*/
@@ -683,6 +730,7 @@ public class QuizGameDataBase extends SQLiteOpenHelper {
                 testQuiz.setLastplayed((cur.getString(cur.getColumnIndex(KEY_LAST_PLAYED))));
                 testQuiz.setTitle((cur.getString(cur.getColumnIndex(KEY_TITLE))));
                 testQuiz.setSerialNo((cur.getString(cur.getColumnIndex(KEY_SERIAL_NUMBER))));
+                testQuiz.setTesttype((cur.getString(cur.getColumnIndex(KEY_TEST_TYPE))));
 
             } while (cur.moveToNext());
         }
@@ -709,6 +757,8 @@ public class QuizGameDataBase extends SQLiteOpenHelper {
         values.put(KEY_TIME_TAKEN, testQuizFinal.getTimetaken());
         values.put(KEY_OPTIONS, testQuizFinal.getOptions());
         values.put(KEY_STATUS, testQuizFinal.getStatus());
+        values.put(KEY_TEST_TYPE, testQuizFinal.getTesttype());
+
         // Inserting Row
         db.insert(TABLE_QUIZ_WITH_TIMER_FINAL, KEY_SERIAL_NUMBER, values);
         //2nd argument is String containing nullColumnHack
@@ -726,7 +776,7 @@ public class QuizGameDataBase extends SQLiteOpenHelper {
 
         // SQLiteDatabase db = this.getReadableDatabase();
         //Cursor cur = db.rawQuery("SELECT * FROM " + TABLE_DAILY_CHALLENGE);
-        String selectQuery = "SELECT  * FROM (select * from " + TABLE_QUIZ_WITH_TIMER_FINAL+" WHERE "+KEY_STATUS+"=1 order by "+KEY_ID+" DESC limit 5 ) order by "+KEY_ID+" DESC";
+        String selectQuery = "SELECT  * FROM (select * from " + TABLE_QUIZ_WITH_TIMER_FINAL+" WHERE "+KEY_STATUS+"=1 order by "+KEY_ID+" DESC limit 10 ) order by "+KEY_ID+" DESC";
         //select * from (select * from tblmessage order by sortfield ASC limit 10) order by sortfield DESC;
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cur = db.rawQuery(selectQuery, null);
@@ -745,7 +795,7 @@ public class QuizGameDataBase extends SQLiteOpenHelper {
                 testQuizFinal.setQuestionPathType(cur.getString(cur.getColumnIndex(KEY_QUESTION_PATH_TYPE)));
                 testQuizFinal.setOptions(cur.getString(cur.getColumnIndex(KEY_OPTIONS)));
                 testQuizFinal.setStatus(cur.getString(cur.getColumnIndex(KEY_STATUS)));
-
+                testQuizFinal.setTesttype(cur.getString(cur.getColumnIndex(KEY_TEST_TYPE)));
                 dailychallengeList.add(testQuizFinal);
 
             } while (cur.moveToNext());
@@ -758,7 +808,7 @@ public class QuizGameDataBase extends SQLiteOpenHelper {
         return dailychallengeList;
     }
 
-    public int updatequizplayFinalstatus(String title, String status, String pdate, String typeofplay) {
+    public int updatequizplayFinalstatus(String title, String status, String pdate, String typeofplay,String type) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
@@ -766,11 +816,11 @@ public class QuizGameDataBase extends SQLiteOpenHelper {
         values.put(KEY_STATUS, status);
 
         // updating row
-        return db.update(TABLE_QUIZ_WITH_TIMER_FINAL, values, KEY_TITLE + " = ? AND "+KEY_PRESENT_DATE + " = ? AND "+KEY_TYPE_OF_PLAY + " = ?",
-                new String[] { String.valueOf(title),pdate,typeofplay });
+        return db.update(TABLE_QUIZ_WITH_TIMER_FINAL, values, KEY_TITLE + " = ? AND "+KEY_PRESENT_DATE + " = ? AND "+KEY_TYPE_OF_PLAY + " = ? AND "+KEY_TEST_TYPE+ " = ?",
+                new String[] { String.valueOf(title),pdate,typeofplay,type });
     }
 
-    public int updatequizplayFinaloptions(String title, String options, String pdate, String typeofplay) {
+    public int updatequizplayFinaloptions(String title, String options, String pdate, String typeofplay,String type) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
@@ -778,15 +828,15 @@ public class QuizGameDataBase extends SQLiteOpenHelper {
         values.put(KEY_OPTIONS, options);
 
         // updating row
-        return db.update(TABLE_QUIZ_WITH_TIMER_FINAL, values, KEY_TITLE + " = ? AND "+KEY_PRESENT_DATE + " = ? AND "+KEY_TYPE_OF_PLAY + " = ?",
-                new String[] { String.valueOf(title),pdate,typeofplay });
+        return db.update(TABLE_QUIZ_WITH_TIMER_FINAL, values, KEY_TITLE + " = ? AND "+KEY_PRESENT_DATE + " = ? AND "+KEY_TYPE_OF_PLAY + " = ? AND "+KEY_TEST_TYPE+ " = ?",
+                new String[] { String.valueOf(title),pdate,typeofplay,type });
     }
 
-    public String getQuizFinalOptions(String title, String pdate, String typeofplay) {
+    public String getQuizFinalOptions(String title, String pdate, String typeofplay,String type) {
         //DailyChallenge dailyChallenge=new DailyChallenge();
         String options = null;
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cur = db.rawQuery("SELECT * FROM " + TABLE_QUIZ_WITH_TIMER_FINAL + " WHERE " + KEY_TITLE + "='" + title+"' AND "+KEY_PRESENT_DATE + " ='"+pdate+"' AND "+KEY_TYPE_OF_PLAY +"= '"+typeofplay+"'", new String[]{});
+        Cursor cur = db.rawQuery("SELECT * FROM " + TABLE_QUIZ_WITH_TIMER_FINAL + " WHERE " + KEY_TITLE + "='" + title+"' AND "+KEY_PRESENT_DATE + " ='"+pdate+"' AND "+KEY_TYPE_OF_PLAY +"= '"+typeofplay+"' AND "+KEY_TEST_TYPE+"='"+type+"'", new String[]{});
         /*Cursor cursor = db.query(TABLE_DAILY_CHALLENGE, new String[] { KEY_ID,
                         KEY_VERSION }, KEY_ID + "=?",
                 new String[] { String.valueOf(id) }, null, null, null, null);*/
@@ -807,7 +857,7 @@ public class QuizGameDataBase extends SQLiteOpenHelper {
         return options;
     }
 
-    public int updatequizplayFinalTimeTaken(String title, String time, String pdate, String typeofplay) {
+    public int updatequizplayFinalTimeTaken(String title, String time, String pdate, String typeofplay,String type) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
@@ -815,15 +865,15 @@ public class QuizGameDataBase extends SQLiteOpenHelper {
         values.put(KEY_TIME_TAKEN, time);
 
         // updating row
-        return db.update(TABLE_QUIZ_WITH_TIMER_FINAL, values, KEY_TITLE + " = ? AND "+KEY_PRESENT_DATE + " = ? AND "+KEY_TYPE_OF_PLAY + " = ?",
-                new String[] { String.valueOf(title),pdate,typeofplay });
+        return db.update(TABLE_QUIZ_WITH_TIMER_FINAL, values, KEY_TITLE + " = ? AND "+KEY_PRESENT_DATE + " = ? AND "+KEY_TYPE_OF_PLAY + " = ? AND "+KEY_TEST_TYPE+ " = ?",
+                new String[] { String.valueOf(title),pdate,typeofplay,type });
     }
 
-    public String getQuiztimetakens(String title, String pdate, String typeofplay) {
+    public String getQuiztimetakens(String title, String pdate, String typeofplay,String type) {
         //DailyChallenge dailyChallenge=new DailyChallenge();
         String answers = null;
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cur = db.rawQuery("SELECT * FROM " + TABLE_QUIZ_WITH_TIMER_FINAL + " WHERE " + KEY_TITLE + "='" + title+"' AND "+KEY_PRESENT_DATE + " ='"+pdate+"' AND "+KEY_TYPE_OF_PLAY +"= '"+typeofplay+"'", new String[]{});
+        Cursor cur = db.rawQuery("SELECT * FROM " + TABLE_QUIZ_WITH_TIMER_FINAL + " WHERE " + KEY_TITLE + "='" + title+"' AND "+KEY_PRESENT_DATE + " ='"+pdate+"' AND "+KEY_TYPE_OF_PLAY +"= '"+typeofplay+"' AND "+KEY_TEST_TYPE+"= '"+type+"'", new String[]{});
         /*Cursor cursor = db.query(TABLE_DAILY_CHALLENGE, new String[] { KEY_ID,
                         KEY_VERSION }, KEY_ID + "=?",
                 new String[] { String.valueOf(id) }, null, null, null, null);*/
@@ -844,7 +894,7 @@ public class QuizGameDataBase extends SQLiteOpenHelper {
         return answers;
     }
 
-    public int updatequizplayFinalanswers(String title, String answers, String pdate, String typeofplay) {
+    public int updatequizplayFinalanswers(String title, String answers, String pdate, String typeofplay,String type) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
@@ -852,15 +902,15 @@ public class QuizGameDataBase extends SQLiteOpenHelper {
         values.put(KEY_ANSWER_STATUS, answers);
 
         // updating row
-        return db.update(TABLE_QUIZ_WITH_TIMER_FINAL, values, KEY_TITLE + " = ? AND "+KEY_PRESENT_DATE + " = ? AND "+KEY_TYPE_OF_PLAY + " = ?",
-                new String[] { String.valueOf(title),pdate,typeofplay });
+        return db.update(TABLE_QUIZ_WITH_TIMER_FINAL, values, KEY_TITLE + " = ? AND "+KEY_PRESENT_DATE + " = ? AND "+KEY_TYPE_OF_PLAY + " = ? AND "+KEY_TEST_TYPE + "= ?",
+                new String[] { String.valueOf(title),pdate,typeofplay,type });
     }
 
-    public String getQuizAnswerStatus(String title, String pdate, String typeofplay) {
+    public String getQuizAnswerStatus(String title, String pdate, String typeofplay,String type) {
         //DailyChallenge dailyChallenge=new DailyChallenge();
         String answers = null;
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cur = db.rawQuery("SELECT * FROM " + TABLE_QUIZ_WITH_TIMER_FINAL + " WHERE " + KEY_TITLE + "='" + title+"' AND "+KEY_PRESENT_DATE + " ='"+pdate+"' AND "+KEY_TYPE_OF_PLAY +"= '"+typeofplay+"'", new String[]{});
+        Cursor cur = db.rawQuery("SELECT * FROM " + TABLE_QUIZ_WITH_TIMER_FINAL + " WHERE " + KEY_TITLE + "='" + title+"' AND "+KEY_PRESENT_DATE + " ='"+pdate+"' AND "+KEY_TYPE_OF_PLAY +"= '"+typeofplay+"' AND "+KEY_TEST_TYPE+"= '"+type+"'", new String[]{});
         /*Cursor cursor = db.query(TABLE_DAILY_CHALLENGE, new String[] { KEY_ID,
                         KEY_VERSION }, KEY_ID + "=?",
                 new String[] { String.valueOf(id) }, null, null, null, null);*/
@@ -881,7 +931,7 @@ public class QuizGameDataBase extends SQLiteOpenHelper {
         return answers;
     }
 
-    public int updatequizplayquestionanswersFinal(String title, String questionanswers, String pdate, String typeofplay) {
+    public int updatequizplayquestionanswersFinal(String title, String questionanswers, String pdate, String typeofplay,String type) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
@@ -889,15 +939,15 @@ public class QuizGameDataBase extends SQLiteOpenHelper {
         values.put(KEY_QUESTION_ANSWER, questionanswers);
 
         // updating row
-        return db.update(TABLE_QUIZ_WITH_TIMER_FINAL, values, KEY_TITLE + " = ? AND "+KEY_PRESENT_DATE + " = ? AND "+KEY_TYPE_OF_PLAY + " = ?",
-                new String[] { String.valueOf(title),pdate,typeofplay  });
+        return db.update(TABLE_QUIZ_WITH_TIMER_FINAL, values, KEY_TITLE + " = ? AND "+KEY_PRESENT_DATE + " = ? AND "+KEY_TYPE_OF_PLAY + " = ? AND "+KEY_TEST_TYPE+ " = ?",
+                new String[] { String.valueOf(title),pdate,typeofplay,type  });
     }
 
-    public String getQuizQuestionAnswersFinal(String title, String pdate, String typeofplay) {
+    public String getQuizQuestionAnswersFinal(String title, String pdate, String typeofplay,String type) {
         //DailyChallenge dailyChallenge=new DailyChallenge();
         String questionanswers = null;
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cur = db.rawQuery("SELECT * FROM " + TABLE_QUIZ_WITH_TIMER_FINAL + " WHERE " + KEY_TITLE + "='" + title+"' AND "+KEY_PRESENT_DATE + " ='"+pdate+"' AND "+KEY_TYPE_OF_PLAY +"= '"+typeofplay+"'", new String[]{});
+        Cursor cur = db.rawQuery("SELECT * FROM " + TABLE_QUIZ_WITH_TIMER_FINAL + " WHERE " + KEY_TITLE + "='" + title+"' AND "+KEY_PRESENT_DATE + " ='"+pdate+"' AND "+KEY_TYPE_OF_PLAY +"= '"+typeofplay+"' AND "+KEY_TEST_TYPE+"= '"+type+"'", new String[]{});
         /*Cursor cursor = db.query(TABLE_DAILY_CHALLENGE, new String[] { KEY_ID,
                         KEY_VERSION }, KEY_ID + "=?",
                 new String[] { String.valueOf(id) }, null, null, null, null);*/
@@ -918,11 +968,11 @@ public class QuizGameDataBase extends SQLiteOpenHelper {
         return questionanswers;
     }
 
-    public String getQuizQuestionPathFinal(String title, String pdate, String typeofplay) {
+    public String getQuizQuestionPathFinal(String title, String pdate, String typeofplay,String type) {
         //DailyChallenge dailyChallenge=new DailyChallenge();
         String questionanswers = null;
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cur = db.rawQuery("SELECT * FROM " + TABLE_QUIZ_WITH_TIMER_FINAL + " WHERE " + KEY_TITLE + "='" + title+"' AND "+KEY_PRESENT_DATE + " ='"+pdate+"' AND "+KEY_TYPE_OF_PLAY +"= '"+typeofplay+"'", new String[]{});
+        Cursor cur = db.rawQuery("SELECT * FROM " + TABLE_QUIZ_WITH_TIMER_FINAL + " WHERE " + KEY_TITLE + "='" + title+"' AND "+KEY_PRESENT_DATE + " ='"+pdate+"' AND "+KEY_TYPE_OF_PLAY +"= '"+typeofplay+"' AND "+KEY_TEST_TYPE +"= '"+type+"'", new String[]{});
         /*Cursor cursor = db.query(TABLE_DAILY_CHALLENGE, new String[] { KEY_ID,
                         KEY_VERSION }, KEY_ID + "=?",
                 new String[] { String.valueOf(id) }, null, null, null, null);*/

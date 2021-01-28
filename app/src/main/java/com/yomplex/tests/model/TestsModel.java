@@ -10,6 +10,8 @@ public class TestsModel implements Serializable {
     public String correctAnswers;
     public String totalQuestions;
     public String userId;
+    public String useremail;
+    public String testname;
 
     public String getTestPlayedDate() {
         return testPlayedDate;
@@ -57,5 +59,21 @@ public class TestsModel implements Serializable {
 
     public void setUserId(String userId) {
         this.userId = userId;
+    }
+
+    public String getUseremail() {
+        return useremail;
+    }
+
+    public void setUseremail(String useremail) {
+        this.useremail = useremail;
+    }
+
+    public String getTestname() {
+        return testname;
+    }
+
+    public void setTestname(String testname) {
+        this.testname = testname;
     }
 }

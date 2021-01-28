@@ -121,8 +121,8 @@ public class ProgressJobService extends JobIntentService {
                                     if(iszip){
                                         File dirFile = new File(context1.getExternalFilesDir(null),"testcontent.rar");
                                         dirFile.delete();
-                                        dataBase.updatetestcontentversion(version);
-                                        dataBase.updatetestcontentdownloadstatus(1);
+                                        dataBase.updatetestcontentversion(version,"");
+                                        dataBase.updatetestcontentdownloadstatus(1,"");
                                     }
                                     Bundle bundle = new Bundle();
                                     bundle.putString("data","success");

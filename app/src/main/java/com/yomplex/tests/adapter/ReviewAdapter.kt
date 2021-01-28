@@ -1,50 +1,38 @@
 package com.yomplex.tests.adapter
 
 import android.content.Context
-
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-
-
 import com.bumptech.glide.Glide
 import com.yomplex.tests.R
-import com.yomplex.tests.interfaces.TestClickListener
 import com.yomplex.tests.interfaces.TestQuizReviewClickListener
 import com.yomplex.tests.model.TestQuizFinal
-import kotlinx.android.synthetic.main.tests_list_item.view.*
+import kotlinx.android.synthetic.main.review_list_item.view.*
 import java.text.SimpleDateFormat
-
 import java.util.*
 
-
-
-
-
-class TestsAdapter(val context: Context,
-                   val testtypeslist: List<String>,
-                   val quiztopicreviewListener: TestClickListener
+class ReviewAdapter(val context: Context,
+                    val branchesItemList: List<TestQuizFinal>,
+                    val quiztopicreviewListener: TestQuizReviewClickListener
 ) :
-    RecyclerView.Adapter<TestsAdapter.TestsViewHolder>()  {
+    RecyclerView.Adapter<ReviewAdapter.ReviewViewHolder>()  {
 
-
-    override fun onCreateViewHolder(p0: ViewGroup, p1: Int): TestsAdapter.TestsViewHolder {
-        return TestsAdapter.TestsViewHolder(
+    override fun onCreateViewHolder(p0: ViewGroup, p1: Int): ReviewAdapter.ReviewViewHolder {
+        return ReviewAdapter.ReviewViewHolder(
             LayoutInflater.from(context)
-                .inflate(R.layout.tests_list_item, p0, false)
+                .inflate(R.layout.review_list_item, p0, false)
         )
     }
 
     override fun getItemCount(): Int {
-        return testtypeslist.size
+        return branchesItemList.size
     }
 
-    override fun onBindViewHolder(holder: TestsAdapter.TestsViewHolder, position: Int) {
-
-        holder.tv_topic_name.text = testtypeslist[position]
-        /*var count:Int = 0
+    override fun onBindViewHolder(holder: ReviewAdapter.ReviewViewHolder, position: Int) {
+        var count:Int = 0
         var questionanswers:String = branchesItemList[position].questionAnswers
         var queans:List<String> = questionanswers.split(",")
         for(i in 0 until branchesItemList[position].totalQuestions!!){
@@ -119,11 +107,6 @@ class TestsAdapter(val context: Context,
         }else{
             holder.tv_challenge_date.text = ""+diff1 + "  days ago"
         }
-        *//*if(diff1 == 1){
-            holder.tv_challenge_date.text = ""+diff1 + "  day ago"
-        }else{
-            holder.tv_challenge_date.text = ""+diff1 + "  days ago"
-        }*//*
 
         if(branchesItemList[position].timetaken.equals("0")){
             holder.tv_challenge_time.text =  "1"
@@ -140,28 +123,18 @@ class TestsAdapter(val context: Context,
 
         holder.rootLayout.setOnClickListener(View.OnClickListener {
             quiztopicreviewListener.onClick(branchesItemList[position])
-        })*/
-        holder.rl_single_topics.setOnClickListener(View.OnClickListener {
-            quiztopicreviewListener.onClick(testtypeslist[position])
         })
-
     }
+class ReviewViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+     val iv_progress_icon = itemView.iv_progress_icon
+     val tv_challenge_date = itemView.tv_challenge_date
+     val tv_challenge_time = itemView.tv_challenge_time
+     val tv_challenge_time_mins = itemView.tv_challenge_time_mins
 
-    class TestsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val tv_topic_name = itemView.tv_topic_name
-        val rl_single_topics = itemView.rl_single_topics
+     val tv_challenge_score = itemView.tv_challenge_score
+     val rootLayout = itemView.rootLayout;
+     val totalLL = itemView.totalLL;
+     val tv_correct = itemView.tv_correct;
 
-       /* val iv_progress_icon = itemView.iv_progress_icon
-        val tv_challenge_date = itemView.tv_challenge_date
-        val tv_challenge_time = itemView.tv_challenge_time
-        val tv_challenge_time_mins = itemView.tv_challenge_time_mins
-
-        val tv_challenge_score = itemView.tv_challenge_score
-        val rootLayout = itemView.rootLayout;
-        val totalLL = itemView.totalLL;
-        val tv_correct = itemView.tv_correct;*/
-
-
-    }
-
+}
 }

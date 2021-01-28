@@ -97,7 +97,8 @@ class TestSummaryActivity : BaseActivity(), View.OnClickListener {
         lastplayed = intent.getStringExtra("LAST_PLAYED") ?: "last"
         comingfrom = intent.getStringExtra("comingfrom")!!
 
-        testQuiz = databaseHandler!!.getQuizTopicsForTimerLastPlayed()
+        Log.e("test summary","topic name....."+topicName)
+        testQuiz = databaseHandler!!.getQuizTopicsForTimerLastPlayed(topicName!!.toLowerCase())
 
         firebaseAnalytics = FirebaseAnalytics.getInstance(this)
         val sdf = SimpleDateFormat("dd-MM-yyyy")
@@ -107,7 +108,7 @@ class TestSummaryActivity : BaseActivity(), View.OnClickListener {
 
         //tv_quiz_title.text = topicName
 
-        var questionanswers:String = databaseHandler!!.getQuizQuestionAnswersFinal(testQuiz.title,currentDate,testQuiz.lastplayed);
+        var questionanswers:String = databaseHandler!!.getQuizQuestionAnswersFinal(testQuiz.title,currentDate,testQuiz.lastplayed,testQuiz.testtype);
         var queans:List<String> = questionanswers.split(",")
 
 
@@ -157,27 +158,27 @@ class TestSummaryActivity : BaseActivity(), View.OnClickListener {
             tv_correct.setTextColor(resources.getColor(R.color.button_close_text))
 
             val format = SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH)
-            var recordcount = databaseHandler!!.getChallengeForDate(format.format(Utils.date))
+            var recordcount = databaseHandler!!.getChallengeForDate(format.format(Utils.date),testQuiz.testtype)
 
             if(recordcount == 0){
 
 
-                challenge = Challenge(format.format(Utils.date),-1,-1,count,1)
+                challenge = Challenge(format.format(Utils.date),-1,-1,count,1,testQuiz.testtype)
                 databaseHandler!!.insertChallenge(challenge)
             }else{
-                var teststatus = databaseHandler!!.getChallengeForTestStatus(format.format(Utils.date))
+                var teststatus = databaseHandler!!.getChallengeForTestStatus(format.format(Utils.date),testQuiz.testtype)
                 if(teststatus != 1){
-                    databaseHandler!!.updateChallengeTest(format.format(Utils.date),count,1)
+                    databaseHandler!!.updateChallengeTest(format.format(Utils.date),count,1,testQuiz.testtype)
                 }
 
             }
 
-            var weeklycount = databaseHandler!!.getChallengeForWEEKLY(format.format(getWeekStartDate()),format.format(getWeekEndDate()))
+            var weeklycount = databaseHandler!!.getChallengeForWEEKLY(format.format(getWeekStartDate()),format.format(getWeekEndDate()),testQuiz.testtype)
             if(weeklycount == 0){
-                databaseHandler!!.insertChallengeWeekly(format.format(getWeekStartDate()),format.format(getWeekEndDate()),1)
+                databaseHandler!!.insertChallengeWeekly(format.format(getWeekStartDate()),format.format(getWeekEndDate()),1,testQuiz.testtype)
             }else{
-                var passcount = databaseHandler!!.getChallengeWeeklystatus(format.format(getWeekStartDate()),format.format(getWeekEndDate()))
-                databaseHandler!!.updateChallengeweeklystatus(format.format(getWeekStartDate()),format.format(getWeekEndDate()),(passcount+1))
+                var passcount = databaseHandler!!.getChallengeWeeklystatus(format.format(getWeekStartDate()),format.format(getWeekEndDate()),testQuiz.testtype)
+                databaseHandler!!.updateChallengeweeklystatus(format.format(getWeekStartDate()),format.format(getWeekEndDate()),(passcount+1),testQuiz.testtype)
 
             }
 
@@ -189,7 +190,7 @@ class TestSummaryActivity : BaseActivity(), View.OnClickListener {
             tv_correct.setTextColor(resources.getColor(R.color.test_fail))
 
             val format = SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH)
-            var recordcount = databaseHandler!!.getChallengeForDate(format.format(Utils.date))
+            var recordcount = databaseHandler!!.getChallengeForDate(format.format(Utils.date),testQuiz.testtype)
 
             if(recordcount == 0){
                 var testStatus:Int = -1
@@ -199,10 +200,10 @@ class TestSummaryActivity : BaseActivity(), View.OnClickListener {
                     testStatus = 0
                 }
 
-                challenge = Challenge(format.format(Utils.date),-1,-1,count,testStatus)
+                challenge = Challenge(format.format(Utils.date),-1,-1,count,testStatus,testQuiz.testtype)
                 databaseHandler!!.insertChallenge(challenge)
             }else{
-                var teststatus = databaseHandler!!.getChallengeForTestStatus(format.format(Utils.date))
+                var teststatus = databaseHandler!!.getChallengeForTestStatus(format.format(Utils.date),testQuiz.testtype)
                 if(teststatus != 1){
                     var testStatus:Int = -1
                     if(count >= 2){
@@ -210,7 +211,7 @@ class TestSummaryActivity : BaseActivity(), View.OnClickListener {
                     }else{
                         testStatus = 0
                     }
-                    databaseHandler!!.updateChallengeTest(format.format(Utils.date),count,testStatus)
+                    databaseHandler!!.updateChallengeTest(format.format(Utils.date),count,testStatus,testQuiz.testtype)
                 }
 
             }
@@ -253,7 +254,7 @@ class TestSummaryActivity : BaseActivity(), View.OnClickListener {
 
 
 
-        var time:String = databaseHandler!!.getQuiztimetakens(testQuiz.title,currentDate,testQuiz.lastplayed);
+        var time:String = databaseHandler!!.getQuiztimetakens(testQuiz.title,currentDate,testQuiz.lastplayed,testQuiz.testtype);
         if(time.equals("0")){
             tv_time.text = "1 min"
         }else{
@@ -363,7 +364,7 @@ class TestSummaryActivity : BaseActivity(), View.OnClickListener {
                     firebaseAnalytics?.logEvent("TestFNewTest", bundle)
                 }
 
-                readFileLocally()
+                readFileLocally(topicName!!.toLowerCase())
                 //playNextBtnAction(position!!)
 
             }
@@ -435,8 +436,8 @@ class TestSummaryActivity : BaseActivity(), View.OnClickListener {
         }
     }
 
-    private fun readFileLocally() {
-        val dirFile = File(getExternalFilesDir(null),"test/")
+    private fun readFileLocally(topicname:String) {
+        val dirFile = File(getExternalFilesDir(null),topicname+"/"+"test/")
         val courseJsonString = Utils.readFromFile( dirFile.absolutePath + "/Courses.json")
         //val courseJsonString = loadJSONFromAsset( ConstantPath.localBlobcityPath1 + "Courses.json")
         //val courseJsonString = readFromFile("$localBlobcityPath/Courses.json")
@@ -591,7 +592,7 @@ class TestSummaryActivity : BaseActivity(), View.OnClickListener {
         var topic:Topic
         var folderPath:String = ""
         var testQuiz:TestQuiz
-        testQuiz = databaseHandler!!.getQuizTopicsForTimerLastPlayed()
+        testQuiz = databaseHandler!!.getQuizTopicsForTimerLastPlayed(topicName!!.toLowerCase())
         Log.e("test fragment","testQuiz.lastplayed......"+testQuiz.lastplayed)
         if(testQuiz.lastplayed == null){
             topic = branchesItemList!![0].topic
@@ -599,9 +600,9 @@ class TestSummaryActivity : BaseActivity(), View.OnClickListener {
             jsonStringBasic =  Utils.readFromFile("$folderPath/basic.json")
             lastplayed = "basic"
 
-            databaseHandler!!.deleteAllQuizTopicsLatPlayed()
+            databaseHandler!!.deleteAllQuizTopicsLatPlayed(testQuiz.testtype)
 
-            databaseHandler!!.insertquiztopiclastplayed(topic.title,topic.displayNo,lastplayed);
+            databaseHandler!!.insertquiztopiclastplayed(topic.title,topic.displayNo,lastplayed,testQuiz.testtype);
         }else{
 
             if(branchesItemList!!.size == (testQuiz.serialNo).toInt()){
@@ -609,27 +610,27 @@ class TestSummaryActivity : BaseActivity(), View.OnClickListener {
                 folderPath = localPath+topic.folderName
                 jsonStringBasic =  Utils.readFromFile("$folderPath/basic.json")
                 lastplayed = "basic"
-                databaseHandler!!.deleteAllQuizTopicsLatPlayed()
+                databaseHandler!!.deleteAllQuizTopicsLatPlayed(testQuiz.testtype)
 
-                databaseHandler!!.insertquiztopiclastplayed(topic.title,topic.displayNo,lastplayed);
+                databaseHandler!!.insertquiztopiclastplayed(topic.title,topic.displayNo,lastplayed,testQuiz.testtype);
             }else{
                 topic = branchesItemList!![((testQuiz.serialNo).toInt())-1].topic
                 folderPath = localPath+topic.folderName
                 if(testQuiz.lastplayed.equals("basic")){
                     jsonStringBasic =  Utils.readFromFile("$folderPath/intermediate.json")
                     lastplayed = "intermediate"
-                    databaseHandler!!.deleteAllQuizTopicsLatPlayed()
+                    databaseHandler!!.deleteAllQuizTopicsLatPlayed(testQuiz.testtype)
 
-                    databaseHandler!!.insertquiztopiclastplayed(topic.title,topic.displayNo,lastplayed);
+                    databaseHandler!!.insertquiztopiclastplayed(topic.title,topic.displayNo,lastplayed,testQuiz.testtype);
                 }else{
                     topic = branchesItemList!![((testQuiz.serialNo).toInt())].topic
                     folderPath = localPath+topic.folderName
 
                     jsonStringBasic =  Utils.readFromFile("$folderPath/basic.json")
                     lastplayed = "basic"
-                    databaseHandler!!.deleteAllQuizTopicsLatPlayed()
+                    databaseHandler!!.deleteAllQuizTopicsLatPlayed(testQuiz.testtype)
 
-                    databaseHandler!!.insertquiztopiclastplayed(topic.title,topic.displayNo,lastplayed);
+                    databaseHandler!!.insertquiztopiclastplayed(topic.title,topic.displayNo,lastplayed,testQuiz.testtype);
 
                 }
             }
@@ -645,7 +646,7 @@ class TestSummaryActivity : BaseActivity(), View.OnClickListener {
 
         val intent = Intent(this!!, StartTestActivity::class.java)
         intent.putExtra(ConstantPath.TOPIC, topic)
-        intent.putExtra(ConstantPath.TOPIC_NAME, topic.title)
+        intent.putExtra(ConstantPath.TOPIC_NAME, topicName)
         intent.putExtra(ConstantPath.FOLDER_NAME, topic.folderName)
         intent.putExtra(ConstantPath.DYNAMIC_PATH, jsonStringBasic)
         intent.putExtra(ConstantPath.COURSE_ID, courseId)

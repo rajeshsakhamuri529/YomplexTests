@@ -346,6 +346,7 @@ class SignInActivity : BaseActivity(){
                 Log.e("sign in activity","android_id....."+android_id)
                 Log.e("sign in activity","user.email....."+user.email)
                 sharedPrefs?.setPrefVal(this@SignInActivity, ConstantPath.UID, user!!.uid)
+                sharedPrefs?.setPrefVal(this@SignInActivity, "email", user.email!!)
                 val sdf = SimpleDateFormat("dd-MM-yyyy HH:mm:ss")
                 val currentDate = sdf.format(Date())
                 //sharedPrefs.setPrefVal(this@GradeActivity, "created_date", currentDate)

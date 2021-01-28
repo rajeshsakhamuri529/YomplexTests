@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <RelativeLayout
+        android:id="@+id/tests"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_45sdp"
+
+
+        android:background="#FFFFFF">
+
+        <TextView
+            android:id="@+id/tv_tests"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/review"
+            android:textSize="@dimen/_18ssp"
+            android:layout_marginLeft="@dimen/_20sdp"
+            android:layout_marginTop="@dimen/_18sdp"
+
+            android:textColor="@color/chapters_text"
+            android:textStyle="bold"
+            android:fontFamily="@font/lato_light"
+            />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/tests"
+        >
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/nsv"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fillViewport="true">
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+
+
+                <RelativeLayout
+                    android:id="@+id/reviewRL"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_30sdp"
+
+                    android:layout_marginLeft="@dimen/_15sdp"
+                    android:layout_marginRight="@dimen/_15sdp"
+                    >
+
+                    <TextView
+                        android:id="@+id/tv_review"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Review"
+                        android:textSize="@dimen/_14ssp"
+                        android:layout_centerVertical="true"
+
+
+                        android:textColor="@color/chapters_text"
+
+                        android:fontFamily="@font/lato_black"
+                        />
+
+                    <TextView
+                        android:id="@+id/tv_last_five"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text=" Last 10 Tests"
+                        android:textSize="@dimen/_14ssp"
+                        android:layout_centerVertical="true"
+
+                        android:layout_toRightOf="@+id/tv_review"
+                        android:textColor="@color/chapters_text"
+                        android:textStyle="bold"
+                        android:fontFamily="@font/lato_black"
+                        />
+                </RelativeLayout>
+
+                <TextView
+                    android:id="@+id/tv_no_review"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+
+                    android:text="Take a Test to see Reviews"
+                    android:textSize="@dimen/_18ssp"
+                    android:layout_marginTop="@dimen/_80sdp"
+                    android:layout_centerInParent="true"
+                    android:layout_marginLeft="@dimen/_20sdp"
+
+                    android:textColor="@color/chapters_text"
+                    android:textStyle="bold"
+                    android:fontFamily="@font/lato_light"
+                    />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rcv_review"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/reviewRL"
+
+                    android:layout_marginLeft="@dimen/_15sdp"
+                    android:layout_marginRight="@dimen/_15sdp"
+                    android:visibility="gone"
+                    android:nestedScrollingEnabled="false"
+
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
+
+            </RelativeLayout>
+        </androidx.core.widget.NestedScrollView>
+    </RelativeLayout>
+
+
+
+
+
+</RelativeLayout>

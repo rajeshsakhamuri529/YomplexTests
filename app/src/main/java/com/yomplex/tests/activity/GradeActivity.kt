@@ -53,6 +53,7 @@ import com.yomplex.tests.database.QuizGameDataBase
 import com.yomplex.tests.interfaces.GradeClickListener
 import com.yomplex.tests.model.GradeResponseModel
 import com.yomplex.tests.model.RevisionModel
+import com.yomplex.tests.model.TestDownload
 import com.yomplex.tests.utils.ConstantPath
 import com.yomplex.tests.utils.ConstantPath.*
 import com.yomplex.tests.utils.SharedPrefs
@@ -205,7 +206,7 @@ class GradeActivity : BaseActivity(), GradeClickListener, PermissionListener  {
 
                 var url = databaseHandler!!.gettesttopicurl()
                 var version = databaseHandler!!.gettesttopicversion()
-                downloadDataFromBackground(this@GradeActivity,url,version)
+                downloadDataFromBackground(this@GradeActivity,url,version,"")
                 if(sharedPrefs.getBooleanPrefVal(this, ConstantPath.IS_FIRST_TIME))
                 {
                     navigateToIntro()
@@ -225,9 +226,9 @@ class GradeActivity : BaseActivity(), GradeClickListener, PermissionListener  {
 
     private fun downloadDataFromBackground(
         mainActivity: GradeActivity,
-        url: String,version:String
+        url: String,version:String,type:String
     ) {
-        JobService.enqueueWork(mainActivity, url,version)
+        JobService.enqueueWork(mainActivity, url,version,type)
     }
 
 
@@ -240,17 +241,28 @@ class GradeActivity : BaseActivity(), GradeClickListener, PermissionListener  {
 
             if(sharedPrefs.getBooleanPrefVal(this, ConstantPath.IS_FIRST_TIME)){
 
-                    var downloadstatus = databaseHandler!!.gettesttopicdownloadstatus()
+                var statuslist: List<Int>? = databaseHandler!!.gettesttopicdownloadstatus()
 
-                    if(downloadstatus == 1){
+                Log.e("signin","statuslist.size........"+statuslist!!.size)
+
+                    if(statuslist.contains(0)){
+                        Log.e("signin","statuslist.contains.....")
+                        var testcontentlist: List<TestDownload>? = databaseHandler!!.gettestContent()
+                        for(i in 0 until testcontentlist!!.size){
+                            if(testcontentlist.get(i).testdownloadstatus == 0){
+                                var url = testcontentlist.get(i).testurl
+                                var version = testcontentlist.get(i).testversion
+                                var type = testcontentlist.get(i).testtype
+                                downloadDataFromBackground(this@GradeActivity,url,version,type)
+
+                            }
+                        }
+
                         navigateToIntro()
+
                     }else{
-
-                        var url = databaseHandler!!.gettesttopicurl()
-                        var version = databaseHandler!!.gettesttopicversion()
-                        downloadDataFromBackground(this@GradeActivity,url,version)
+                        Log.e("signin","statuslist........"+statuslist)
                         navigateToIntro()
-
                     }
 
             }else{
@@ -263,15 +275,54 @@ class GradeActivity : BaseActivity(), GradeClickListener, PermissionListener  {
                         docRef.get().addOnSuccessListener { document ->
                             if (document != null) {
                                 Log.e("grade activity", "DocumentSnapshot data: ${document.data}")
-                                version = document.data!!.get("TestContentVersion").toString()
+                                for(i in 0 until (document.data!!.size - 4)){
+                                    if(i == 0){
+                                        var version = document.data!!.get("BasicVersion").toString()
+                                        var url = document.data!!.get("BasicUrl").toString()
+
+                                        Log.e("grade activity","version......."+version)
+                                        Log.e("grade activity","url......."+url)
+
+                                        databaseHandler!!.insertTESTCONTENTDOWNLOAD(version,url,"basic",0)
+                                        downloadDataFromBackground(this@GradeActivity,url,version,"basic")
+                                    }else if(i == 1){
+                                        var version = document.data!!.get("AlgebraVersion").toString()
+                                        var url = document.data!!.get("AlgebraUrl").toString()
+
+                                        Log.e("grade activity","version......."+version)
+                                        Log.e("grade activity","url......."+url)
+
+                                        databaseHandler!!.insertTESTCONTENTDOWNLOAD(version,url,"algebra",0)
+                                        downloadDataFromBackground(this@GradeActivity,url,version,"algebra")
+                                    }else if(i == 2){
+                                        var version = document.data!!.get("CalculusVersion").toString()
+                                        var url = document.data!!.get("CalculusUrl").toString()
+
+                                        Log.e("grade activity","version......."+version)
+                                        Log.e("grade activity","url......."+url)
+
+                                        databaseHandler!!.insertTESTCONTENTDOWNLOAD(version,url,"calculus",0)
+                                        downloadDataFromBackground(this@GradeActivity,url,version,"calculus")
+                                    }else if(i == 3){
+                                        var version = document.data!!.get("GeometryVersion").toString()
+                                        var url = document.data!!.get("GeometryUrl").toString()
+
+                                        Log.e("grade activity","version......."+version)
+                                        Log.e("grade activity","url......."+url)
+
+                                        databaseHandler!!.insertTESTCONTENTDOWNLOAD(version,url,"geometry",0)
+                                        downloadDataFromBackground(this@GradeActivity,url,version,"geometry")
+                                    }
+                                }
+                                /*version = document.data!!.get("TestContentVersion").toString()
                                 url = document.data!!.get("TestContentUrl").toString()
 
                                 Log.e("grade activity","version......."+version)
                                 Log.e("grade activity","url......."+url)
 
-                                databaseHandler!!.insertTESTCONTENTDOWNLOAD(version,url,0)
+                                databaseHandler!!.insertTESTCONTENTDOWNLOAD(version,url,"",0)*/
 
-                                downloadDataFromBackground(this@GradeActivity,url,version)
+
                                 navigateToIntro()
 
                             } else {
@@ -295,15 +346,54 @@ class GradeActivity : BaseActivity(), GradeClickListener, PermissionListener  {
                             docRef.get().addOnSuccessListener { document ->
                                 if (document != null) {
                                     Log.e("grade activity", "DocumentSnapshot data: ${document.data}")
-                                    version = document.data!!.get("TestContentVersion").toString()
+                                    /*version = document.data!!.get("TestContentVersion").toString()
                                     url = document.data!!.get("TestContentUrl").toString()
 
                                     Log.e("grade activity","version......."+version)
                                     Log.e("grade activity","url......."+url)
 
-                                    databaseHandler!!.insertTESTCONTENTDOWNLOAD(version,url,0)
+                                    databaseHandler!!.insertTESTCONTENTDOWNLOAD(version,url,"",0)
 
-                                    downloadDataFromBackground(this@GradeActivity,url,version)
+                                    downloadDataFromBackground(this@GradeActivity,url,version,"")*/
+                                    for(i in 0 until (document.data!!.size - 4)){
+                                        if(i == 0){
+                                            var version = document.data!!.get("BasicVersion").toString()
+                                            var url = document.data!!.get("BasicUrl").toString()
+
+                                            Log.e("grade activity","version......."+version)
+                                            Log.e("grade activity","url......."+url)
+
+                                            databaseHandler!!.insertTESTCONTENTDOWNLOAD(version,url,"basic",0)
+                                            downloadDataFromBackground(this@GradeActivity,url,version,"basic")
+                                        }else if(i == 1){
+                                            var version = document.data!!.get("AlgebraVersion").toString()
+                                            var url = document.data!!.get("AlgebraUrl").toString()
+
+                                            Log.e("grade activity","version......."+version)
+                                            Log.e("grade activity","url......."+url)
+
+                                            databaseHandler!!.insertTESTCONTENTDOWNLOAD(version,url,"algebra",0)
+                                            downloadDataFromBackground(this@GradeActivity,url,version,"algebra")
+                                        }else if(i == 2){
+                                            var version = document.data!!.get("CalculusVersion").toString()
+                                            var url = document.data!!.get("CalculusUrl").toString()
+
+                                            Log.e("grade activity","version......."+version)
+                                            Log.e("grade activity","url......."+url)
+
+                                            databaseHandler!!.insertTESTCONTENTDOWNLOAD(version,url,"calculus",0)
+                                            downloadDataFromBackground(this@GradeActivity,url,version,"calculus")
+                                        }else if(i == 3){
+                                            var version = document.data!!.get("GeometryVersion").toString()
+                                            var url = document.data!!.get("GeometryUrl").toString()
+
+                                            Log.e("grade activity","version......."+version)
+                                            Log.e("grade activity","url......."+url)
+
+                                            databaseHandler!!.insertTESTCONTENTDOWNLOAD(version,url,"geometry",0)
+                                            downloadDataFromBackground(this@GradeActivity,url,version,"geometry")
+                                        }
+                                    }
                                     navigateToDashboard("GRADE 6")
 
                                 } else {
@@ -326,23 +416,96 @@ class GradeActivity : BaseActivity(), GradeClickListener, PermissionListener  {
                                 val docRef = db.collection("testcontentdownload").document("nJUIWEtshPEmAXjqn7y4")
                                 docRef.get().addOnSuccessListener { document ->
                                         if (document != null) {
-                                            Log.e("grade activity", "DocumentSnapshot data: ${document.data}")
+                                            /*Log.e("grade activity", "DocumentSnapshot data: ${document.data}")
                                             version = document.data!!.get("TestContentVersion").toString()
                                             url = document.data!!.get("TestContentUrl").toString()
 
                                             Log.e("grade activity","version......."+version)
-                                            Log.e("grade activity","url......."+url)
+                                            Log.e("grade activity","url......."+url)*/
+                                            var testcontentlist: List<TestDownload>? = databaseHandler!!.gettestContent()
+                                            for(i in 0 until (document.data!!.size - 4)){
+                                                if(i == 0){
+                                                    var version = document.data!!.get("BasicVersion").toString()
+                                                    var url = document.data!!.get("BasicUrl").toString()
 
-                                            var dbversion = databaseHandler!!.gettesttopicversion()
+                                                    Log.e("grade activity","version......."+version)
+                                                    Log.e("grade activity","url......."+url)
+                                                    for(j in 0 until testcontentlist!!.size){
+                                                        if(testcontentlist.get(j).testtype.equals("basic")){
+                                                            if(testcontentlist.get(j).testversion != version) {
+                                                                downloadDataFromBackground(this@GradeActivity,url,version,"basic")
+                                                            }
+                                                            break
+                                                        }
+                                                    }
+
+                                                    //databaseHandler!!.insertTESTCONTENTDOWNLOAD(version,url,"basic",0)
+                                                    //downloadDataFromBackground(this@GradeActivity,url,version,"basic")
+                                                }else if(i == 1){
+                                                    var version = document.data!!.get("AlgebraVersion").toString()
+                                                    var url = document.data!!.get("AlgebraUrl").toString()
+
+                                                    Log.e("grade activity","version......."+version)
+                                                    Log.e("grade activity","url......."+url)
+
+                                                    for(j in 0 until testcontentlist!!.size){
+                                                        if(testcontentlist.get(j).testtype.equals("algebra")){
+                                                            if(testcontentlist.get(j).testversion != version) {
+                                                                downloadDataFromBackground(this@GradeActivity,url,version,"algebra")
+                                                            }
+                                                            break
+                                                        }
+                                                    }
+
+                                                   // databaseHandler!!.insertTESTCONTENTDOWNLOAD(version,url,"algebra",0)
+                                                   // downloadDataFromBackground(this@GradeActivity,url,version,"algebra")
+                                                }else if(i == 2){
+                                                    var version = document.data!!.get("CalculusVersion").toString()
+                                                    var url = document.data!!.get("CalculusUrl").toString()
+
+                                                    Log.e("grade activity","version......."+version)
+                                                    Log.e("grade activity","url......."+url)
+                                                    for(j in 0 until testcontentlist!!.size){
+                                                        if(testcontentlist.get(j).testtype.equals("calculus")){
+                                                            if(testcontentlist.get(j).testversion != version) {
+                                                                downloadDataFromBackground(this@GradeActivity,url,version,"calculus")
+                                                            }
+                                                            break
+                                                        }
+                                                    }
+
+                                                   // databaseHandler!!.insertTESTCONTENTDOWNLOAD(version,url,"calculus",0)
+                                                   // downloadDataFromBackground(this@GradeActivity,url,version,"calculus")
+                                                }else if(i == 3){
+                                                    var version = document.data!!.get("GeometryVersion").toString()
+                                                    var url = document.data!!.get("GeometryUrl").toString()
+
+                                                    Log.e("grade activity","version......."+version)
+                                                    Log.e("grade activity","url......."+url)
+                                                    for(j in 0 until testcontentlist!!.size){
+                                                        if(testcontentlist.get(j).testtype.equals("geometry")){
+                                                            if(testcontentlist.get(j).testversion != version) {
+                                                                downloadDataFromBackground(this@GradeActivity,url,version,"geometry")
+                                                            }
+                                                            break
+                                                        }
+                                                    }
+                                                  //  databaseHandler!!.insertTESTCONTENTDOWNLOAD(version,url,"geometry",0)
+                                                  //  downloadDataFromBackground(this@GradeActivity,url,version,"geometry")
+                                                }
+                                            }
+
+                                            navigateToDashboard("GRADE 6")
+                                           /* var dbversion = databaseHandler!!.gettesttopicversion()
                                             if(dbversion != version) {
 
-                                                downloadDataFromBackground(this@GradeActivity,url,version)
+                                                downloadDataFromBackground(this@GradeActivity,url,version,"")
                                                 navigateToDashboard("GRADE 6")
 
                                             }else{
 
                                                 navigateToDashboard("GRADE 6")
-                                            }
+                                            }*/
 
                                         } else {
                                             Log.e("grade activity", "No such document")
@@ -380,13 +543,43 @@ class GradeActivity : BaseActivity(), GradeClickListener, PermissionListener  {
                     .addOnSuccessListener { document ->
                         if (document != null) {
                             Log.e("grade activity", "DocumentSnapshot data: ${document.data}")
-                            var version = document.data!!.get("TestContentVersion").toString()
-                            var url = document.data!!.get("TestContentUrl").toString()
+                            Log.e("grade activity", "DocumentSnapshot data: ${document.data!!.size}")
+                            for(i in 0 until (document.data!!.size - 4)){
+                                if(i == 0){
+                                    var version = document.data!!.get("BasicVersion").toString()
+                                    var url = document.data!!.get("BasicUrl").toString()
 
-                            Log.e("grade activity","version......."+version)
-                            Log.e("grade activity","url......."+url)
+                                    Log.e("grade activity","version......."+version)
+                                    Log.e("grade activity","url......."+url)
 
-                            databaseHandler!!.insertTESTCONTENTDOWNLOAD(version,url,0)
+                                    databaseHandler!!.insertTESTCONTENTDOWNLOAD(version,url,"basic",0)
+                                }else if(i == 1){
+                                    var version = document.data!!.get("AlgebraVersion").toString()
+                                    var url = document.data!!.get("AlgebraUrl").toString()
+
+                                    Log.e("grade activity","version......."+version)
+                                    Log.e("grade activity","url......."+url)
+
+                                    databaseHandler!!.insertTESTCONTENTDOWNLOAD(version,url,"algebra",0)
+                                }else if(i == 2){
+                                    var version = document.data!!.get("CalculusVersion").toString()
+                                    var url = document.data!!.get("CalculusUrl").toString()
+
+                                    Log.e("grade activity","version......."+version)
+                                    Log.e("grade activity","url......."+url)
+
+                                    databaseHandler!!.insertTESTCONTENTDOWNLOAD(version,url,"calculus",0)
+                                }else if(i == 3){
+                                    var version = document.data!!.get("GeometryVersion").toString()
+                                    var url = document.data!!.get("GeometryUrl").toString()
+
+                                    Log.e("grade activity","version......."+version)
+                                    Log.e("grade activity","url......."+url)
+
+                                    databaseHandler!!.insertTESTCONTENTDOWNLOAD(version,url,"geometry",0)
+                                }
+                            }
+
 
                             // Sign in success, update UI with the signed-in user's information
                            // val user = auth!!.currentUser

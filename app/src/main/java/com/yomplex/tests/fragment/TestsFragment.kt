@@ -19,6 +19,10 @@ import androidx.fragment.app.Fragment
 import com.downloader.Error
 import com.downloader.OnDownloadListener
 import com.downloader.PRDownloader
+import com.github.mikephil.charting.data.BarData
+import com.github.mikephil.charting.data.BarDataSet
+import com.github.mikephil.charting.data.BarEntry
+import com.github.mikephil.charting.utils.ColorTemplate
 
 
 import com.google.firebase.analytics.FirebaseAnalytics
@@ -35,6 +39,7 @@ import com.yomplex.tests.activity.TestReviewActivity
 import com.yomplex.tests.activity.StartTestActivity
 import com.yomplex.tests.adapter.TestsAdapter
 import com.yomplex.tests.database.QuizGameDataBase
+import com.yomplex.tests.interfaces.TestClickListener
 import com.yomplex.tests.interfaces.TestQuizReviewClickListener
 import com.yomplex.tests.model.*
 import com.yomplex.tests.utils.ConstantPath
@@ -45,7 +50,7 @@ import kotlinx.android.synthetic.main.tests_challenge.view.*
 import org.apache.commons.io.FileUtils
 import java.io.File
 
-class TestsFragment: Fragment(),View.OnClickListener, TestQuizReviewClickListener,
+class TestsFragment: Fragment(),View.OnClickListener, TestClickListener,
     ServiceResultReceiver.Receiver {
 
 
@@ -61,6 +66,7 @@ class TestsFragment: Fragment(),View.OnClickListener, TestQuizReviewClickListene
     var localPath: String?= null
     private var branchesItemList:List<BranchesItem>?=null
     var testquizlist: List<TestQuizFinal>? = null
+    var testtypeslist: ArrayList<String>? = null
     var sharedPrefs: SharedPrefs? = null
     var sound: Boolean = false
     var gradeTitle: String?= null
@@ -93,37 +99,71 @@ class TestsFragment: Fragment(),View.OnClickListener, TestQuizReviewClickListene
         firebaseAnalytics = FirebaseAnalytics.getInstance(activity!!)
 
         firebaseAnalytics.setCurrentScreen(activity!!, "Test", null /* class override */)
-        view.test_btn.setOnClickListener(this)
+        //view.test_btn.setOnClickListener(this)
 
 
-        var downloadstatus = databaseHandler!!.gettesttopicdownloadstatus()
+        /*var downloadstatus = databaseHandler!!.gettesttopicdownloadstatus()
         if(downloadstatus == 1) {
             readFileLocally()
-        }
+        }*/
 
         testquizlist = databaseHandler!!.getTestQuizList()
-
-        if(testquizlist!!.size == 0){
+        testtypeslist = ArrayList<String>()
+        testtypeslist!!.add("BASIC")
+        testtypeslist!!.add("ALGEBRA")
+        testtypeslist!!.add("GEOMETRY")
+        testtypeslist!!.add("CALCULUS")
+        /*if(testquizlist!!.size == 0){
             view.tv_no_review.visibility = View.VISIBLE
             view.rcv_tests.visibility = View.GONE
-        }else{
+        }else{*/
             view.rcv_tests.visibility = View.VISIBLE
             view.tv_no_review.visibility = View.GONE
 
 
-            adapter = TestsAdapter(context!!, testquizlist!!,this)
+            adapter = TestsAdapter(context!!, testtypeslist!!,this)
 
 
             view.rcv_tests.addItemDecoration(VerticalSpaceItemDecoration(30));
             //rcv_chapter.addItemDecoration(itemDecorator)
             //rcv_chapter.addItemDecoration(DividerItemDecoration(context,))
             view.rcv_tests.adapter = adapter
-        }
+      //  }
+
+        //code for bar chart
+        //BarChart barChart = (BarChart) findViewById(R.id.barchart);
+
+        var  entries:ArrayList<BarEntry> = ArrayList<BarEntry>();
+        //var barEntry = BarEntry();
+        entries.add(BarEntry(8f, 4f));
+        entries.add(BarEntry(2f, 1f));
+        entries.add(BarEntry(5f, 2f));
+        entries.add(BarEntry(20f, 3f));
+        //entries.add(BarEntry(15f, 4f));
+        //entries.add(BarEntry(19f, 5f));
+
+        var  bardataset: BarDataSet = BarDataSet(entries, "Cells");
+
+        var labels:ArrayList<String> = ArrayList<String>();
+        labels.add("2016");
+        labels.add("2015");
+        labels.add("2014");
+        labels.add("2013");
+       // labels.add("2012");
+       // labels.add("2011");
+
+        var  data = BarData(bardataset);
+        view.barchart.setData(data); // set the data and list of labels into chart
+       // view.barchart.setDescription("Set Bar Chart Description Here");  // set the description
+        bardataset.setColors(ColorTemplate.COLORFUL_COLORS.toMutableList());
+        view.barchart.animateY(2000);
 
     }
 
-    private fun readFileLocally() {
-        val dirFile = File(activity!!.getExternalFilesDir(null),"test/")
+
+
+    private fun readFileLocally(topicname:String) {
+        val dirFile = File(activity!!.getExternalFilesDir(null),topicname+"/"+"test/")
         Log.e("test fragment","dir file....."+dirFile.absolutePath)
         val courseJsonString = Utils.readFromFile( dirFile.absolutePath + "/Courses.json")
         //val courseJsonString = readFromFile("$localBlobcityPath/Courses.json")
@@ -178,24 +218,24 @@ class TestsFragment: Fragment(),View.OnClickListener, TestQuizReviewClickListene
                 //showData(resultData.getString("data"))
                 Log.e("test fragment","onReceiveResult....."+resultData.getString("data"))
                 if (resultData.getString("data") == "success") {
-                    readFileLocally()
-                    gotoStartScreen()
+                    readFileLocally("")
+                    gotoStartScreen("")
                 }else if(resultData.getString("data") == "failure"){
 
                 }
             }
         }
     }
-    private fun showDataFromBackground(
+    /*private fun showDataFromBackground(
         mainActivity: Activity,
         url:String,
         version:String,
         mResultReceiver: ServiceResultReceiver
     ) {
         ProgressJobService.enqueueWork(mainActivity, url,version, mResultReceiver)
-    }
+    }*/
 
-    private fun downdata(url:String){
+    /*private fun downdata(url:String){
         val dirpath = File((activity!!.getExternalFilesDir(null))!!.absolutePath)
 
         val downloadId = PRDownloader.download(url, dirpath.absolutePath, "/testcontent.rar")
@@ -228,8 +268,8 @@ class TestsFragment: Fragment(),View.OnClickListener, TestQuizReviewClickListene
                         val dirFile = File(activity!!.getExternalFilesDir(null), "testcontent.rar")
                         dirFile.delete()
 
-                        databaseHandler!!.updatetestcontentversion(version)
-                        databaseHandler!!.updatetestcontentdownloadstatus(1)
+                        databaseHandler!!.updatetestcontentversion(version,"")
+                        databaseHandler!!.updatetestcontentdownloadstatus(1,"")
 
                         if(alertDialog != null){
                            alertDialog!!.dismiss()
@@ -237,7 +277,7 @@ class TestsFragment: Fragment(),View.OnClickListener, TestQuizReviewClickListene
                       //  test_btn.isEnabled = true
                         isdownload = false
                         readFileLocally()
-                        gotoStartScreen()
+                        gotoStartScreen("")
                     }
 
                 }
@@ -262,176 +302,47 @@ class TestsFragment: Fragment(),View.OnClickListener, TestQuizReviewClickListene
 
 
             })
+    }*/
+    override fun onClick(topicname: String) {
+        var downloadstatus:Int = -1
+        var testcontentlist: List<TestDownload>? = databaseHandler!!.gettestContent()
+        for(i in 0 until testcontentlist!!.size) {
+            if (testcontentlist.get(i).testtype.equals(topicname.toLowerCase())) {
+                downloadstatus = testcontentlist.get(i).testdownloadstatus
+                break
+            }
+        }
+
+        Log.e("test fragment","on click download status...."+downloadstatus)
+
+
+        sound = sharedPrefs?.getBooleanPrefVal(activity!!, ConstantPath.SOUNDS) ?: true
+        if(!sound){
+            // mediaPlayer = MediaPlayer.create(this,R.raw.amount_low)
+            //  mediaPlayer.start()
+            if (Utils.loaded) {
+                Utils.soundPool.play(Utils.soundID, Utils.volume, Utils.volume, 1, 0, 1f);
+                Log.e("Test", "Played sound...volume..."+ Utils.volume);
+                //Toast.makeText(context,"end",Toast.LENGTH_SHORT).show()
+            }
+        }
+        if(downloadstatus == 1){
+            readFileLocally(topicname.toLowerCase())
+            gotoStartScreen(topicname)
+        }
+
+        //gotoReviewScreen(topicname)
     }
     override fun onClick(v: View?) {
         when (v!!.id){
-           R.id.test_btn -> {
-               sound = sharedPrefs?.getBooleanPrefVal(activity!!, ConstantPath.SOUNDS) ?: true
-               if(!sound){
-                   // mediaPlayer = MediaPlayer.create(this,R.raw.amount_low)
-                   //  mediaPlayer.start()
-                   if (Utils.loaded) {
-                       Utils.soundPool.play(Utils.soundID, Utils.volume, Utils.volume, 1, 0, 1f);
-                       Log.e("Test", "Played sound...volume..."+ Utils.volume);
-                       //Toast.makeText(context,"end",Toast.LENGTH_SHORT).show()
-                   }
-               }
 
-               if(Utils.isOnline(activity)){
-                   var downloadstatus = databaseHandler!!.gettesttopicdownloadstatus()
-                   if(downloadstatus == 1){
-                      // test_btn.isEnabled = false
-                       if(isdownload){
-                           downloaddialog("We’re downloading the latest Tests. Please try again in a few minutes.")
-                       }else {
-                           view!!.progress_bar.visibility = View.VISIBLE
-                           view!!.txt_next.visibility = View.GONE
-                           view!!.right_arrow.visibility = View.GONE
-                           val docRef =
-                               db.collection("testcontentdownload").document("nJUIWEtshPEmAXjqn7y4")
-                           docRef.get().addOnSuccessListener { document ->
-                               if (document != null) {
-                                   Log.e(
-                                       "grade activity",
-                                       "DocumentSnapshot data: ${document.data}"
-                                   )
-                                   version = document.data!!.get("TestContentVersion").toString()
-                                   url = document.data!!.get("TestContentUrl").toString()
-
-                                   var dbversion = databaseHandler!!.gettesttopicversion()
-                                   if (dbversion != version) {
-                                       try {
-                                           view!!.progress_bar.visibility = View.GONE
-                                           view!!.txt_next.visibility = View.VISIBLE
-                                           view!!.right_arrow.visibility = View.VISIBLE
-                                       }catch (e:Exception){
-
-                                       }
-
-                                       downloaddialog("We’re downloading the latest Tests. Please try again in a few minutes.")
-                                       //showDataFromBackground(activity!!,url,version, mServiceResultReceiver!!)
-                                       downdata(url)
-                                   } else {
-                                       //   test_btn.isEnabled = true
-                                       try {
-                                           view!!.progress_bar.visibility = View.GONE
-                                           view!!.txt_next.visibility = View.VISIBLE
-                                           view!!.right_arrow.visibility = View.VISIBLE
-                                       } catch (e:Exception){
-
-                                       }
-
-                                       gotoStartScreen()
-                                   }
-
-                               } else {
-                                   Log.e("grade activity", "No such document")
-                                   //navigateToDashboard("GRADE 6")
-
-                               }
-                           }
-                               .addOnFailureListener { exception ->
-                                   Log.e("grade activity", "get failed with ", exception)
-                                   //navigateToDashboard("GRADE 6")
-
-                               }
-
-                       }
-
-                   }else{
-
-                       var dburl = databaseHandler!!.gettesttopicurl()
-                       if(dburl == null){
-                         //  test_btn.isEnabled = false
-                           if(isdownload){
-                               downloaddialog("We’re downloading the latest Tests. Please try again in a few minutes.")
-                           }else {
-
-
-                               view!!.progress_bar.visibility = View.VISIBLE
-                               view!!.txt_next.visibility = View.GONE
-                               view!!.right_arrow.visibility = View.GONE
-                           val docRef = db.collection("testcontentdownload").document("nJUIWEtshPEmAXjqn7y4")
-                           docRef.get().addOnSuccessListener { document ->
-                               if (document != null) {
-                                   Log.e("grade activity", "DocumentSnapshot data: ${document.data}")
-                                   version = document.data!!.get("TestContentVersion").toString()
-                                   url = document.data!!.get("TestContentUrl").toString()
-
-                                   view!!.progress_bar.visibility = View.GONE
-                                   view!!.txt_next.visibility = View.VISIBLE
-                                   view!!.right_arrow.visibility = View.VISIBLE
-                                   databaseHandler!!.insertTESTCONTENTDOWNLOAD(version,url,0)
-                                   //sharedPrefs.setBooleanPrefVal(this@GradeActivity, ConstantPath.IS_FIRST_TIME, true)
-                                   //if(hasPermissions(this@GradeActivity, *PERMISSIONS)){
-                                   // var url = databaseHandler!!.gettesttopicurl()
-                                   downloaddialog("We’re downloading the latest Tests. Please try again in a few minutes.")
-                                   downdata(url)
-                                   //showDataFromBackground(activity!!,url,version, mServiceResultReceiver!!)
-                                   //navigateToDashboard("GRADE 6")
-                                   /*if(Utils.isOnline(this@GradeActivity)){
-                                       val task = MyAsyncTask(this@GradeActivity)
-                                       task.execute(url)
-                                   }else{
-                                       Toast.makeText(this@GradeActivity,"Internet is required!",Toast.LENGTH_LONG).show();
-                                   }*/
-
-
-
-
-                               } else {
-                                   Log.e("grade activity", "No such document")
-                                   //navigateToDashboard("GRADE 6")
-
-                               }
-                           }
-                               .addOnFailureListener { exception ->
-                                   Log.e("grade activity", "get failed with ", exception)
-                                   //navigateToDashboard("GRADE 6")
-
-                               }
-                           }
-
-                       }else{
-                           view!!.progress_bar.visibility = View.GONE
-                           view!!.txt_next.visibility = View.VISIBLE
-                           view!!.right_arrow.visibility = View.VISIBLE
-                           var url = databaseHandler!!.gettesttopicurl()
-                           var version = databaseHandler!!.gettesttopicversion()
-                           downdata(url)
-                           downloaddialog("We’re downloading the latest Tests. Please try again in a few minutes.")
-                           //showDataFromBackground(activity!!,url,version, mServiceResultReceiver!!)
-                       }
-
-
-                   }
-               }else{
-                   var downloadstatus = databaseHandler!!.gettesttopicdownloadstatus()
-                   if(downloadstatus == 1){
-                       gotoStartScreen()
-                   }else{
-                       downloaddialog("Please connect to the internet to download the latest tests.")
-                   }
-
-               }
-
-               /*var downloadstatus = databaseHandler!!.gettesttopicdownloadstatus()
-               if(downloadstatus == 1){
-                   readFileLocally()
-                   gotoStartScreen()
-               }else{
-
-               }*/
-
-
-           }
         }
     }
     private fun downloadDataFromBackground(
         mainActivity: Activity,
         url: String, version:String
     ) {
-        JobService.enqueueWork(mainActivity, url,version)
+        JobService.enqueueWork(mainActivity, url,version,"")
     }
 
     fun downloaddialog(msg:String){
@@ -463,7 +374,7 @@ class TestsFragment: Fragment(),View.OnClickListener, TestQuizReviewClickListene
         alertDialog!!.show()
     }
 
-    override fun onClick(topic: TestQuizFinal) {
+    /*override fun onClick(topic: TestQuizFinal) {
         sound = sharedPrefs?.getBooleanPrefVal(activity!!, ConstantPath.SOUNDS) ?: true
         if(!sound){
             // mediaPlayer = MediaPlayer.create(this,R.raw.amount_low)
@@ -475,7 +386,7 @@ class TestsFragment: Fragment(),View.OnClickListener, TestQuizReviewClickListene
             }
         }
         gotoReviewScreen(topic)
-    }
+    }*/
 
     fun gotoReviewScreen(topic: TestQuizFinal){
         val intent = Intent(activity, TestReviewActivity::class.java)
@@ -487,14 +398,14 @@ class TestsFragment: Fragment(),View.OnClickListener, TestQuizReviewClickListene
         startActivity(intent)
     }
 
-    fun gotoStartScreen(){
+    fun gotoStartScreen(topictype:String){
 
         //databaseHandler!!.deleteQuizPlayRecord(topic.title)
         var lastplayed:String =""
         var topic:Topic
         var folderPath:String = ""
         var testQuiz:TestQuiz
-        testQuiz = databaseHandler!!.getQuizTopicsForTimerLastPlayed()
+        testQuiz = databaseHandler!!.getQuizTopicsForTimerLastPlayed(topictype.toLowerCase())
         Log.e("test fragment","testQuiz.lastplayed......"+testQuiz.lastplayed)
         if(testQuiz.lastplayed == null){
             topic = branchesItemList!![0].topic
@@ -503,9 +414,9 @@ class TestsFragment: Fragment(),View.OnClickListener, TestQuizReviewClickListene
             jsonStringBasic =  Utils.readFromFile("$folderPath/basic.json")
             lastplayed = "basic"
 
-            databaseHandler!!.deleteAllQuizTopicsLatPlayed()
+            databaseHandler!!.deleteAllQuizTopicsLatPlayed(topictype.toLowerCase())
 
-            databaseHandler!!.insertquiztopiclastplayed(topic.title,topic.displayNo,lastplayed);
+            databaseHandler!!.insertquiztopiclastplayed(topic.title,topic.displayNo,lastplayed,topictype.toLowerCase());
         }else{
 
             if(branchesItemList!!.size == (testQuiz.serialNo).toInt()){
@@ -514,9 +425,9 @@ class TestsFragment: Fragment(),View.OnClickListener, TestQuizReviewClickListene
                 Log.e("test fragment","testQuiz.folderPath......"+folderPath)
                 jsonStringBasic =  Utils.readFromFile("$folderPath/basic.json")
                 lastplayed = "basic"
-                databaseHandler!!.deleteAllQuizTopicsLatPlayed()
+                databaseHandler!!.deleteAllQuizTopicsLatPlayed(topictype.toLowerCase())
 
-                databaseHandler!!.insertquiztopiclastplayed(topic.title,topic.displayNo,lastplayed);
+                databaseHandler!!.insertquiztopiclastplayed(topic.title,topic.displayNo,lastplayed,topictype.toLowerCase());
             }else{
                 topic = branchesItemList!![((testQuiz.serialNo).toInt())-1].topic
                 folderPath = localPath+topic.folderName
@@ -524,18 +435,18 @@ class TestsFragment: Fragment(),View.OnClickListener, TestQuizReviewClickListene
                 if(testQuiz.lastplayed.equals("basic")){
                     jsonStringBasic =  Utils.readFromFile("$folderPath/intermediate.json")
                     lastplayed = "intermediate"
-                    databaseHandler!!.deleteAllQuizTopicsLatPlayed()
+                    databaseHandler!!.deleteAllQuizTopicsLatPlayed(topictype.toLowerCase())
 
-                    databaseHandler!!.insertquiztopiclastplayed(topic.title,topic.displayNo,lastplayed);
+                    databaseHandler!!.insertquiztopiclastplayed(topic.title,topic.displayNo,lastplayed,topictype.toLowerCase());
                 }else{
                     topic = branchesItemList!![((testQuiz.serialNo).toInt())].topic
                     folderPath = localPath+topic.folderName
                     Log.e("test fragment","testQuiz.folderPath......"+folderPath)
                     jsonStringBasic =  Utils.readFromFile("$folderPath/basic.json")
                     lastplayed = "basic"
-                    databaseHandler!!.deleteAllQuizTopicsLatPlayed()
+                    databaseHandler!!.deleteAllQuizTopicsLatPlayed(topictype.toLowerCase())
 
-                    databaseHandler!!.insertquiztopiclastplayed(topic.title,topic.displayNo,lastplayed);
+                    databaseHandler!!.insertquiztopiclastplayed(topic.title,topic.displayNo,lastplayed,topictype.toLowerCase());
 
                 }
             }
@@ -562,7 +473,7 @@ class TestsFragment: Fragment(),View.OnClickListener, TestQuizReviewClickListene
 
         val intent = Intent(context!!, StartTestActivity::class.java)
         intent.putExtra(ConstantPath.TOPIC, topic)
-        intent.putExtra(ConstantPath.TOPIC_NAME, topic.title)
+        intent.putExtra(ConstantPath.TOPIC_NAME, topictype)
         intent.putExtra(ConstantPath.FOLDER_NAME, topic.folderName)
         intent.putExtra(ConstantPath.DYNAMIC_PATH, jsonStringBasic)
         intent.putExtra(ConstantPath.COURSE_ID, courseId)

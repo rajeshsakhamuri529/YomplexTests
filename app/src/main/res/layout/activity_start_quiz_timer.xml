@@ -6,8 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
-    android:paddingBottom="@dimen/_15sdp"
-    tools:context=".activity.QuizSummaryActivity">
+    android:paddingBottom="@dimen/_15sdp">
 
 
     <RelativeLayout
@@ -24,6 +23,44 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="0.5">
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_alignParentTop="true">
+
+                <LinearLayout
+                    android:id="@+id/titleLL1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="21dp">
+
+                    <ImageView
+                        android:id="@+id/imageView2"
+                        android:layout_width="100dp"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center_horizontal"
+                        android:gravity="center"
+                        android:src="@drawable/ic_splash_new"
+                        />
+                    <TextView
+                        android:id="@+id/tv_quiz_title1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="20dp"
+                        android:text="TINY TESTS (JEE)"
+
+                        android:layout_gravity="center_horizontal"
+                        android:gravity="center"
+
+
+                        android:textSize="@dimen/_15ssp"
+
+                        android:layout_marginLeft="@dimen/_3sdp"
+                        android:textColor="#C0C0C0"
+                        android:fontFamily="@font/lato_bold"/>
+
+                </LinearLayout>
+
+            </RelativeLayout>
 
                 <RelativeLayout
                     android:layout_width="wrap_content"

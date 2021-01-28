@@ -4,6 +4,7 @@ import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.AssetManager;
+import android.graphics.Bitmap;
 import android.graphics.drawable.GradientDrawable;
 import android.media.AudioManager;
 import android.media.SoundPool;
@@ -29,6 +30,7 @@ import org.jsoup.select.Elements;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -511,6 +513,36 @@ public class Utils {
         }
 
         return true;
+    }
+    public static void saveBitmap(Bitmap bitmap,Context context) {
+        File imagePath = new File(context.getExternalFilesDir(null) + "/screenshot.png"); ////File imagePath
+        FileOutputStream fos;
+        try {
+            fos = new FileOutputStream(imagePath);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+            fos.flush();
+            fos.close();
+        } catch (FileNotFoundException e) {
+            Log.e("GREC", e.getMessage(), e);
+        } catch (IOException e) {
+            Log.e("GREC", e.getMessage(), e);
+        }
+    }
+
+    public static void store(Bitmap bm, String fileName,Context context){
+        String dirPath = context.getExternalFilesDir(null).getAbsolutePath() + "/Screenshots";
+        File dir = new File(dirPath);
+        if(!dir.exists())
+            dir.mkdirs();
+        File file = new File(dirPath, fileName);
+        try {
+            FileOutputStream fOut = new FileOutputStream(file);
+            bm.compress(Bitmap.CompressFormat.PNG, 85, fOut);
+            fOut.flush();
+            fOut.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /*public static String readFromFile(String filepath) {

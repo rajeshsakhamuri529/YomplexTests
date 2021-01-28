@@ -30,8 +30,7 @@ import com.bumptech.glide.Glide
 import com.yomplex.tests.R
 import com.yomplex.tests.database.QuizGameDataBase
 import com.yomplex.tests.utils.ConstantPath
-import com.yomplex.tests.utils.ConstantPath.SOUNDS
-import com.yomplex.tests.utils.ConstantPath.WEBVIEW_FILE_PATH
+import com.yomplex.tests.utils.ConstantPath.*
 import com.yomplex.tests.utils.SharedPrefs
 import com.yomplex.tests.utils.Utils
 import kotlinx.android.synthetic.main.activity_quiz_time_review.*
@@ -130,7 +129,8 @@ class TestReviewActivity : BaseActivity(), View.OnClickListener {
         gradeTitle = intent.getStringExtra(TITLE_TOPIC)
         readyCardNumber = intent.getIntExtra(CARD_NO, -1)*/
         totalQuestion = intent.getIntExtra(ConstantPath.QUIZ_COUNT, 0)
-
+        topicName = intent.getStringExtra(TOPIC_NAME)
+        Log.e("test review","topic name..........."+topicName)
 
         title = intent.getStringExtra("title")!!
         lastplayed = intent.getStringExtra("lastplayed")!!
@@ -165,7 +165,7 @@ class TestReviewActivity : BaseActivity(), View.OnClickListener {
         }
         countInt++
         addDot(countInt, totalQuestion!!)
-        val paths: String = databaseHandler!!.getQuizQuestionPathFinal(title,playeddate,lastplayed)
+        val paths: String = databaseHandler!!.getQuizQuestionPathFinal(title,playeddate,lastplayed,topicName!!.toLowerCase())
         var ans:List<String> = paths.split(",")
         var ans1:List<String> = ans.get((countInt - 1)).split("~")
         type = ans1[1].toInt()
@@ -187,7 +187,7 @@ class TestReviewActivity : BaseActivity(), View.OnClickListener {
         }
         countInt--
         addDot(countInt, totalQuestion!!)
-        val paths: String = databaseHandler!!.getQuizQuestionPathFinal(title,playeddate,lastplayed)
+        val paths: String = databaseHandler!!.getQuizQuestionPathFinal(title,playeddate,lastplayed,topicName!!.toLowerCase())
         var ans:List<String> = paths.split(",")
         var ans1:List<String> = ans.get((countInt - 1)).split("~")
         type = ans1[1].toInt()
@@ -439,7 +439,7 @@ class TestReviewActivity : BaseActivity(), View.OnClickListener {
 
         }
 
-        var optionString:String = databaseHandler!!.getQuizFinalOptions(title,playeddate,lastplayed)
+        var optionString:String = databaseHandler!!.getQuizFinalOptions(title,playeddate,lastplayed,topicName!!.toLowerCase())
 
         var queans:List<String> = optionString.split(",")
         var optionsmutanslist = queans.toMutableList()
@@ -792,7 +792,7 @@ class TestReviewActivity : BaseActivity(), View.OnClickListener {
          webView_option4!!.startAnimation(animationFadeIn)
 
 
-        var answers:String = databaseHandler!!.getQuizAnswerStatus(title,playeddate,lastplayed);
+        var answers:String = databaseHandler!!.getQuizAnswerStatus(title,playeddate,lastplayed,topicName!!.toLowerCase());
 
 
         var ans:List<String> = answers.split(",")
@@ -800,7 +800,7 @@ class TestReviewActivity : BaseActivity(), View.OnClickListener {
         Log.e("test question activity","next.....ans..."+ans);
 
         if(ans.get((countInt - 1)).equals("1")){
-            var questionanswers:String = databaseHandler!!.getQuizQuestionAnswersFinal(title,playeddate,lastplayed);
+            var questionanswers:String = databaseHandler!!.getQuizQuestionAnswersFinal(title,playeddate,lastplayed,topicName!!.toLowerCase());
             var queans:List<String> = questionanswers.split(",")
             var ans1:List<String> = queans.get((countInt - 1)).split("~")
             Log.e("test question activity","next.....ans1..."+ans1);
@@ -1033,6 +1033,7 @@ class TestReviewActivity : BaseActivity(), View.OnClickListener {
         next_btn!!.setOnClickListener(this)
         prev_btn!!.setOnClickListener(this)
         btn_close!!.setOnClickListener(this)
+        report_rl!!.setOnClickListener(this)
         hint_btn!!.setOnClickListener(this)
         close!!.setOnClickListener(this)
         iv_cancel_test_question!!.setOnClickListener(this)
@@ -1128,6 +1129,21 @@ class TestReviewActivity : BaseActivity(), View.OnClickListener {
                 }
                 finish()
             }
+            R.id.report_rl -> {
+                sound = sharedPrefs?.getBooleanPrefVal(this, ConstantPath.SOUNDS) ?: true
+                if (!sound) {
+                    // mediaPlayer = MediaPlayer.create(this,R.raw.amount_low)
+                    //  mediaPlayer.start()
+                    if (Utils.loaded) {
+                        Utils.soundPool.play(Utils.soundID, Utils.volume, Utils.volume, 1, 0, 1f);
+                        Log.e("Test...............", "Played sound...volume..." + Utils.volume);
+                        //Toast.makeText(context,"end",Toast.LENGTH_SHORT).show()
+                    }
+
+                }
+
+                showDialog()
+            }
             R.id.next_btn -> {
                 sound = sharedPrefs?.getBooleanPrefVal(this, ConstantPath.SOUNDS) ?: true
                 if(!sound){
@@ -1196,49 +1212,17 @@ class TestReviewActivity : BaseActivity(), View.OnClickListener {
         dialog = Dialog(this)
         dialog!!.requestWindowFeature(Window.FEATURE_NO_TITLE)
         dialog!!.setCancelable(false)
-        dialog!!.setContentView(R.layout.hint_dialog)
-        val webview = dialog!!.findViewById(R.id.webview_hint) as WebView
-        val btn_gotIt = dialog!!.findViewById(R.id.btn_gotIt) as Button
+        dialog!!.setContentView(R.layout.layout_report)
+       // val webview = dialog!!.findViewById(R.id.webview_hint) as WebView
+        val close = dialog!!.findViewById(R.id.btn_cancel) as Button
 
 
-        // Creating Dynamic
-        /*val displayRectangle = Rect()
-        val window = this.getWindow()
-        window.getDecorView().getWindowVisibleDisplayFrame(displayRectangle)
-        dialog!!.getWindow().setLayout(((displayRectangle.width() * 0.8f).toInt()), dialog!!.getWindow().getAttributes().height)
-*/
 
-        dialog!!.window?.decorView?.addOnLayoutChangeListener { v, _, _, _, _, _, _, _, _ ->
-            val displayRectangle = Rect()
-            val window = dialog!!.window
-            v.getWindowVisibleDisplayFrame(displayRectangle)
-            val maxHeight = displayRectangle.height() * 0.8f // 60%
 
-            if (v.height > maxHeight) {
-                window?.setLayout(window.attributes.width, maxHeight.toInt())
-            }
-        }
-        webview.settings.javaScriptEnabled = true
-        //  webview.setVerticalScrollBarEnabled(true)
-        // Enable responsive layout
-        // webview.getSettings().setUseWideViewPort(true);
-        // Zoom out if the content width is greater than the width of the viewport
-        //webview.getSettings().setLoadWithOverviewMode(true);
-        val hint = object : WebViewClient() {
 
-            override fun onPageFinished(view: WebView?, url: String?) {
-                Log.d("onPageFinished", url + "!")
-                injectCSS(view, "Hint")
-                // view!!.loadUrl("javascript:document.getElementsByTagName('html')[0].innerHTML+='<style>*{color:#ffffff}</style>';")
-            }
-        }
-        Log.e("test question activity","hint alert dialog....hint path..."+hintPath);
-        webview.webViewClient = hint
-        webview.loadUrl(hintPath!!)
-        webview.setBackgroundColor(0)
         //buttonEffect(btn_gotIt,false)
         // alertDialog = dialogBuilder.create()
-        btn_gotIt.setOnClickListener {
+        close.setOnClickListener {
             sound = sharedPrefs?.getBooleanPrefVal(this, SOUNDS) ?: true
             if(!sound){
                 // mediaPlayer = MediaPlayer.create(this,R.raw.amount_low)
@@ -1251,15 +1235,8 @@ class TestReviewActivity : BaseActivity(), View.OnClickListener {
             }
             dialog!!.dismiss()
         }
-        // dialog!!.show()
-        // val alertDialog = dialogBuilder.create()
-        //  alertDialog.window.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT));
-        //  alertDialog.show()
-        /*yesBtn.setOnClickListener {
-            dialog!!.dismiss()
-        }
-        noBtn.setOnClickListener { dialog .dismiss() }
-        dialog .show()*/
+        dialog!!.show()
+
 
     }
 }

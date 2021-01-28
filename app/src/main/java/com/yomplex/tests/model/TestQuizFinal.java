@@ -13,6 +13,7 @@ public class TestQuizFinal {
     private String timetaken;
     private String options;
     private String status;
+    private String testtype;
 
 
 
@@ -21,7 +22,7 @@ public class TestQuizFinal {
     }
 
     public TestQuizFinal(String serialno, String title, String typeofPlay,
-                         int totalQuestions, String answerstatus, String questionAnswers, String questionPathType, String pdate, String timetaken, String options, String status){
+                         int totalQuestions, String answerstatus, String questionAnswers, String questionPathType, String pdate, String timetaken, String options, String status,String testtype){
 
         this.serialNo = serialno;
         this.title = title;
@@ -34,6 +35,7 @@ public class TestQuizFinal {
         this.timetaken = timetaken;
         this.options = options;
         this.status = status;
+        this.testtype = testtype;
 
     }
 
@@ -123,5 +125,13 @@ public class TestQuizFinal {
 
     public void setPdate(String pdate) {
         this.pdate = pdate;
+    }
+
+    public String getTesttype() {
+        return testtype;
+    }
+
+    public void setTesttype(String testtype) {
+        this.testtype = testtype;
     }
 }

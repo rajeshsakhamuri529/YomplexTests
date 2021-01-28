@@ -39,150 +39,14 @@
             android:layout_height="wrap_content"
             >
             <RelativeLayout
+                android:id="@+id/review1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
                 <RelativeLayout
-                    android:id="@+id/tinytestRL"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="@dimen/_15sdp"
-                    android:background="@drawable/close_button">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="@dimen/_15sdp"
-                        android:orientation="vertical">
-                        <TextView
-                            android:id="@+id/tv_tiny"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="TINY TEST"
-                            android:textSize="@dimen/_14ssp"
-
-
-                            android:layout_centerVertical="true"
-                            android:textColor="@color/chapters_text"
-                            android:textStyle="bold"
-                            android:fontFamily="@font/lato_bold"
-                            />
-
-                        <TextView
-                            android:id="@+id/tv_tiny1"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Take a Tiny Test now!"
-                            android:textSize="@dimen/_11ssp"
-
-                            android:layout_marginTop="@dimen/_10sdp"
-                            android:layout_centerVertical="true"
-                            android:textColor="@color/chapters_text"
-                            android:textStyle="bold"
-                            android:fontFamily="@font/lato_regular"
-                            />
-                        <TextView
-                            android:id="@+id/tv_tiny2"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="2dp"
-                            android:lineSpacingExtra="2dp"
-                            android:text="Specially designed to help you master calculus concepts for JEE. Questions based on JEE Mains Syllabus and past papers."
-                            android:textSize="@dimen/_11ssp"
-                            android:layout_centerVertical="true"
-                            android:textColor="@color/chapters_text"
-                            android:textStyle="bold"
-                            android:fontFamily="@font/lato_regular"
-                            />
-
-                        <RelativeLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/_10sdp">
-
-                            <TextView
-                                android:id="@+id/tv_learn_more"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="LEARN MORE"
-                                android:textSize="@dimen/_12ssp"
-                                android:layout_centerVertical="true"
-                                android:layout_marginTop="@dimen/_5sdp"
-                                android:visibility="gone"
-                                android:textColor="#017FFF"
-                                android:textStyle="bold"
-                                android:fontFamily="@font/lato_regular"
-                                />
-
-                            <androidx.constraintlayout.widget.ConstraintLayout
-                                android:id="@+id/test_btn"
-                                style="@style/Widget.AppCompat.Button.Borderless"
-                                android:layout_width="wrap_content"
-                                android:layout_height="@dimen/_25sdp"
-                                android:layout_alignParentEnd="true"
-                                android:layout_centerVertical="true"
-                                android:layout_marginEnd="1dp"
-                                android:background="@drawable/close_btn">
-
-                                <ProgressBar
-                                    android:id="@+id/progress_bar"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:visibility="gone"
-                                    android:indeterminateTint="@color/white"
-                                    android:layout_centerInParent="true"
-                                    app:layout_constraintBottom_toBottomOf="parent"
-                                    app:layout_constraintEnd_toEndOf="parent"
-                                    app:layout_constraintStart_toStartOf="parent"
-                                    app:layout_constraintTop_toTopOf="parent" />
-
-                                <TextView
-                                    android:id="@+id/txt_next"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:visibility="visible"
-
-
-                                    android:layout_marginStart="20dp"
-                                    android:fontFamily="@font/lato_bold"
-                                    android:gravity="center_vertical"
-                                    android:text="TEST"
-                                    android:textSize="@dimen/_11sdp"
-                                    android:letterSpacing="0.1"
-                                    android:textColor="#FFFFFF"
-                                    app:layout_constraintVertical_bias="0.5"
-                                    app:layout_constraintBottom_toBottomOf="parent"
-                                    app:layout_constraintStart_toStartOf="parent"
-                                    app:layout_constraintTop_toTopOf="parent" />
-
-                                <ImageView
-                                    android:id="@+id/right_arrow"
-                                    android:layout_width="11dp"
-                                    android:layout_height="11dp"
-                                    android:layout_marginStart="3dp"
-                                    android:visibility="visible"
-                                    android:tint="@color/white"
-                                    app:layout_constraintVertical_bias="0.5"
-                                    app:layout_constraintBottom_toBottomOf="parent"
-                                    app:layout_constraintStart_toEndOf="@+id/txt_next"
-                                    app:layout_constraintTop_toTopOf="parent"
-                                    app:srcCompat="@drawable/ic_right_arrow" />
-
-                            </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-                        </RelativeLayout>
-
-                    </LinearLayout>
-
-                </RelativeLayout>
-
-
-                <RelativeLayout
                     android:id="@+id/reviewRL"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/_30sdp"
-                    android:layout_below="@+id/tinytestRL"
+                    android:layout_height="@dimen/_40sdp"
                     android:layout_marginLeft="@dimen/_15sdp"
                     android:layout_marginRight="@dimen/_15sdp"
                     >
@@ -191,7 +55,7 @@
                         android:id="@+id/tv_review"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Review"
+                        android:text="This Week"
                         android:textSize="@dimen/_14ssp"
                         android:layout_centerVertical="true"
 
@@ -202,14 +66,53 @@
                         />
 
                     <TextView
-                        android:id="@+id/tv_last_five"
+                        android:id="@+id/tv_txt1"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="( Last 5 Tests )"
+                        android:text="("
                         android:textSize="@dimen/_14ssp"
                         android:layout_centerVertical="true"
                         android:layout_marginLeft="@dimen/_15sdp"
                         android:layout_toRightOf="@+id/tv_review"
+                        android:textColor="@color/chapters_text"
+                        android:textStyle="bold"
+                        android:fontFamily="@font/lato_light"
+                        />
+                    <TextView
+                        android:id="@+id/tv_txt2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text=" Score: "
+                        android:textSize="@dimen/_14ssp"
+                        android:layout_centerVertical="true"
+
+                        android:layout_toRightOf="@+id/tv_txt1"
+                        android:textColor="@color/chapters_text"
+                        android:textStyle="bold"
+                        android:fontFamily="@font/lato_light"
+                        />
+                    <TextView
+                        android:id="@+id/tv_txt3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0/32"
+                        android:textSize="@dimen/_14ssp"
+                        android:layout_centerVertical="true"
+
+                        android:layout_toRightOf="@+id/tv_txt2"
+                        android:textColor="@color/chapters_text"
+                        android:textStyle="bold"
+                        android:fontFamily="@font/lato_light"
+                        />
+                    <TextView
+                        android:id="@+id/tv_txt4"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text=" )"
+                        android:textSize="@dimen/_14ssp"
+                        android:layout_centerVertical="true"
+
+                        android:layout_toRightOf="@+id/tv_txt3"
                         android:textColor="@color/chapters_text"
                         android:textStyle="bold"
                         android:fontFamily="@font/lato_light"
@@ -237,7 +140,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_below="@id/reviewRL"
-                    android:layout_marginTop="@dimen/_15sdp"
+
                     android:layout_marginLeft="@dimen/_15sdp"
                     android:layout_marginRight="@dimen/_15sdp"
                     android:visibility="gone"
@@ -245,7 +148,45 @@
 
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
 
+
+
+
+                    <RelativeLayout
+                        android:id="@+id/weekRL"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/_40sdp"
+                        android:layout_below="@+id/rcv_tests"
+                        android:layout_marginLeft="@dimen/_15sdp"
+                        android:layout_marginRight="@dimen/_15sdp"
+                        >
+                        <TextView
+                            android:id="@+id/tv_week"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Past Week"
+                            android:textSize="@dimen/_14ssp"
+                            android:layout_centerVertical="true"
+
+
+                            android:textColor="@color/chapters_text"
+
+                            android:fontFamily="@font/lato_black"
+                            />
+                    </RelativeLayout>
+
+
+                <com.github.mikephil.charting.charts.BarChart
+                    android:id="@+id/barchart"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_200sdp"
+                    android:layout_below="@id/weekRL"
+                    android:visibility="gone"
+                    android:layout_marginLeft="@dimen/_15sdp"
+                    android:layout_marginRight="@dimen/_15sdp"/>
+
+
             </RelativeLayout>
+
         </androidx.core.widget.NestedScrollView>
     </RelativeLayout>
 

@@ -53,7 +53,7 @@ public class JobService extends JobIntentService {
     /**
      * Convenience method for enqueuing work in to this service.
      */
-    public static void enqueueWork(Context context, String url, String version) {
+    public static void enqueueWork(Context context, String url, String version,String type) {
         dataBase = new QuizGameDataBase(context);
         File f =  new File((context.getExternalFilesDir(null)).getAbsolutePath());
         dirpath = f.getAbsolutePath();
@@ -62,6 +62,7 @@ public class JobService extends JobIntentService {
         //intent.putExtra(RECEIVER, workerResultReceiver);
         intent.putExtra(URL, url);
         intent.putExtra("version", version);
+        intent.putExtra("testtype", type);
         intent.setAction(ACTION_DOWNLOAD);
         enqueueWork(context, JobService.class, DOWNLOAD_JOB_ID, intent);
     }
@@ -78,7 +79,8 @@ public class JobService extends JobIntentService {
                     //mResultReceiver = intent.getParcelableExtra(RECEIVER);
                     final String url = intent.getStringExtra(URL);
                     final String version = intent.getStringExtra("version");
-                    int downloadId = PRDownloader.download(url, dirpath, "/testcontent.rar")
+                    final String testtype = intent.getStringExtra("testtype");
+                    int downloadId = PRDownloader.download(url, dirpath+"/"+testtype, "/testcontent.rar")
                             .build()
                             .setOnStartOrResumeListener(new OnStartOrResumeListener() {
                                 @Override
@@ -114,13 +116,40 @@ public class JobService extends JobIntentService {
                                     }catch (Exception e){
 
                                     }
-                                    boolean iszip = Utils.unpackZip(dirpath,"/testcontent.rar");
-                                    if(iszip){
-                                        File dirFile = new File(context1.getExternalFilesDir(null),"testcontent.rar");
-                                        dirFile.delete();
-                                        dataBase.updatetestcontentversion(version);
-                                        dataBase.updatetestcontentdownloadstatus(1);
+                                    if(testtype.equals("basic")){
+                                        boolean iszip = Utils.unpackZip(dirpath+"/"+testtype,"/testcontent.rar");
+                                        if(iszip){
+                                            File dirFile = new File(context1.getExternalFilesDir(null),testtype+"/testcontent.rar");
+                                            dirFile.delete();
+                                            dataBase.updatetestcontentversion(version,testtype);
+                                            dataBase.updatetestcontentdownloadstatus(1,testtype);
+                                        }
+                                    }else if(testtype.equals("algebra")){
+                                        boolean iszip = Utils.unpackZip(dirpath+"/"+testtype,"/testcontent.rar");
+                                        if(iszip){
+                                            File dirFile = new File(context1.getExternalFilesDir(null),testtype+"/testcontent.rar");
+                                            dirFile.delete();
+                                            dataBase.updatetestcontentversion(version,testtype);
+                                            dataBase.updatetestcontentdownloadstatus(1,testtype);
+                                        }
+                                    }else if(testtype.equals("calculus")){
+                                        boolean iszip = Utils.unpackZip(dirpath+"/"+testtype,"/testcontent.rar");
+                                        if(iszip){
+                                            File dirFile = new File(context1.getExternalFilesDir(null),testtype+"/testcontent.rar");
+                                            dirFile.delete();
+                                            dataBase.updatetestcontentversion(version,testtype);
+                                            dataBase.updatetestcontentdownloadstatus(1,testtype);
+                                        }
+                                    }else if(testtype.equals("geometry")){
+                                        boolean iszip = Utils.unpackZip(dirpath+"/"+testtype,"/testcontent.rar");
+                                        if(iszip){
+                                            File dirFile = new File(context1.getExternalFilesDir(null),testtype+"/testcontent.rar");
+                                            dirFile.delete();
+                                            dataBase.updatetestcontentversion(version,testtype);
+                                            dataBase.updatetestcontentdownloadstatus(1,testtype);
+                                        }
                                     }
+
                                     /*Bundle bundle = new Bundle();
                                     bundle.putString("data","success");
                                     mResultReceiver.send(SHOW_RESULT, bundle);*/

@@ -5,6 +5,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/rl_root"
     android:background="@color/white"
+    tools:context=".activity.TestQuizActivity"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -69,33 +70,59 @@
         android:layout_marginTop="@dimen/_15sdp"
         android:layout_centerHorizontal="true">
 
-        <LinearLayout
-            android:id="@+id/report_rl"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:visibility="gone"
-            android:layout_marginStart="@dimen/_15sdp"
-            android:layout_marginEnd="@dimen/_15sdp">
+
+
+
+        <RelativeLayout
+            android:id="@+id/progressRL"
+            android:layout_width="@dimen/_50sdp"
+            android:layout_height="@dimen/_35sdp"
+            android:visibility="visible">
+
+
+            <ProgressBar
+                android:id="@+id/progressBarCircle"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="@dimen/_35sdp"
+                android:layout_height="@dimen/_35sdp"
+                android:visibility="visible"
+                android:layout_centerVertical="true"
+                android:layout_centerInParent="true"
+                android:indeterminate="false"
+                android:max="100"
+                android:progress="100"
+                android:scaleY="-1"
+                android:progressDrawable="@drawable/drawable_circularprogressbar"
+                />
 
             <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_error_black"
-                android:tint="#666666"
-                android:layout_gravity="center_vertical"/>
+                android:id="@+id/iv_progress_icon"
+                android:layout_width="@dimen/_35sdp"
+                android:layout_height="@dimen/_35sdp"
+                android:layout_centerVertical="true"
+                android:layout_centerInParent="true"
+                android:background="@drawable/drawable_red_progress"
+                android:visibility="gone"
+
+
+                />
 
             <TextView
-                android:layout_width="@dimen/_40sdp"
+                android:id="@+id/textViewTime"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Report"
-                android:textColor="#666666"
-                android:fontFamily="@font/lato_black"
-                android:textSize="@dimen/_10sdp"
-                android:layout_marginLeft="@dimen/_3sdp"
-                android:layout_gravity="center_vertical"/>
+                android:layout_centerVertical="true"
+                android:layout_centerInParent="true"
+                android:text=""
+                android:visibility="visible"
+                android:textColor="#424242"
+                android:fontFamily="@font/lato_bold"
+                android:textSize="@dimen/_12sdp" />
 
-        </LinearLayout>
+
+
+
+        </RelativeLayout>
 
 
 
@@ -104,15 +131,16 @@
             android:layout_height="@dimen/_25sdp"
             android:id="@+id/btn_close"
             android:layout_marginRight="@dimen/_15sdp"
-            android:textSize="@dimen/_11sdp"
-            android:letterSpacing="0.1"
             android:layout_alignParentEnd="true"
             android:fontFamily="@font/lato_bold"
             style="@style/Widget.AppCompat.Button.Borderless"
-            android:background="@drawable/submit_active_background"
-            android:text="Close"
+            android:background="@drawable/close_button"
+            android:text="CLOSE"
+            android:letterSpacing="0.1"
+            android:textSize="@dimen/_11sdp"
             android:layout_centerVertical="true"
-            android:textColor="@color/white"/>
+            android:textColor="@color/button_close_text"/>
+
 
         <LinearLayout
             android:id="@+id/ll_dots"
@@ -122,6 +150,8 @@
             android:layout_centerInParent="true"
 
             />
+
+
 
     </RelativeLayout>
 
@@ -190,8 +220,8 @@
                 android:fontFamily="@font/lato_bold"
                 android:gravity="center_vertical"
                 android:text="NEXT"
-                android:textSize="@dimen/_11sdp"
                 android:letterSpacing="0.1"
+                android:textSize="@dimen/_11sdp"
                 android:textColor="#424242"
                 app:layout_constraintVertical_bias="0.5"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -237,18 +267,16 @@
             android:layout_centerVertical="true">
 
             <Button
-                android:id="@+id/hint_btn"
+                android:id="@+id/btn_submit"
                 android:layout_width="wrap_content"
                 android:layout_height="@dimen/_25sdp"
                 android:layout_alignParentStart="true"
                 android:fontFamily="@font/lato_bold"
                 android:background="@drawable/submit_active_background"
                 style="@style/Widget.AppCompat.Button.Borderless"
-                android:text="Solution"
-                android:paddingLeft="@dimen/_15sdp"
-                android:paddingRight="@dimen/_15sdp"
-                android:textSize="@dimen/_11sdp"
+                android:text="SUBMIT"
                 android:letterSpacing="0.1"
+                android:textSize="@dimen/_11sdp"
                 android:layout_centerVertical="true"
                 android:textColor="@color/white"
                 />
@@ -287,8 +315,8 @@
                 android:layout_centerVertical="true"
                 android:fontFamily="@font/lato_bold"
                 android:gravity="center_vertical"
-                android:textSize="@dimen/_11sdp"
                 android:letterSpacing="0.1"
+                android:textSize="@dimen/_11sdp"
                 android:text="PREV"
                 android:textColor="#D6D6D6"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -386,7 +414,7 @@
         android:background="#333333"
         android:visibility="gone"
         android:alpha="0.5"/>
-    <!--<LinearLayout
+    <LinearLayout
         android:id="@+id/alertLL"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -444,134 +472,7 @@
             android:paddingRight="@dimen/_20sdp"
             android:layout_marginBottom="@dimen/_20sdp"/>
 
-    </LinearLayout>-->
-
-
-    <RelativeLayout
-        android:id="@+id/solution"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone"
-        android:background="#FFFFFF">
-
-        <RelativeLayout
-            xmlns:android="http://schemas.android.com/apk/res/android"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-
-            >
-
-            <TextView
-                android:id="@+id/tv_solution"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="@dimen/_14ssp"
-                android:text="Solution"
-                android:textColor="#424242"
-                android:layout_marginTop="@dimen/_15sdp"
-                android:fontFamily="@font/lato_bold"
-                android:layout_centerHorizontal="true"/>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="0.5dp"
-                android:id="@+id/view5"
-                android:background="@color/hint_title_text"
-                android:layout_below="@id/tv_solution"
-                android:layout_marginTop="@dimen/_15sdp"
-                />
-
-            <!--<ScrollView
-                android:id="@+id/scroll"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/view"
-                android:layout_above="@+id/btn_gotIt">-->
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_below="@+id/view5"
-                android:layout_above="@+id/view6"
-                android:layout_marginLeft="@dimen/_20sdp"
-                android:layout_marginRight="@dimen/_20sdp"
-                android:layout_marginTop="@dimen/_1sdp">
-                <WebView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-
-                    android:id="@+id/webview_hint"
-                    />
-                <!--<RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-
-                    >
-
-                    <WebView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-
-                        android:id="@+id/webview_hint"
-                        android:layout_marginLeft="@dimen/_10sdp"
-                        android:layout_marginRight="@dimen/_10sdp"
-                        android:layout_marginTop="@dimen/_10sdp"/>
-
-                </RelativeLayout>-->
-
-
-            </RelativeLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="0.5dp"
-                android:id="@+id/view6"
-                android:layout_above="@+id/btnRL"
-                android:background="@color/hint_title_text"
-
-                android:layout_marginTop="@dimen/_1sdp"
-
-                />
-            <RelativeLayout
-                android:id="@+id/btnRL"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/_45sdp"
-                android:layout_alignParentBottom="true"
-                android:layout_centerHorizontal="true"
-                >
-                <Button android:layout_width="@dimen/_50sdp"
-                    android:layout_height="@dimen/_25sdp"
-                    android:layout_centerInParent="true"
-                    android:id="@+id/close"
-
-
-
-                    android:background="@drawable/submit_active_background"
-                    android:text="OK"
-
-                    android:letterSpacing="0.1"
-                    style="@style/Widget.AppCompat.Button.Borderless"
-                    android:textColor="@color/white"
-                    android:fontFamily="@font/lato_bold"
-                    android:textSize="@dimen/_11ssp"
-
-                    />
-
-            </RelativeLayout>
-
-
-
-            <!--</ScrollView>-->
-
-
-
-
-
-
-        </RelativeLayout>
-
-
-    </RelativeLayout>
+    </LinearLayout>
 
 
 
