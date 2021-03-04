@@ -13,6 +13,7 @@ import com.bumptech.glide.Glide
 import com.yomplex.tests.R
 import com.yomplex.tests.interfaces.TestClickListener
 import com.yomplex.tests.interfaces.TestQuizReviewClickListener
+import com.yomplex.tests.model.QuizScore
 import com.yomplex.tests.model.TestQuizFinal
 import kotlinx.android.synthetic.main.tests_list_item.view.*
 import java.text.SimpleDateFormat
@@ -24,7 +25,7 @@ import java.util.*
 
 
 class TestsAdapter(val context: Context,
-                   val testtypeslist: List<String>,
+                   val testtypeslist: List<String>,val testscorelist: ArrayList<QuizScore>,
                    val quiztopicreviewListener: TestClickListener
 ) :
     RecyclerView.Adapter<TestsAdapter.TestsViewHolder>()  {
@@ -38,12 +39,44 @@ class TestsAdapter(val context: Context,
     }
 
     override fun getItemCount(): Int {
+
         return testtypeslist.size
     }
 
     override fun onBindViewHolder(holder: TestsAdapter.TestsViewHolder, position: Int) {
 
         holder.tv_topic_name.text = testtypeslist[position]
+        for(i in 0 until testscorelist.size) {
+            if(testscorelist.get(i).testtype.equals(testtypeslist[position].replace("\\s".toRegex(), "").toLowerCase())){
+                holder.tv_score.text = testscorelist.get(i).highestscore
+                if(testscorelist.get(i).highestscore.equals("0")){
+                    holder.totalRL.background = context.resources.getDrawable(R.drawable.test_summary_0)
+                    holder.tv_score.setTextColor(context.resources.getColor(R.color.seriously))
+                }else if(testscorelist.get(i).highestscore.equals("1")){
+                    holder.totalRL.background = context.resources.getDrawable(R.drawable.test_summary_0)
+                    holder.tv_score.setTextColor(context.resources.getColor(R.color.not_good))
+                }else if(testscorelist.get(i).highestscore.equals("2")){
+                    holder.tv_score.setTextColor(context.resources.getColor(R.color.not_bad))
+                    holder.totalRL.background = context.resources.getDrawable(R.drawable.test_summary_2)
+                }else if(testscorelist.get(i).highestscore.equals("3")){
+                    holder.totalRL.background = context.resources.getDrawable(R.drawable.test_summary_3)
+                    holder.tv_score.setTextColor(context.resources.getColor(R.color.good))
+                }else if(testscorelist.get(i).highestscore.equals("4")){
+                    holder.totalRL.background = context.resources.getDrawable(R.drawable.test_summary_4)
+                    holder.tv_score.setTextColor(context.resources.getColor(R.color.white))
+                }
+
+                break
+            }else{
+                holder.tv_score.text = ""
+                holder.tv_score.setTextColor(context.resources.getColor(R.color.topic_text))
+                holder.totalRL.background = context.resources.getDrawable(R.drawable.rounded_square)
+            }
+
+        }
+
+
+
         /*var count:Int = 0
         var questionanswers:String = branchesItemList[position].questionAnswers
         var queans:List<String> = questionanswers.split(",")
@@ -150,7 +183,8 @@ class TestsAdapter(val context: Context,
     class TestsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val tv_topic_name = itemView.tv_topic_name
         val rl_single_topics = itemView.rl_single_topics
-
+        val totalRL = itemView.totalRL;
+        val tv_score = itemView.tv_score;
        /* val iv_progress_icon = itemView.iv_progress_icon
         val tv_challenge_date = itemView.tv_challenge_date
         val tv_challenge_time = itemView.tv_challenge_time

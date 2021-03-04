@@ -35,28 +35,27 @@
                 <LinearLayout
                     android:id="@+id/titleLL1"
                     android:layout_width="wrap_content"
-                    android:layout_height="20dp">
+                    android:layout_height="30dp">
 
-                    <ImageView
+                    <TextView
                         android:id="@+id/imageView2"
-                        android:layout_width="100dp"
-                        android:layout_height="@dimen/_18sdp"
-
-                        android:tint="@color/share_btn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:text="YOMPLEX"
+                        android:textSize="@dimen/_14sdp"
+                        android:textColor="@color/blue"
                         android:src="@drawable/ic_splash_new"
+                        android:fontFamily="@font/ribeyemarrow_regular"
                         />
                     <TextView
                         android:id="@+id/tv_quiz_title1"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:text="Tiny Tests for JEE"
-
-
-
-                        android:textSize="@dimen/_15sdp"
-
+                        android:textSize="@dimen/_14sdp"
+                        android:paddingTop="@dimen/_2sdp"
                         android:layout_marginLeft="@dimen/_3sdp"
-                        android:textColor="@color/share_btn"
+                        android:textColor="@color/blue"
                         android:fontFamily="@font/lato_bold"/>
 
                 </LinearLayout>

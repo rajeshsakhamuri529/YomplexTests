@@ -1,6 +1,10 @@
 package com.yomplex.tests.activity
 
+import android.app.Activity
+import android.content.Context
 import android.content.Intent
+import android.net.ConnectivityManager
+import android.net.NetworkInfo
 import android.os.Build
 
 import android.os.Bundle
@@ -10,14 +14,18 @@ import android.view.View
 import android.view.WindowManager
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.Toast
 
 
 import com.blobcity.viewmodel.TopicStatusVM
 import com.bumptech.glide.Glide
 import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.FirebaseFirestoreSettings
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.yomplex.tests.R
+import com.yomplex.tests.Service.ContentDownloadService
 import com.yomplex.tests.database.QuizGameDataBase
 import com.yomplex.tests.entity.TopicStatusEntity
 import com.yomplex.tests.model.*
@@ -37,6 +45,7 @@ class TestSummaryActivity : BaseActivity(), View.OnClickListener {
     var reviewModelList: ArrayList<ReviewModel>? = null
     var topicLevel: String? = ""
     var topicName: String? = ""
+    var originaltopicName: String? = ""
     var topicId: String? = ""
     private var totalQuestion: Int? = null
     var topicStatusVM: TopicStatusVM? = null
@@ -46,6 +55,7 @@ class TestSummaryActivity : BaseActivity(), View.OnClickListener {
     var paths: String? = null
     var courseId: String? = null
     var courseName: String? = null
+    var readdata: String? = null
     var folderName: String? = null
     var level_status: Boolean? = null
     var readyCardNumber = 0
@@ -69,6 +79,7 @@ class TestSummaryActivity : BaseActivity(), View.OnClickListener {
     lateinit var challenge: Challenge
     var mLastClickTime:Long = 0;
     private lateinit var firebaseAnalytics: FirebaseAnalytics
+    private val db: FirebaseFirestore = FirebaseFirestore.getInstance()
     override var layoutID: Int = R.layout.activity_quiz_time_summary
 
     override fun initView() {
@@ -96,10 +107,17 @@ class TestSummaryActivity : BaseActivity(), View.OnClickListener {
         displayno = intent.getIntExtra("DISPLAY_NO", -1)
         lastplayed = intent.getStringExtra("LAST_PLAYED") ?: "last"
         comingfrom = intent.getStringExtra("comingfrom")!!
+        originaltopicName = intent.getStringExtra("topicnameoriginal")!!
+
+        readdata = intent.getStringExtra("readdata")
 
         Log.e("test summary","topic name....."+topicName)
         testQuiz = databaseHandler!!.getQuizTopicsForTimerLastPlayed(topicName!!.toLowerCase())
-
+        val settings = FirebaseFirestoreSettings.Builder()
+            .setPersistenceEnabled(true)
+            .setCacheSizeBytes(FirebaseFirestoreSettings.CACHE_SIZE_UNLIMITED)
+            .build()
+        db.firestoreSettings = settings
         firebaseAnalytics = FirebaseAnalytics.getInstance(this)
         val sdf = SimpleDateFormat("dd-MM-yyyy")
         val currentDate = sdf.format(Date())
@@ -149,6 +167,21 @@ class TestSummaryActivity : BaseActivity(), View.OnClickListener {
                 circles[i]!!.layoutParams = params
                 ll_answers.addView(circles!![i])
             }
+        }
+
+        Log.e("test summary","count....."+count);
+        Log.e("test summary","weekofyear....."+getWeekOfYear());
+        var recordexistcount = databaseHandler!!.getQuizScore(getWeekOfYear(),topicName!!.toLowerCase())
+        Log.e("test summary","recordexistcount....."+recordexistcount);
+        if(recordexistcount < 0){
+            var quizScore:QuizScore
+            quizScore = QuizScore(""+getWeekOfYear(),""+count,topicName!!.toLowerCase())
+            databaseHandler!!.insertQuizPlayScore(quizScore)
+        }else{
+            if(count > recordexistcount){
+                databaseHandler!!.updateQuizPlayScore(getWeekOfYear(),topicName!!.toLowerCase(),count)
+            }
+
         }
 
         tv_total.text = ""+totalQuestion
@@ -270,6 +303,13 @@ class TestSummaryActivity : BaseActivity(), View.OnClickListener {
 
     }
 
+    fun getWeekOfYear(): Int{
+        val calendar = Calendar.getInstance()
+        calendar.setFirstDayOfWeek(Calendar.MONDAY);
+        calendar.setTime(Utils.date)
+        return calendar.get(Calendar.WEEK_OF_YEAR)
+    }
+
     fun getWeekStartDate(): Date {
         val calendar = Calendar.getInstance()
         calendar.setTime(Utils.date)
@@ -292,6 +332,11 @@ class TestSummaryActivity : BaseActivity(), View.OnClickListener {
 
         calendar.add(Calendar.DATE, -1)
         return calendar.time
+    }
+    private fun downloadServiceFromBackground(
+        mainActivity: Activity, db: FirebaseFirestore
+    ) {
+        ContentDownloadService.enqueueWork(mainActivity, db)
     }
 
     override fun onClick(v: View?) {
@@ -363,9 +408,66 @@ class TestSummaryActivity : BaseActivity(), View.OnClickListener {
                     // bundle.putString("Label", "TestGo")
                     firebaseAnalytics?.logEvent("TestFNewTest", bundle)
                 }
+                var downloadstatus:Int = -1
+                var testcontentlist: List<TestDownload>? = databaseHandler!!.gettestContent()
+                for(i in 0 until testcontentlist!!.size) {
+                    if (testcontentlist.get(i).testtype.equals(topicName!!.toLowerCase())) {
+                        downloadstatus = testcontentlist.get(i).testdownloadstatus
+                        break
+                    }
+                }
+                var filename = ""
+                if (topicName!!.toLowerCase().equals("calculus1")) {
+                    filename = "/jee-calculus-1"
+                } else if (topicName!!.toLowerCase().equals("calculus2")) {
+                    filename = "/jee-calculus-2"
+                } else if (topicName!!.toLowerCase().equals("algebra")) {
+                    filename = "/ii-algebra"
+                } else if (topicName!!.toLowerCase().equals("other")) {
+                    filename = "/other"
+                } else if (topicName!!.toLowerCase().equals("geometry")) {
+                    filename = "/iii-geometry"
+                }
 
-                readFileLocally(topicName!!.toLowerCase())
-                //playNextBtnAction(position!!)
+                Log.e("test fragment","on click download status...."+downloadstatus)
+                if(downloadstatus == 1){
+                    val dirFile = File(getCacheDir(),topicName!!.toLowerCase()+filename)
+                    if(dirFile.isDirectory){
+                        var files = dirFile.list();
+                        if (files.size == 0) {
+                            //directory is empty
+                            Log.e("test fragment","files.size......empty.");
+                            val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+                            val activeNetwork: NetworkInfo? = connectivityManager.activeNetworkInfo
+                            val isConnected: Boolean = activeNetwork?.isConnected == true
+                            //Log.d("isConnected",isConnected.toString()+"!")
+                            databaseHandler!!.updatetestcontentdownloadstatus(0,topicName!!.toLowerCase())
+                            if(isNetworkConnected()) {
+                                downloadServiceFromBackground(this@TestSummaryActivity,db)
+                            }
+                            readFileFromAssets(topicName!!.toLowerCase())
+                            //gotoStartScreenThroughAssets(topicname)
+                        }else{
+                            Log.e("test fragment","files.size.....not...empty.");
+                            readFileLocally(topicName!!.toLowerCase())
+                            //gotoStartScreen(topicname)
+
+                            //for testing tests read from assets
+                            //readFileFromAssets(topicName!!.toLowerCase())
+                            //gotoStartScreenThroughAssets(topicname)
+                        }
+                    }
+                    //readFileLocally(topicName!!.toLowerCase())
+                    //playNextBtnAction(position!!)
+                }else{
+                    databaseHandler!!.updatetestcontentdownloadstatus(0,topicName!!.toLowerCase())
+                    if(isNetworkConnected()) {
+                        downloadServiceFromBackground(this@TestSummaryActivity,db)
+                    }
+                    readFileFromAssets(topicName!!.toLowerCase())
+                    //gotoStartScreenThroughAssets(topicName!!)
+                }
+
 
             }
 
@@ -427,7 +529,7 @@ class TestSummaryActivity : BaseActivity(), View.OnClickListener {
                 intent.putExtra("title", testQuiz.title)
                 intent.putExtra("playeddate", currentDate)
                 intent.putExtra("lastplayed", testQuiz.lastplayed)
-
+                intent.putExtra("readdata", readdata)
 
                 startActivity(intent)
                 //finish()
@@ -436,8 +538,50 @@ class TestSummaryActivity : BaseActivity(), View.OnClickListener {
         }
     }
 
+    private fun readFileFromAssets(topicname: String){
+        //Toast.makeText(activity,"content read from assets", Toast.LENGTH_SHORT).show()
+        val courseJsonString = loadJSONFromAsset( topicname+"/test/" + "Courses.json")
+        Log.d("courseJsonString",courseJsonString+"!");
+        /*val jsonString = (activity!! as DashBoardActivity).loadJSONFromAsset( assetTestCoursePath + "topic.json")*/
+        val gsonFile = Gson()
+        val courseType = object : TypeToken<List<CoursesResponseModel>>() {}.type
+        val courseResponseModel: ArrayList<CoursesResponseModel> = gsonFile
+            .fromJson(courseJsonString, courseType)
+        courseId = courseResponseModel[0].id
+        courseName = courseResponseModel[0].syllabus.title
+        Log.e("test fragment","readFileFromAssets.....courseName...."+courseName);
+        // tv_class.text = courseName
+        // tv_class_board.text = courseResponseModel[0].syllabus.displayTitle
+        localPath = "$topicname/test/$courseName/"
+        Log.e("test fragment","readFileFromAssets.....localPath...."+localPath);
+        // val jsonString = readFromFile(localPath +"topic.json")
+        val jsonString = loadJSONFromAsset( localPath + "topic.json")
+        Log.d("jsonString",jsonString);
+        val topicType = object : TypeToken<TopicResponseModel>() {}.type
+        val topicResponseModel: TopicResponseModel= gsonFile.fromJson(jsonString, topicType )
+
+        branchesItemList = topicResponseModel.branches
+        sharedPrefs?.setIntPrefVal(this@TestSummaryActivity, ConstantPath.TOPIC_SIZE, branchesItemList!!.size)
+
+        gotoStartScreenThroughAssets(topicname)
+    }
+
     private fun readFileLocally(topicname:String) {
-        val dirFile = File(getExternalFilesDir(null),topicname+"/"+"test/")
+        Log.e("test fragment","readFileLocally...."+topicname)
+        var filename = ""
+        if (topicname.equals("calculus1")) {
+            filename = "/jee-calculus-1"
+        } else if (topicname.equals("calculus2")) {
+            filename = "/jee-calculus-2"
+        } else if (topicname.equals("algebra")) {
+            filename = "/ii-algebra"
+        } else if (topicname.equals("other")) {
+            filename = "/other"
+        } else if (topicname.equals("geometry")) {
+            filename = "/iii-geometry"
+        }
+        Log.e("test fragment","on click filename...."+filename)
+        val dirFile = File(getCacheDir(),topicname+filename)
         val courseJsonString = Utils.readFromFile( dirFile.absolutePath + "/Courses.json")
         //val courseJsonString = loadJSONFromAsset( ConstantPath.localBlobcityPath1 + "Courses.json")
         //val courseJsonString = readFromFile("$localBlobcityPath/Courses.json")
@@ -584,6 +728,104 @@ class TestSummaryActivity : BaseActivity(), View.OnClickListener {
 
     }*/
 
+    fun gotoStartScreenThroughAssets(topictype:String){
+
+        //databaseHandler!!.deleteQuizPlayRecord(topic.title)
+        var lastplayed:String =""
+        var topic:Topic
+        var folderPath:String = ""
+        var testQuiz:TestQuiz
+        testQuiz = databaseHandler!!.getQuizTopicsForTimerLastPlayed(topictype.toLowerCase())
+        Log.e("test fragment","testQuiz.lastplayed......"+testQuiz.lastplayed)
+        if(testQuiz.lastplayed == null){
+            topic = branchesItemList!![0].topic
+            folderPath = localPath+topic.folderName
+            Log.e("test fragment","testQuiz.folderPath......"+folderPath)
+            jsonStringBasic = loadJSONFromAsset("$folderPath/basic.json")
+            // jsonStringBasic =  Utils.readFromFile("$folderPath/basic.json")
+            lastplayed = "basic"
+
+            databaseHandler!!.deleteAllQuizTopicsLatPlayed(topictype.toLowerCase())
+
+            databaseHandler!!.insertquiztopiclastplayed(topic.title,topic.displayNo,lastplayed,topictype.toLowerCase());
+        }else{
+
+            if(branchesItemList!!.size == (testQuiz.serialNo).toInt()){
+                topic = branchesItemList!![0].topic
+                folderPath = localPath+topic.folderName
+                Log.e("test fragment","testQuiz.folderPath......"+folderPath)
+                jsonStringBasic = loadJSONFromAsset("$folderPath/basic.json")
+                //jsonStringBasic =  Utils.readFromFile("$folderPath/basic.json")
+                lastplayed = "basic"
+                databaseHandler!!.deleteAllQuizTopicsLatPlayed(topictype.toLowerCase())
+
+                databaseHandler!!.insertquiztopiclastplayed(topic.title,topic.displayNo,lastplayed,topictype.toLowerCase());
+            }else{
+                topic = branchesItemList!![((testQuiz.serialNo).toInt())-1].topic
+                folderPath = localPath+topic.folderName
+                Log.e("test fragment","testQuiz.folderPath......"+folderPath)
+                if(testQuiz.lastplayed.equals("basic")){
+                    jsonStringBasic = loadJSONFromAsset("$folderPath/intermediate.json")
+                    //jsonStringBasic =  Utils.readFromFile("$folderPath/intermediate.json")
+                    lastplayed = "intermediate"
+                    databaseHandler!!.deleteAllQuizTopicsLatPlayed(topictype.toLowerCase())
+
+                    databaseHandler!!.insertquiztopiclastplayed(topic.title,topic.displayNo,lastplayed,topictype.toLowerCase());
+                }else{
+                    topic = branchesItemList!![((testQuiz.serialNo).toInt())].topic
+                    folderPath = localPath+topic.folderName
+                    Log.e("test fragment","testQuiz.folderPath......"+folderPath)
+                    jsonStringBasic = loadJSONFromAsset("$folderPath/basic.json")
+                    // jsonStringBasic =  Utils.readFromFile("$folderPath/basic.json")
+                    lastplayed = "basic"
+                    databaseHandler!!.deleteAllQuizTopicsLatPlayed(topictype.toLowerCase())
+
+                    databaseHandler!!.insertquiztopiclastplayed(topic.title,topic.displayNo,lastplayed,topictype.toLowerCase());
+
+                }
+            }
+
+
+
+        }
+
+
+        /*val bundle = Bundle()
+        bundle.putString("Category", "Test")
+        bundle.putString("Action", "Test")
+        bundle.putString("Label", topic.title)
+        firebaseAnalytics?.logEvent("Test", bundle)*/
+
+        val bundle = Bundle()
+        bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, topic.title)
+        bundle.putString(FirebaseAnalytics.Param.ITEM_ID, "Test")
+        // bundle.putString("Label", "TestGo")
+        firebaseAnalytics?.logEvent("Test", bundle)
+
+
+        Log.e("chapter fragment.....","jsonStringBasic......."+jsonStringBasic);
+
+        val intent = Intent(this!!, StartTestActivity::class.java)
+        intent.putExtra(ConstantPath.TOPIC, topic)
+        intent.putExtra(ConstantPath.TOPIC_NAME, topictype)
+        intent.putExtra(ConstantPath.FOLDER_NAME, topic.folderName)
+        intent.putExtra(ConstantPath.DYNAMIC_PATH, jsonStringBasic)
+        intent.putExtra(ConstantPath.COURSE_ID, courseId)
+        intent.putExtra(ConstantPath.COURSE_NAME, courseName)
+        intent.putExtra(ConstantPath.TOPIC_ID, "")
+        intent.putExtra(ConstantPath.TOPIC_POSITION, topic.displayNo)
+        intent.putExtra(ConstantPath.FOLDER_PATH, localPath)
+        intent.putExtra(ConstantPath.TITLE_TOPIC, gradeTitle!!)
+        intent.putExtra("LAST_PLAYED", lastplayed)
+        intent.putExtra("comingfrom", "Test")
+        intent.putExtra("readdata", "assets")
+        intent.putExtra(ConstantPath.TOPIC_LEVEL, "")
+        intent.putExtra(ConstantPath.LEVEL_COMPLETED, "")
+        intent.putExtra(ConstantPath.CARD_NO, "")
+        intent.putExtra("topicnameoriginal", originaltopicName)
+        startActivity(intent)
+    }
+
 
     fun gotoStartScreen(){
 
@@ -660,6 +902,8 @@ class TestSummaryActivity : BaseActivity(), View.OnClickListener {
         intent.putExtra(ConstantPath.TOPIC_LEVEL, "")
         intent.putExtra(ConstantPath.LEVEL_COMPLETED, "")
         intent.putExtra(ConstantPath.CARD_NO, "")
+        intent.putExtra("readdata", "files")
+        intent.putExtra("topicnameoriginal", originaltopicName)
         startActivity(intent)
     }
 

@@ -55,7 +55,7 @@ public class JobService extends JobIntentService {
      */
     public static void enqueueWork(Context context, String url, String version,String type) {
         dataBase = new QuizGameDataBase(context);
-        File f =  new File((context.getExternalFilesDir(null)).getAbsolutePath());
+        File f =  new File((context.getCacheDir()).getAbsolutePath());
         dirpath = f.getAbsolutePath();
         JobService.context1 = context;
         Intent intent = new Intent(context, JobService.class);
@@ -111,7 +111,7 @@ public class JobService extends JobIntentService {
                                 public void onDownloadComplete() {
                                     Log.e("job service","onDownloadComplete.....");
                                     try{
-                                        File dirFile = new File(context1.getExternalFilesDir(null),"test");
+                                        File dirFile = new File(context1.getCacheDir(),"test");
                                         FileUtils.deleteDirectory(dirFile);
                                     }catch (Exception e){
 
@@ -119,7 +119,7 @@ public class JobService extends JobIntentService {
                                     if(testtype.equals("basic")){
                                         boolean iszip = Utils.unpackZip(dirpath+"/"+testtype,"/testcontent.rar");
                                         if(iszip){
-                                            File dirFile = new File(context1.getExternalFilesDir(null),testtype+"/testcontent.rar");
+                                            File dirFile = new File(context1.getCacheDir(),testtype+"/testcontent.rar");
                                             dirFile.delete();
                                             dataBase.updatetestcontentversion(version,testtype);
                                             dataBase.updatetestcontentdownloadstatus(1,testtype);
@@ -127,7 +127,7 @@ public class JobService extends JobIntentService {
                                     }else if(testtype.equals("algebra")){
                                         boolean iszip = Utils.unpackZip(dirpath+"/"+testtype,"/testcontent.rar");
                                         if(iszip){
-                                            File dirFile = new File(context1.getExternalFilesDir(null),testtype+"/testcontent.rar");
+                                            File dirFile = new File(context1.getCacheDir(),testtype+"/testcontent.rar");
                                             dirFile.delete();
                                             dataBase.updatetestcontentversion(version,testtype);
                                             dataBase.updatetestcontentdownloadstatus(1,testtype);
@@ -135,7 +135,7 @@ public class JobService extends JobIntentService {
                                     }else if(testtype.equals("calculus")){
                                         boolean iszip = Utils.unpackZip(dirpath+"/"+testtype,"/testcontent.rar");
                                         if(iszip){
-                                            File dirFile = new File(context1.getExternalFilesDir(null),testtype+"/testcontent.rar");
+                                            File dirFile = new File(context1.getCacheDir(),testtype+"/testcontent.rar");
                                             dirFile.delete();
                                             dataBase.updatetestcontentversion(version,testtype);
                                             dataBase.updatetestcontentdownloadstatus(1,testtype);
@@ -143,7 +143,7 @@ public class JobService extends JobIntentService {
                                     }else if(testtype.equals("geometry")){
                                         boolean iszip = Utils.unpackZip(dirpath+"/"+testtype,"/testcontent.rar");
                                         if(iszip){
-                                            File dirFile = new File(context1.getExternalFilesDir(null),testtype+"/testcontent.rar");
+                                            File dirFile = new File(context1.getCacheDir(),testtype+"/testcontent.rar");
                                             dirFile.delete();
                                             dataBase.updatetestcontentversion(version,testtype);
                                             dataBase.updatetestcontentdownloadstatus(1,testtype);

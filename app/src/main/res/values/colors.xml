@@ -92,6 +92,11 @@
 
     <color name="share_btn">#017FFF</color>
 
+    <color name="blue">#0096FF</color>
+    <color name="light_blue">#76D6FF</color>
+
+
+    <color name="chart_color">#40C073</color>
 
 
 </resources>

@@ -1,0 +1,499 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/rl_root"
+    android:background="@color/white"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:id="@+id/solution1"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="visible"
+        android:layout_above="@+id/btnRL"
+        android:background="#FFFFFF">
+
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/nsv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        >
+
+    <RelativeLayout
+        android:id="@+id/solution"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="visible"
+
+        android:background="#FFFFFF">
+
+        <RelativeLayout
+            android:id="@+id/titleRL"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_50sdp">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true">
+
+                <TextView
+                    android:id="@+id/title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="YOMPLEX"
+                    android:textColor="#424242"
+                    android:fontFamily="@font/ribeyemarrow_regular"
+                    android:textSize="@dimen/_14sdp"
+                    android:layout_centerHorizontal="true"/>
+
+                <TextView
+                    android:id="@+id/titleTxt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="JEE Maths"
+
+
+                    android:textColor="#00ce73"
+                    android:fontFamily="@font/lato_black"
+                    android:textSize="@dimen/_14sdp"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginLeft="@dimen/_5sdp"/>
+
+            </LinearLayout>
+
+
+
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/tipsRL"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/titleRL"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:layout_marginLeft="@dimen/_22sdp"
+            android:layout_marginRight="@dimen/_22sdp">
+
+            <TextView
+                android:id="@+id/tipsTxt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="TIPS"
+                android:textColor="#424242"
+                android:fontFamily="@font/lato_black"
+                android:textSize="@dimen/_14sdp">
+
+
+            </TextView>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_below="@+id/tipsTxt"
+                android:layout_marginTop="@dimen/_15sdp">
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:id="@+id/secondDotImageView"
+                        android:layout_width="@dimen/_8sdp"
+                        android:layout_height="@dimen/_8sdp"
+
+
+
+                        android:layout_marginTop="@dimen/_3sdp"
+
+
+                        android:background="@drawable/info_dot" />
+
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_toRightOf="@+id/secondDotImageView"
+                        android:text="@string/tips_text1"
+                        android:lineSpacingExtra="@dimen/_2sdp"
+                        android:fontFamily="@font/lato_regular"
+                        android:textColor="#424242"
+                        android:layout_marginLeft="@dimen/_8sdp"
+                       android:layout_centerVertical="true"
+                        android:textSize="@dimen/_12sdp"/>
+
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_5sdp">
+
+                    <TextView
+                        android:id="@+id/secondDotImageView1"
+                        android:layout_width="@dimen/_8sdp"
+                        android:layout_height="@dimen/_8sdp"
+
+
+                        android:layout_marginTop="@dimen/_3sdp"
+
+
+                        android:background="@drawable/info_dot" />
+
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_toRightOf="@+id/secondDotImageView1"
+                        android:text="@string/tips_text2"
+                        android:textColor="#424242"
+                        android:fontFamily="@font/lato_regular"
+                        android:lineSpacingExtra="@dimen/_2sdp"
+                        android:layout_marginLeft="@dimen/_8sdp"
+                        android:layout_centerVertical="true"
+                        android:textSize="@dimen/_12sdp"/>
+
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_5sdp">
+
+                    <TextView
+                        android:id="@+id/secondDotImageView2"
+                        android:layout_width="@dimen/_8sdp"
+                        android:layout_height="@dimen/_8sdp"
+
+
+                        android:layout_marginTop="@dimen/_3sdp"
+
+
+                        android:background="@drawable/info_dot" />
+
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_toRightOf="@+id/secondDotImageView2"
+                        android:text="@string/tips_text3"
+                        android:textColor="#424242"
+                        android:fontFamily="@font/lato_regular"
+                        android:lineSpacingExtra="@dimen/_2sdp"
+                        android:layout_marginLeft="@dimen/_8sdp"
+                        android:layout_centerVertical="true"
+                        android:textSize="@dimen/_12sdp"/>
+
+
+                </RelativeLayout>
+
+
+
+
+            </LinearLayout>
+
+
+
+
+
+        </RelativeLayout>
+
+
+        <RelativeLayout
+            android:id="@+id/topicsRL"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tipsRL"
+            android:layout_marginTop="@dimen/_20sdp"
+            android:layout_marginLeft="@dimen/_22sdp"
+            android:layout_marginRight="@dimen/_22sdp">
+
+            <TextView
+                android:id="@+id/topicsTxt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="TOPICS"
+                android:textColor="#424242"
+                android:fontFamily="@font/lato_black"
+                android:textSize="@dimen/_14sdp">
+
+
+            </TextView>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_below="@+id/topicsTxt"
+                android:layout_marginTop="@dimen/_20sdp">
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:id="@+id/dottext1"
+                        android:layout_width="@dimen/_8sdp"
+                        android:layout_height="@dimen/_8sdp"
+
+
+                        android:layout_marginTop="@dimen/_3sdp"
+
+
+                        android:background="@drawable/info_dot" />
+
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_toRightOf="@+id/dottext1"
+                        android:text="@string/topics_text1"
+                        android:textColor="#424242"
+                        android:fontFamily="@font/lato_regular"
+                        android:lineSpacingExtra="@dimen/_2sdp"
+                        android:layout_marginLeft="@dimen/_8sdp"
+                        android:layout_centerVertical="true"
+                        android:textSize="@dimen/_12sdp"/>
+
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_5sdp">
+
+                    <TextView
+                        android:id="@+id/dottext2"
+                        android:layout_width="@dimen/_8sdp"
+                        android:layout_height="@dimen/_8sdp"
+
+
+                        android:layout_marginTop="@dimen/_3sdp"
+
+
+                        android:background="@drawable/info_dot" />
+
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_toRightOf="@+id/dottext2"
+                        android:text="@string/topics_text2"
+                        android:textColor="#424242"
+                        android:fontFamily="@font/lato_regular"
+                        android:lineSpacingExtra="@dimen/_2sdp"
+                        android:layout_marginLeft="@dimen/_8sdp"
+                        android:layout_centerVertical="true"
+                        android:textSize="@dimen/_12sdp"/>
+
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_5sdp">
+
+                    <TextView
+                        android:id="@+id/dottext3"
+                        android:layout_width="@dimen/_8sdp"
+                        android:layout_height="@dimen/_8sdp"
+
+
+                        android:layout_marginTop="@dimen/_3sdp"
+
+
+                        android:background="@drawable/info_dot" />
+
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_toRightOf="@+id/dottext3"
+                        android:text="@string/topics_text3"
+                        android:fontFamily="@font/lato_regular"
+                        android:textColor="#424242"
+                        android:lineSpacingExtra="@dimen/_2sdp"
+                        android:layout_marginLeft="@dimen/_8sdp"
+                        android:layout_centerVertical="true"
+                        android:textSize="@dimen/_12sdp"/>
+
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_5sdp">
+
+                    <TextView
+                        android:id="@+id/dottext4"
+                        android:layout_width="@dimen/_8sdp"
+                        android:layout_height="@dimen/_8sdp"
+
+
+                        android:layout_marginTop="@dimen/_3sdp"
+
+
+                        android:background="@drawable/info_dot" />
+
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_toRightOf="@+id/dottext4"
+                        android:text="@string/topics_text4"
+                        android:fontFamily="@font/lato_regular"
+                        android:textColor="#424242"
+                        android:lineSpacingExtra="@dimen/_2sdp"
+                        android:layout_marginLeft="@dimen/_8sdp"
+                        android:layout_centerVertical="true"
+                        android:textSize="@dimen/_12sdp"/>
+
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_5sdp">
+
+                    <TextView
+                        android:id="@+id/dottext5"
+                        android:layout_width="@dimen/_8sdp"
+                        android:layout_height="@dimen/_8sdp"
+
+
+                        android:layout_marginTop="@dimen/_3sdp"
+
+
+                        android:background="@drawable/info_dot" />
+
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_toRightOf="@+id/dottext5"
+                        android:text="@string/topics_text5"
+                        android:fontFamily="@font/lato_regular"
+                        android:textColor="#424242"
+                        android:lineSpacingExtra="@dimen/_2sdp"
+                        android:layout_marginLeft="@dimen/_8sdp"
+                        android:layout_centerVertical="true"
+                        android:textSize="@dimen/_12sdp"/>
+
+
+                </RelativeLayout>
+
+
+
+
+            </LinearLayout>
+
+
+
+
+
+        </RelativeLayout>
+
+
+
+
+
+
+
+
+
+
+
+
+
+        <RelativeLayout
+            android:id="@+id/successRL"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+            android:padding="@dimen/_20sdp"
+            android:visibility="gone">
+            <TextView
+                android:id="@+id/text1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/_13ssp"
+
+                android:text="@string/text5"
+                android:textColor="#424242"
+
+                android:fontFamily="@font/lato_regular"
+                android:layout_centerHorizontal="true"/>
+
+            <TextView
+                android:id="@+id/text2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/_13ssp"
+                android:layout_below="@+id/text1"
+                android:visibility="gone"
+                android:text="We will look into this asap!"
+                android:textColor="#424242"
+                android:layout_marginTop="@dimen/_5sdp"
+                android:fontFamily="@font/lato_regular"
+                android:layout_centerHorizontal="true"/>
+
+        </RelativeLayout>
+
+
+
+
+    </RelativeLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/btnRL"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_45sdp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:visibility="visible">
+        <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:id="@+id/view6"
+
+        android:background="@color/hint_title_text"
+
+        android:layout_marginTop="@dimen/_1sdp"
+
+        />
+
+        <Button android:layout_width="@dimen/_50sdp"
+            android:layout_height="@dimen/_25sdp"
+            android:layout_centerInParent="true"
+            android:id="@+id/close"
+
+
+
+            android:background="@drawable/submit_active_background"
+            android:text="DONE"
+
+            android:letterSpacing="0.1"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:textColor="@color/white"
+            android:fontFamily="@font/lato_bold"
+            android:textSize="@dimen/_11ssp"
+
+            />
+
+    </RelativeLayout>
+</RelativeLayout>

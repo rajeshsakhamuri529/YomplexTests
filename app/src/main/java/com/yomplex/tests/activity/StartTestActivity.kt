@@ -45,6 +45,8 @@ class StartTestActivity : BaseActivity(), View.OnClickListener {
     var readyCardNumber = 0
     var courseName: String? = ""
     var topicName: String? = ""
+    var readdata: String? = null
+    var originaltopicName: String? = ""
     var lastplayed:String = ""
     var comingfrom:String = ""
     var dbPosition: Int? = null
@@ -80,6 +82,8 @@ class StartTestActivity : BaseActivity(), View.OnClickListener {
       //  readyCardNumber = intent.getIntExtra(ConstantPath.CARD_NO, 0)
         lastplayed = intent.getStringExtra("LAST_PLAYED")!!
         comingfrom = intent.getStringExtra("comingfrom")!!
+        originaltopicName = intent.getStringExtra("topicnameoriginal")!!
+        readdata = intent.getStringExtra("readdata")
         val gsonFile = Gson()
         val questionResponseModel = gsonFile.fromJson(dynamicPath, TopicOneBasicResponseModel::class.java)
         val questionsItems = questionResponseModel.questions
@@ -90,7 +94,7 @@ class StartTestActivity : BaseActivity(), View.OnClickListener {
 
 
 
-        tv_quiz_title.text = topicName
+        tv_quiz_title.text = originaltopicName
 
         circles = arrayOfNulls<ImageView>(totalQuestion!!)
         ll_answers.removeAllViews()
@@ -175,7 +179,9 @@ class StartTestActivity : BaseActivity(), View.OnClickListener {
                 intent.putExtra(ConstantPath.TOPIC_LEVEL, "")
                 intent.putExtra(ConstantPath.LEVEL_COMPLETED, "")
                 intent.putExtra(ConstantPath.CARD_NO, "")
+                intent.putExtra("readdata", "files")
                 intent.putExtra("DISPLAY_NO", topic.displayNo)
+                intent.putExtra("topicnameoriginal", originaltopicName)
                 startActivity(intent)
 
 

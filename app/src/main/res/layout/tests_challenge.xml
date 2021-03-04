@@ -16,15 +16,62 @@
             android:id="@+id/tv_tests"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/tests"
+            android:text="@string/tiny_tests"
             android:textSize="@dimen/_18ssp"
-            android:layout_marginLeft="@dimen/_20sdp"
+            android:layout_marginLeft="@dimen/_15sdp"
             android:layout_marginTop="@dimen/_18sdp"
 
             android:textColor="@color/chapters_text"
             android:textStyle="bold"
             android:fontFamily="@font/lato_light"
             />
+
+        <RelativeLayout
+            android:id="@+id/infoRl"
+            android:layout_width="@dimen/_18sdp"
+            android:layout_height="@dimen/_18sdp"
+            android:layout_marginLeft="@dimen/_10sdp"
+            android:visibility="visible"
+            android:layout_marginTop="@dimen/_20sdp"
+
+
+            android:layout_toRightOf="@+id/tv_tests"
+            >
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_centerInParent="true"
+                android:src="@drawable/ic_info">
+
+            </ImageView>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/dateRL"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="@dimen/_5sdp"
+            android:visibility="visible"
+            android:layout_toRightOf="@+id/infoRl"
+            android:layout_toLeftOf="@+id/settings">
+
+            <TextView
+                android:id="@+id/tv_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="23/06/2020"
+                android:textSize="@dimen/_17ssp"
+                android:layout_marginLeft="@dimen/_20sdp"
+                android:layout_marginTop="@dimen/_18sdp"
+
+                android:textColor="@color/chapters_text"
+                android:textStyle="bold"
+                android:fontFamily="@font/lato_light"
+                />
+
+        </RelativeLayout>
 
     </RelativeLayout>
 
@@ -47,6 +94,7 @@
                     android:id="@+id/reviewRL"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/_40sdp"
+                    android:layout_marginTop="@dimen/_8sdp"
                     android:layout_marginLeft="@dimen/_15sdp"
                     android:layout_marginRight="@dimen/_15sdp"
                     >
@@ -83,6 +131,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text=" Score: "
+
                         android:textSize="@dimen/_14ssp"
                         android:layout_centerVertical="true"
 
@@ -95,7 +144,7 @@
                         android:id="@+id/tv_txt3"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="0/32"
+                        android:text="0 / 20"
                         android:textSize="@dimen/_14ssp"
                         android:layout_centerVertical="true"
 
@@ -180,9 +229,11 @@
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/_200sdp"
                     android:layout_below="@id/weekRL"
-                    android:visibility="gone"
+                    android:background="@drawable/white_curved_border"
+                    android:visibility="visible"
                     android:layout_marginLeft="@dimen/_15sdp"
-                    android:layout_marginRight="@dimen/_15sdp"/>
+                    android:layout_marginRight="@dimen/_15sdp"
+                    android:layout_marginBottom="@dimen/_15sdp"/>
 
 
             </RelativeLayout>

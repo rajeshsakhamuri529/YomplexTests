@@ -17,6 +17,12 @@ android {
         multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
+    lintOptions {
+        checkReleaseBuilds false
+        // Or, if you prefer, you can continue to check for errors in release builds,
+        // but continue the build even when errors are found:
+        abortOnError false
+    }
     splits {
 
         // Configures multiple APKs based on ABI.
@@ -46,10 +52,11 @@ android {
     signingConfigs {
 
         release {
-            storeFile file('/home/rajesh/Android Projects/superhero/superhero.jks')
-            storePassword 'superhero'
-            keyAlias 'superhero'
-            keyPassword 'superhero'
+            ///home/rajesh/Android Projects/YomplexTests/yomplextests.jks
+            storeFile file('/home/rajesh/Android Projects/YomplexTests/yomplextests.jks')
+            storePassword 'yomplextests'
+            keyAlias 'yomplex tests'
+            keyPassword 'yomplextests'
         }
     }
     buildTypes {
@@ -125,9 +132,9 @@ dependencies {
     implementation 'com.github.barteksc:android-pdf-viewer:3.2.0-beta.1'
     implementation 'com.mindorks.android:prdownloader:0.6.0'
 
-    implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
+    //implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
 
-
+    implementation project(':MPChartLib')
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 }

@@ -35,6 +35,7 @@ import com.yomplex.tests.utils.ConstantPath.NOTIFICATION
 import com.yomplex.tests.utils.ConstantPath.SOUNDS
 import com.yomplex.tests.utils.SharedPrefs
 import com.yomplex.tests.utils.Utils
+import kotlinx.android.synthetic.main.setting_layout.*
 import kotlinx.android.synthetic.main.setting_layout.view.*
 
 class SettingFragment : Fragment(), View.OnClickListener {
@@ -53,6 +54,7 @@ class SettingFragment : Fragment(), View.OnClickListener {
     var remoteConfig: FirebaseRemoteConfig? = null
     private var mGoogleSignInClient: GoogleSignInClient? = null
     private lateinit var firebaseAnalytics: FirebaseAnalytics
+    var enddate = ""
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.setting_layout, container, false)
     }
@@ -64,14 +66,19 @@ class SettingFragment : Fragment(), View.OnClickListener {
             var currentVersion = activity!!.packageManager.getPackageInfo(activity!!.packageName, 0).versionName
             var currentCode = activity!!.packageManager.getPackageInfo(activity!!.packageName, 0).versionCode
             //versionname.text = "V "+currentVersion+" ("+currentCode+")"
-            view.versionname.text = "V "+currentVersion+" ("+currentCode+")"
+            view.versionname.text = "v"+currentVersion+" ("+currentCode+")"
+
+
+
         } catch (e: PackageManager.NameNotFoundException) {
             e.printStackTrace()
         }
         sharedPrefs = SharedPrefs()
         databaseHandler = QuizGameDataBase(activity);
         databaseHandler1 = DatabaseHandler(activity);
-
+        enddate = sharedPrefs!!.getPrefVal(activity!!,"enddate")!!
+        Log.e("settings","end date.........."+enddate);
+        view.txt_sub_date.setText(enddate)
         /*remoteConfig = FirebaseRemoteConfig.getInstance()
 
         val configSettings = FirebaseRemoteConfigSettings.Builder()

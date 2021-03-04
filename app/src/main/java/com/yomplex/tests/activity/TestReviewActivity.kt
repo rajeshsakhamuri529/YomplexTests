@@ -1,10 +1,13 @@
 package com.yomplex.tests.activity
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.app.AlertDialog
 import android.app.Dialog
 import android.content.Context
+import android.content.Intent
 import android.content.res.ColorStateList
+import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.Rect
 import android.graphics.drawable.ColorDrawable
@@ -20,19 +23,27 @@ import android.util.Log
 import android.view.*
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
+import android.view.inputmethod.InputMethodManager
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.LinearLayout
+import android.widget.*
+import androidx.core.content.FileProvider
 
 import com.bumptech.glide.Glide
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.android.gms.tasks.Task
+import com.google.firebase.firestore.DocumentReference
+import com.google.firebase.firestore.FirebaseFirestore
+import com.yomplex.tests.BuildConfig
 import com.yomplex.tests.R
 import com.yomplex.tests.database.QuizGameDataBase
+import com.yomplex.tests.model.ReportsModel
+import com.yomplex.tests.model.TestQuiz
 import com.yomplex.tests.utils.ConstantPath
 import com.yomplex.tests.utils.ConstantPath.*
 import com.yomplex.tests.utils.SharedPrefs
 import com.yomplex.tests.utils.Utils
+import com.yomplex.tests.utils.Utils.listAssetFiles
 import kotlinx.android.synthetic.main.activity_quiz_time_review.*
 
 
@@ -60,7 +71,7 @@ class TestReviewActivity : BaseActivity(), View.OnClickListener {
     var dynamicPath: String? = null
     var folderName: String? = null
     var gradeTitle: String? = null
-    var courseId: String? = ""
+    var readdata: String? = ""
     var topicId: String? = ""
 
     var complete: String? = ""
@@ -72,6 +83,7 @@ class TestReviewActivity : BaseActivity(), View.OnClickListener {
     var readyCardNumber = 0
     private var countInt: Int = 0
     var type: Int = 0
+    var reportQuestionPath: String? = ""
     private var totalQuestion: Int? = null
     val handler = Handler()
     var isOption1Wrong = false
@@ -105,6 +117,19 @@ class TestReviewActivity : BaseActivity(), View.OnClickListener {
     var animationFadeIn1000: Animation? = null
     var animationFadeIn500: Animation? = null
     var mLastClickTime:Long = 0;
+
+    var webView_share_question: WebView? = null
+    var webView_share_option1: WebView? = null
+    var webView_share_option2: WebView? = null
+    var webView_share_option3: WebView? = null
+    var webView_share_option4: WebView? = null
+    var sharechild: View? = null
+    var sharedialog: Dialog? = null;
+    var share_ll_inflate: LinearLayout? = null
+    var report_rl: RelativeLayout? = null
+    var share_rl: RelativeLayout? = null
+    lateinit var testQuiz: TestQuiz
+    var firestore: FirebaseFirestore? = null
     override var layoutID: Int = R.layout.activity_quiz_time_review
 
     override fun initView() {
@@ -135,10 +160,11 @@ class TestReviewActivity : BaseActivity(), View.OnClickListener {
         title = intent.getStringExtra("title")!!
         lastplayed = intent.getStringExtra("lastplayed")!!
         playeddate = intent.getStringExtra("playeddate")!!
-
+        readdata = intent.getStringExtra("readdata")
 
         sharedPrefs = SharedPrefs()
         unAnsweredList = ArrayList<Int>()
+        firestore = FirebaseFirestore.getInstance()
         //createArrayMapList(dynamicPath!!)
         databaseHandler = QuizGameDataBase(this);
 
@@ -146,7 +172,7 @@ class TestReviewActivity : BaseActivity(), View.OnClickListener {
         animationFadeIn1500 = AnimationUtils.loadAnimation(this, R.anim.fade_in_500)
         animationFadeIn1000 = AnimationUtils.loadAnimation(this, R.anim.fade_in_300)
         animationFadeIn500 = AnimationUtils.loadAnimation(this, R.anim.fade_in_100)
-
+        showDialogForShare()
         createPath()
 
     }
@@ -163,8 +189,15 @@ class TestReviewActivity : BaseActivity(), View.OnClickListener {
         if (child != null) {
             ll_inflate.removeView(child!!)
         }
+        if(sharechild != null){
+            share_ll_inflate!!.removeView(sharechild)
+        }
         countInt++
         addDot(countInt, totalQuestion!!)
+        Log.e("test review ","title......"+title);
+        Log.e("test review ","playeddate......"+playeddate);
+        Log.e("test review ","lastplayed......"+lastplayed);
+        Log.e("test review ","topicName!!.toLowerCase()......"+topicName!!.toLowerCase());
         val paths: String = databaseHandler!!.getQuizQuestionPathFinal(title,playeddate,lastplayed,topicName!!.toLowerCase())
         var ans:List<String> = paths.split(",")
         var ans1:List<String> = ans.get((countInt - 1)).split("~")
@@ -184,6 +217,9 @@ class TestReviewActivity : BaseActivity(), View.OnClickListener {
         handler.removeCallbacksAndMessages(null)
         if (child != null) {
             ll_inflate.removeView(child!!)
+        }
+        if(sharechild != null){
+            share_ll_inflate!!.removeView(sharechild)
         }
         countInt--
         addDot(countInt, totalQuestion!!)
@@ -361,6 +397,7 @@ class TestReviewActivity : BaseActivity(), View.OnClickListener {
 
     private fun loadDataInWebView(path: String) {
         listOfOptions = ArrayList()
+        reportQuestionPath = path
         Log.e("test question activity","testPath................"+ path)
         var questionPath = ""
         //Log.d("list", "!" + listAssetFiles(path, applicationContext))
@@ -398,16 +435,57 @@ class TestReviewActivity : BaseActivity(), View.OnClickListener {
 
             }
         }*/
+        if(readdata.equals("files")){
+            val file = File(path)
+            val listFile = file.listFiles()
+            if(listFile.size > 0){
+                for (file1 in listFile){
+                    if (file1.name.contains("question")) {
+                        questionPath = file1.absolutePath
+                    }
+                    if (file1.name.contains("hint")) {
+                        hintPath = file1.absolutePath
+                        //showDialog()
+                        webview_hint.settings.javaScriptEnabled = true
+                        //  webview.setVerticalScrollBarEnabled(true)
+                        // Enable responsive layout
+                        // webview.getSettings().setUseWideViewPort(true);
+                        // Zoom out if the content width is greater than the width of the viewport
+                        //webview.getSettings().setLoadWithOverviewMode(true);
+                        val hint = object : WebViewClient() {
 
-        val file = File(path)
-        val listFile = file.listFiles()
-        if(listFile.size > 0){
-            for (file1 in listFile){
-                if (file1.name.contains("question")) {
-                    questionPath = file1.absolutePath
+                            override fun onPageFinished(view: WebView?, url: String?) {
+                                Log.d("onPageFinished", url + "!")
+                                injectCSS(view, "Hint")
+                                // view!!.loadUrl("javascript:document.getElementsByTagName('html')[0].innerHTML+='<style>*{color:#ffffff}</style>';")
+                            }
+                        }
+                        Log.e("test question activity","hint alert dialog....hint path..."+hintPath);
+                        webview_hint.webViewClient = hint
+                        webview_hint.loadUrl(WEBVIEW_FILE_PATH + hintPath)
+                        webview_hint.setBackgroundColor(0)
+
+                    }
+
+
+
+
+
                 }
-                if (file1.name.contains("hint")) {
-                    hintPath = file1.absolutePath
+
+            }
+        }else{
+            for (filename in listAssetFiles(path, applicationContext)!!) {
+                /*if (filename.contains("opt")) {
+                    if (!filename.contains("opt5")) {
+                        listOfOptions!!.add(filename)
+                    }
+                }*/
+                if (filename.contains("question")) {
+                    questionPath = WEBVIEW_PATH + path + "/" + filename
+                }
+                if (filename.contains("hint")) {
+                    hintPath = WEBVIEW_PATH + path + "/" + filename
                     //showDialog()
                     webview_hint.settings.javaScriptEnabled = true
                     //  webview.setVerticalScrollBarEnabled(true)
@@ -425,19 +503,13 @@ class TestReviewActivity : BaseActivity(), View.OnClickListener {
                     }
                     Log.e("test question activity","hint alert dialog....hint path..."+hintPath);
                     webview_hint.webViewClient = hint
-                    webview_hint.loadUrl(WEBVIEW_FILE_PATH + hintPath)
+                    webview_hint.loadUrl(hintPath)
                     webview_hint.setBackgroundColor(0)
 
                 }
-
-                /*if (file1.name.contains("opt")) {
-                    listOfOptions!!.add(file1.absolutePath)
-                }*/
-
-
             }
-
         }
+
 
         var optionString:String = databaseHandler!!.getQuizFinalOptions(title,playeddate,lastplayed,topicName!!.toLowerCase())
 
@@ -523,9 +595,14 @@ class TestReviewActivity : BaseActivity(), View.OnClickListener {
                 }
 
             }, 1500)
+            if(readdata.equals("files")){
+                opt1Path = WEBVIEW_FILE_PATH + listOfOptions!!.get(0)
+                opt2Path = WEBVIEW_FILE_PATH + listOfOptions!!.get(1)
+            }else{
+                opt1Path = WEBVIEW_PATH + path + "/" + listOfOptions!!.get(0)
+                opt2Path = WEBVIEW_PATH + path + "/" + listOfOptions!!.get(1)
+            }
 
-            opt1Path = WEBVIEW_FILE_PATH + listOfOptions!!.get(0)
-            opt2Path = WEBVIEW_FILE_PATH + listOfOptions!!.get(1)
 
 
             webView_option1!!.settings.javaScriptEnabled = true
@@ -556,18 +633,32 @@ class TestReviewActivity : BaseActivity(), View.OnClickListener {
             webView_option2!!.webViewClient = webviewClient
             webView_option1_opacity!!.webViewClient = OpacitywebviewClient
             webView_option2_opacity!!.webViewClient = OpacitywebviewClient
-
-            if (Utils.jsoupWrapper(WEBVIEW_FILE_PATH + listOfOptions!!.get(0), this)) {
-                webView_option1!!.loadUrl(opt1Path!!)
-                webView_option2!!.loadUrl(opt2Path!!)
-                webView_option1_opacity!!.loadUrl(opt1Path!!)
-                webView_option2_opacity!!.loadUrl(opt2Path!!)
-            } else {
-                webView_option1!!.loadUrl(opt2Path!!)
-                webView_option2!!.loadUrl(opt1Path!!)
-                webView_option1_opacity!!.loadUrl(opt2Path!!)
-                webView_option2_opacity!!.loadUrl(opt1Path!!)
+            if(readdata.equals("files")){
+                if (Utils.jsoupWrapper(WEBVIEW_FILE_PATH + listOfOptions!!.get(0), this)) {
+                    webView_option1!!.loadUrl(opt1Path!!)
+                    webView_option2!!.loadUrl(opt2Path!!)
+                    webView_option1_opacity!!.loadUrl(opt1Path!!)
+                    webView_option2_opacity!!.loadUrl(opt2Path!!)
+                } else {
+                    webView_option1!!.loadUrl(opt2Path!!)
+                    webView_option2!!.loadUrl(opt1Path!!)
+                    webView_option1_opacity!!.loadUrl(opt2Path!!)
+                    webView_option2_opacity!!.loadUrl(opt1Path!!)
+                }
+            }else{
+                if (Utils.jsoupWrapper(path + "/" + listOfOptions!!.get(0), this)) {
+                    webView_option1!!.loadUrl(opt1Path)
+                    webView_option2!!.loadUrl(opt2Path)
+                    webView_option1_opacity!!.loadUrl(opt1Path)
+                    webView_option2_opacity!!.loadUrl(opt2Path)
+                } else {
+                    webView_option1!!.loadUrl(opt2Path)
+                    webView_option2!!.loadUrl(opt1Path)
+                    webView_option1_opacity!!.loadUrl(opt2Path)
+                    webView_option2_opacity!!.loadUrl(opt1Path)
+                }
             }
+
 
         }
         webView_question!!.setBackgroundColor(0)
@@ -612,8 +703,14 @@ class TestReviewActivity : BaseActivity(), View.OnClickListener {
             //webView_question!!.loadDataWithBaseURL(null, html, "text/html", "UTF-8", null);
             //webView_question!!.loadData(html, "text/html", "UTF-8");
         }*/
+        if(readdata.equals("files")){
+            webView_question!!.loadUrl(WEBVIEW_FILE_PATH + questionPath)
+            webView_share_question!!.loadUrl(WEBVIEW_FILE_PATH + questionPath)
+        }else{
+            webView_question!!.loadUrl(questionPath)
+            webView_share_question!!.loadUrl(questionPath)
+        }
 
-        webView_question!!.loadUrl(WEBVIEW_FILE_PATH + questionPath)
 
     }
 
@@ -660,17 +757,23 @@ class TestReviewActivity : BaseActivity(), View.OnClickListener {
 
         webView_option1!!.setBackgroundResource(R.drawable.option_curved_border)
         webView_option2!!.setBackgroundResource(R.drawable.option_curved_border)
+        webView_share_option1!!.setBackgroundResource(R.drawable.option_curved_border)
+        webView_share_option2!!.setBackgroundResource(R.drawable.option_curved_border)
         if (webView_option3 != null) {
             webView_option3!!.setBackgroundResource(R.drawable.option_curved_border)
             webView_option3!!.setBackgroundColor(0x00000000)
             webView_option3_opacity!!.setBackgroundResource(R.drawable.inactive_answer_overlay)
             webView_option3_opacity!!.setBackgroundColor(0x00000000)
+            webView_share_option3!!.setBackgroundResource(R.drawable.option_curved_border)
+            webView_share_option3!!.setBackgroundColor(0x00000000)
         }
         if (webView_option4 != null) {
             webView_option4!!.setBackgroundResource(R.drawable.option_curved_border)
             webView_option4!!.setBackgroundColor(0x00000000)
             webView_option4_opacity!!.setBackgroundResource(R.drawable.inactive_answer_overlay)
             webView_option4_opacity!!.setBackgroundColor(0x00000000)
+            webView_share_option4!!.setBackgroundResource(R.drawable.option_curved_border)
+            webView_share_option4!!.setBackgroundColor(0x00000000)
         }
 
         webView_option1!!.setBackgroundColor(0x00000000)
@@ -679,6 +782,8 @@ class TestReviewActivity : BaseActivity(), View.OnClickListener {
         webView_option1_opacity!!.setBackgroundColor(0x00000000)
         webView_option2_opacity!!.setBackgroundResource(R.drawable.inactive_answer_overlay)
         webView_option2_opacity!!.setBackgroundColor(0x00000000)
+        webView_share_option1!!.setBackgroundColor(0x00000000)
+        webView_share_option2!!.setBackgroundColor(0x00000000)
 
         /*val tran = webView_option1!!.background as GradientDrawable
         tran.color =applicationContext.resources.getColor(R.color.purple_opt_bg)*/
@@ -700,10 +805,18 @@ class TestReviewActivity : BaseActivity(), View.OnClickListener {
 
     private fun webViewPathAndLoad(path: String, type: Int) {
        // Collections.shuffle(listOfOptions!!)
-        opt1Path = WEBVIEW_FILE_PATH + listOfOptions!!.get(0)
-        opt2Path = WEBVIEW_FILE_PATH + listOfOptions!!.get(1)
-        opt3Path = WEBVIEW_FILE_PATH + listOfOptions!!.get(2)
-        opt4Path = WEBVIEW_FILE_PATH + listOfOptions!!.get(3)
+        if(readdata.equals("files")){
+            opt1Path = WEBVIEW_FILE_PATH + listOfOptions!!.get(0)
+            opt2Path = WEBVIEW_FILE_PATH + listOfOptions!!.get(1)
+            opt3Path = WEBVIEW_FILE_PATH + listOfOptions!!.get(2)
+            opt4Path = WEBVIEW_FILE_PATH + listOfOptions!!.get(3)
+        }else{
+            opt1Path = WEBVIEW_PATH + path + "/" + listOfOptions!!.get(0)
+            opt2Path = WEBVIEW_PATH + path + "/" + listOfOptions!!.get(1)
+            opt3Path = WEBVIEW_PATH + path + "/" + listOfOptions!!.get(2)
+            opt4Path = WEBVIEW_PATH + path + "/" + listOfOptions!!.get(3)
+        }
+
         Log.d("webViewPathAndLoad", opt1Path + " ! " + opt2Path)
 
 
@@ -715,6 +828,11 @@ class TestReviewActivity : BaseActivity(), View.OnClickListener {
         webView_option2_opacity!!.settings.javaScriptEnabled = true
         webView_option3_opacity!!.settings.javaScriptEnabled = true
         webView_option4_opacity!!.settings.javaScriptEnabled = true
+
+        webView_share_option1!!.settings.javaScriptEnabled = true
+        webView_share_option2!!.settings.javaScriptEnabled = true
+        webView_share_option3!!.settings.javaScriptEnabled = true
+        webView_share_option4!!.settings.javaScriptEnabled = true
 
         /* webView_option1.setInitialScale(1);
          x.getSettings().setLoadWithOverviewMode(true);
@@ -746,6 +864,11 @@ class TestReviewActivity : BaseActivity(), View.OnClickListener {
             webView_option3_opacity!!.webViewClient = webviewopacity
             webView_option4_opacity!!.webViewClient = webviewopacity
 
+            webView_share_option2!!.webViewClient = webview
+            webView_share_option3!!.webViewClient = webview
+            webView_share_option4!!.webViewClient = webview
+            webView_share_option1!!.webViewClient = webview
+
         }
         /*webView_option1!!.webViewClient = object : WebViewClient() {
             override fun onPageFinished(view: WebView?, url: String?) {
@@ -772,6 +895,11 @@ class TestReviewActivity : BaseActivity(), View.OnClickListener {
         webView_option2!!.loadUrl(opt2Path!!)
         webView_option3!!.loadUrl(opt3Path!!)
         webView_option4!!.loadUrl(opt4Path!!)
+
+        webView_share_option1!!.loadUrl(opt1Path!!)
+        webView_share_option2!!.loadUrl(opt2Path!!)
+        webView_share_option3!!.loadUrl(opt3Path!!)
+        webView_share_option4!!.loadUrl(opt4Path!!)
         // Log.d("url1",webView_option1!!.url+"!")
 
         //webViewAnimation()
@@ -987,8 +1115,11 @@ class TestReviewActivity : BaseActivity(), View.OnClickListener {
 
     private fun inflateView4100() {
         child = layoutInflater.inflate(R.layout.webview_4100_layout, null)
+        sharechild = layoutInflater.inflate(R.layout.webview_4100_share_layout, null)
         ll_inflate.addView(child)
+        share_ll_inflate!!.addView(sharechild)
         initializeView(child!!)
+        initializeShareView(sharechild!!)
     }
 
     private fun inflateView2201() {
@@ -1008,7 +1139,16 @@ class TestReviewActivity : BaseActivity(), View.OnClickListener {
         ll_inflate.addView(child)
         initializeView(child!!)
     }
+    @SuppressLint("ClickableViewAccessibility")
+    private fun initializeShareView(view: View) {
+        webView_share_question = view.findViewById(R.id.webView_share_question)
+        webView_share_option1 = view.findViewById(R.id.webView_option1)
+        webView_share_option2 = view.findViewById(R.id.webView_option2)
+        webView_share_option3 = view.findViewById(R.id.webView_option3)
+        webView_share_option4 = view.findViewById(R.id.webView_option4)
 
+
+    }
 
     @SuppressLint("ClickableViewAccessibility")
     private fun initializeView(view: View) {
@@ -1026,6 +1166,9 @@ class TestReviewActivity : BaseActivity(), View.OnClickListener {
         webView_option2?.getSettings()?.setLoadWithOverviewMode(true)
         webView_option2?.getSettings()?.setUseWideViewPort(true)*/
         //webView_option2?.getSettings()?.setDefaultZoom(WebSettings.ZoomDensity.FAR);
+        report_rl = view.findViewById(R.id.report_rl)
+        share_rl = view.findViewById(R.id.share_rl)
+
 
         btn_next!!.setOnClickListener(this)
         btn_hint!!.setOnClickListener(this)
@@ -1034,6 +1177,7 @@ class TestReviewActivity : BaseActivity(), View.OnClickListener {
         prev_btn!!.setOnClickListener(this)
         btn_close!!.setOnClickListener(this)
         report_rl!!.setOnClickListener(this)
+        share_rl!!.setOnClickListener(this)
         hint_btn!!.setOnClickListener(this)
         close!!.setOnClickListener(this)
         iv_cancel_test_question!!.setOnClickListener(this)
@@ -1142,7 +1286,27 @@ class TestReviewActivity : BaseActivity(), View.OnClickListener {
 
                 }
 
-                showDialog()
+                showDialogForReport()
+            }
+            R.id.share_rl -> {
+                sound = sharedPrefs?.getBooleanPrefVal(this, SOUNDS) ?: true
+                if(!sound){
+                    // mediaPlayer = MediaPlayer.create(this,R.raw.amount_low)
+                    //  mediaPlayer.start()
+                    if (Utils.loaded) {
+                        Utils.soundPool.play(Utils.soundID, Utils.volume, Utils.volume, 1, 0, 1f);
+                        Log.e("Test", "Played sound...volume..."+ Utils.volume);
+                        //Toast.makeText(context,"end",Toast.LENGTH_SHORT).show()
+                    }
+                }
+
+
+                //var rootView = findViewById(android.R.id.content);
+                /**/
+                sharedialog!!.show()
+
+
+                //navigateToSummaryScreenNew()
             }
             R.id.next_btn -> {
                 sound = sharedPrefs?.getBooleanPrefVal(this, ConstantPath.SOUNDS) ?: true
@@ -1205,6 +1369,208 @@ class TestReviewActivity : BaseActivity(), View.OnClickListener {
                 //solution.startAnimation(AnimationUtils.loadAnimation(this, R.anim.transalate_anim));
             }
         }
+    }
+
+    private fun showDialogForShare() {
+        sharedialog = Dialog(this,android.R.style.Theme_Black_NoTitleBar_Fullscreen)
+        sharedialog!!.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        sharedialog!!.setCancelable(true)
+        sharedialog!!.setContentView(R.layout.layout_share)
+        // val webview = dialog!!.findViewById(R.id.webview_hint) as WebView
+        val close = sharedialog!!.findViewById(R.id.btn_done) as Button
+        val share = sharedialog!!.findViewById(R.id.btn_share) as Button
+        share_ll_inflate = sharedialog!!.findViewById(R.id.ll_share_inflate) as LinearLayout
+        val sharelayout = sharedialog!!.findViewById(R.id.sharelayout) as RelativeLayout
+
+        //image.setImageBitmap(bitmap)
+        //buttonEffect(btn_gotIt,false)
+        // alertDialog = dialogBuilder.create()
+        close.setOnClickListener {
+            sound = sharedPrefs?.getBooleanPrefVal(this, SOUNDS) ?: true
+            if(!sound){
+                // mediaPlayer = MediaPlayer.create(this,R.raw.amount_low)
+                //  mediaPlayer.start()
+                if (Utils.loaded) {
+                    Utils.soundPool.play(Utils.soundID, Utils.volume, Utils.volume, 1, 0, 1f);
+                    Log.e("Test", "Played sound...volume..."+ Utils.volume);
+                    //Toast.makeText(context,"end",Toast.LENGTH_SHORT).show()
+                }
+            }
+            sharedialog!!.dismiss()
+        }
+        share.setOnClickListener {
+            sound = sharedPrefs?.getBooleanPrefVal(this, SOUNDS) ?: true
+            if(!sound){
+                // mediaPlayer = MediaPlayer.create(this,R.raw.amount_low)
+                //  mediaPlayer.start()
+                if (Utils.loaded) {
+                    Utils.soundPool.play(Utils.soundID, Utils.volume, Utils.volume, 1, 0, 1f);
+                    Log.e("Test", "Played sound...volume..."+ Utils.volume);
+                    //Toast.makeText(context,"end",Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            var v1 = sharelayout;
+            v1.setDrawingCacheEnabled(true);
+            var bitmap: Bitmap = Bitmap.createBitmap(v1.getDrawingCache());
+            v1.setDrawingCacheEnabled(false);
+            Utils.saveBitmap(bitmap,this@TestReviewActivity)
+            val dirFile = File(this@TestReviewActivity.getCacheDir(), "/screenshot.png")
+            Log.e("test quiz","dir file........"+dirFile);
+            //var uri = Uri.fromFile(dirFile);
+            var photoURI = FileProvider.getUriForFile(this@TestReviewActivity,
+                BuildConfig.APPLICATION_ID + ".files",dirFile);
+            var sharingIntent = Intent(Intent.ACTION_SEND);
+            sharingIntent.setType("image/*");
+            var emoji = getString(R.string.emoji);
+            //var shareBody = "My highest score with screen shot";
+            sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "My Catch score");
+            sharingIntent.putExtra(Intent.EXTRA_TEXT, "Can you solve this?? "+ emoji +" https://www.yomplex.com/app");
+            sharingIntent.putExtra(Intent.EXTRA_STREAM, photoURI);
+
+            startActivity(Intent.createChooser(sharingIntent, "Share via"));
+            sharedialog!!.dismiss()
+
+        }
+        //sharedialog!!.show()
+
+
+    }
+
+    fun View.hideKeyboard() {
+        val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(windowToken, 0)
+    }
+
+    private fun showDialogForReport() {
+        dialog = Dialog(this)
+        dialog!!.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog!!.setCancelable(false)
+        dialog!!.setContentView(R.layout.layout_report)
+        // val webview = dialog!!.findViewById(R.id.webview_hint) as WebView
+        val close = dialog!!.findViewById(R.id.btn_cancel) as Button
+        val submit_btn = dialog!!.findViewById(R.id.submit_btn) as Button
+
+        val radioGroup = dialog!!.findViewById(R.id.radioGroup) as RadioGroup
+
+        val successRL = dialog!!.findViewById(R.id.successRL) as RelativeLayout
+        val edittextRL = dialog!!.findViewById(R.id.edittextRL) as RelativeLayout
+        val solution = dialog!!.findViewById(R.id.solution1) as RelativeLayout
+        val solution2 = dialog!!.findViewById(R.id.solution2) as RelativeLayout
+        val rl_root = dialog!!.findViewById(R.id.rl_root) as RelativeLayout
+        val tv_solution = dialog!!.findViewById(R.id.tv_solution) as TextView
+        val btn_done = dialog!!.findViewById(R.id.btn_done) as Button
+
+        val infoedt = dialog!!.findViewById(R.id.infoedt) as EditText
+        radioGroup.setOnClickListener {
+            it.hideKeyboard()
+        }
+        rl_root.setOnClickListener {
+            it.hideKeyboard()
+        }
+        tv_solution.setOnClickListener {
+            it.hideKeyboard()
+        }
+        solution2.setOnClickListener {
+            it.hideKeyboard()
+        }
+        solution.setOnClickListener {
+            it.hideKeyboard()
+        }
+        submit_btn.setOnClickListener {
+            Log.e("test quiz","showDialogForReport....submit btn click....");
+            it.hideKeyboard()
+
+            sound = sharedPrefs?.getBooleanPrefVal(this, SOUNDS) ?: true
+            if(!sound){
+                // mediaPlayer = MediaPlayer.create(this,R.raw.amount_low)
+                //  mediaPlayer.start()
+                if (Utils.loaded) {
+                    Utils.soundPool.play(Utils.soundID, Utils.volume, Utils.volume, 1, 0, 1f);
+                    Log.e("Test", "Played sound...volume..."+ Utils.volume);
+                    //Toast.makeText(context,"end",Toast.LENGTH_SHORT).show()
+                }
+            }
+            var selectedId = radioGroup.checkedRadioButtonId
+            Log.e("test quiz","selected id......"+selectedId);
+            if(selectedId > 0){
+                val radioButton = dialog!!.findViewById(selectedId) as RadioButton
+
+                btn_done.visibility = View.VISIBLE
+                successRL.visibility = View.VISIBLE
+                edittextRL.visibility = View.GONE
+                radioGroup.visibility = View.GONE
+                submit_btn.visibility = View.GONE
+                close.visibility = View.GONE
+                Toast.makeText(this, radioButton.text, Toast.LENGTH_LONG).show()
+
+                val reportsModel = ReportsModel()
+                var userid = sharedPrefs!!.getPrefVal(this, ConstantPath.UID)
+                var email = sharedPrefs!!.getPrefVal(this, "email")
+                Log.e("test quiz activity","userid......."+userid)
+                testQuiz = databaseHandler!!.getQuizTopicsForTimerLastPlayed(topicName!!.toLowerCase())
+
+                reportsModel.useremail = email
+                reportsModel.reportissuetype = ""+radioButton.text
+                reportsModel.additionalinfo = infoedt.text.toString()
+                reportsModel.coursename = testQuiz.testtype
+                reportsModel.questionpath = reportQuestionPath
+
+
+
+                firestore!!.collection("reportissuecollection")
+                    .add(reportsModel)
+                    .addOnCompleteListener(object : OnCompleteListener<DocumentReference> {
+                        override fun onComplete(task: Task<DocumentReference>) {
+                            if (task.isSuccessful) {
+                                Log.e("reportissuecollection", "reportissuecollection added successfully")
+                            } else {
+                                Log.e("reportissuecollection", task.exception.toString())
+                            }
+                        }
+                    })
+
+
+
+            }else{
+                Toast.makeText(this, "Please select the report issue.", Toast.LENGTH_LONG).show()
+            }
+            //dialog!!.dismiss()
+        }
+        //buttonEffect(btn_gotIt,false)
+        // alertDialog = dialogBuilder.create()
+        close.setOnClickListener {
+            sound = sharedPrefs?.getBooleanPrefVal(this, SOUNDS) ?: true
+            if(!sound){
+                // mediaPlayer = MediaPlayer.create(this,R.raw.amount_low)
+                //  mediaPlayer.start()
+                if (Utils.loaded) {
+                    Utils.soundPool.play(Utils.soundID, Utils.volume, Utils.volume, 1, 0, 1f);
+                    Log.e("Test", "Played sound...volume..."+ Utils.volume);
+                    //Toast.makeText(context,"end",Toast.LENGTH_SHORT).show()
+                }
+            }
+            val imm = context?.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager?
+            imm?.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0)
+            dialog!!.dismiss()
+        }
+
+        btn_done.setOnClickListener {
+            sound = sharedPrefs?.getBooleanPrefVal(this, SOUNDS) ?: true
+            if(!sound){
+                // mediaPlayer = MediaPlayer.create(this,R.raw.amount_low)
+                //  mediaPlayer.start()
+                if (Utils.loaded) {
+                    Utils.soundPool.play(Utils.soundID, Utils.volume, Utils.volume, 1, 0, 1f);
+                    Log.e("Test", "Played sound...volume..."+ Utils.volume);
+                    //Toast.makeText(context,"end",Toast.LENGTH_SHORT).show()
+                }
+            }
+            dialog!!.dismiss()
+        }
+        dialog!!.show()
+
+
     }
 
 

@@ -43,11 +43,11 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Yomplex.com"
+                    android:text="yomplex.com"
                     android:layout_centerHorizontal="true"
                     android:layout_centerInParent="true"
                     android:layout_alignParentEnd="true"
-                    android:textColor="@color/share_btn"
+                    android:textColor="@color/light_blue"
                     android:fontFamily="@font/lato_bold">
 
 

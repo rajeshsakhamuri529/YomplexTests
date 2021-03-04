@@ -47,6 +47,7 @@ import com.gun0912.tedpermission.PermissionListener
 import com.gun0912.tedpermission.TedPermission
 import com.yomplex.tests.BuildConfig
 import com.yomplex.tests.R
+import com.yomplex.tests.Service.ContentDownloadService
 import com.yomplex.tests.Service.JobService
 import com.yomplex.tests.adapter.GradeAdapter
 import com.yomplex.tests.database.QuizGameDataBase
@@ -168,8 +169,10 @@ class GradeActivity : BaseActivity(), GradeClickListener, PermissionListener  {
     }
 
     fun displayUpdateAlert() {
+
         val enddate = remoteConfig!!.getString(SUBSCRIPTION_END_DATE)
         sharedPrefs!!.setPrefVal(this,"enddate", enddate)
+       // Toast.makeText(this,"displayUpdateAlert..."+enddate,Toast.LENGTH_LONG).show()
         /*val url = remoteConfig!!.getString(TEST_CONTENT_URL)
         val version = remoteConfig!!.getString(TEST_CONTENT_VERSION)
         Log.e("grade activity","displayUpdateAlert.....version......."+version)
@@ -231,6 +234,12 @@ class GradeActivity : BaseActivity(), GradeClickListener, PermissionListener  {
         JobService.enqueueWork(mainActivity, url,version,type)
     }
 
+    private fun downloadServiceFromBackground(
+        mainActivity: GradeActivity,db: FirebaseFirestore
+    ) {
+        ContentDownloadService.enqueueWork(mainActivity, db)
+    }
+
 
     @TargetApi(Build.VERSION_CODES.M)
     private fun signin(sharedPrefs: SharedPrefs) {
@@ -241,7 +250,16 @@ class GradeActivity : BaseActivity(), GradeClickListener, PermissionListener  {
 
             if(sharedPrefs.getBooleanPrefVal(this, ConstantPath.IS_FIRST_TIME)){
 
-                var statuslist: List<Int>? = databaseHandler!!.gettesttopicdownloadstatus()
+                val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+                val activeNetwork: NetworkInfo? = connectivityManager.activeNetworkInfo
+                val isConnected: Boolean = activeNetwork?.isConnected == true
+                Log.d("isConnected",isConnected.toString()+"!")
+                if(isNetworkConnected()) {
+                    downloadServiceFromBackground(this@GradeActivity,db)
+                }
+                navigateToIntro()
+
+                /*var statuslist: List<Int>? = databaseHandler!!.gettesttopicdownloadstatus()
 
                 Log.e("signin","statuslist.size........"+statuslist!!.size)
 
@@ -263,13 +281,20 @@ class GradeActivity : BaseActivity(), GradeClickListener, PermissionListener  {
                     }else{
                         Log.e("signin","statuslist........"+statuslist)
                         navigateToIntro()
-                    }
+                    }*/
 
             }else{
 
                 Log.e("grade activity","sharedPrefs.getBooleanPrefVal(this, ISNOTLOGIN)...."+sharedPrefs.getBooleanPrefVal(this, ISNOTLOGIN))
-
-                if(!sharedPrefs.getBooleanPrefVal(this, ISNOTLOGIN)){
+                val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+                val activeNetwork: NetworkInfo? = connectivityManager.activeNetworkInfo
+                val isConnected: Boolean = activeNetwork?.isConnected == true
+                Log.d("isConnected",isConnected.toString()+"!")
+                if(isNetworkConnected()) {
+                    downloadServiceFromBackground(this@GradeActivity,db)
+                }
+                navigateToDashboard("GRADE 6")
+                /*if(!sharedPrefs.getBooleanPrefVal(this, ISNOTLOGIN)){
                     //this block is for not sign in users
                         val docRef = db.collection("testcontentdownload").document("nJUIWEtshPEmAXjqn7y4")
                         docRef.get().addOnSuccessListener { document ->
@@ -314,13 +339,13 @@ class GradeActivity : BaseActivity(), GradeClickListener, PermissionListener  {
                                         downloadDataFromBackground(this@GradeActivity,url,version,"geometry")
                                     }
                                 }
-                                /*version = document.data!!.get("TestContentVersion").toString()
+                                *//*version = document.data!!.get("TestContentVersion").toString()
                                 url = document.data!!.get("TestContentUrl").toString()
 
                                 Log.e("grade activity","version......."+version)
                                 Log.e("grade activity","url......."+url)
 
-                                databaseHandler!!.insertTESTCONTENTDOWNLOAD(version,url,"",0)*/
+                                databaseHandler!!.insertTESTCONTENTDOWNLOAD(version,url,"",0)*//*
 
 
                                 navigateToIntro()
@@ -346,7 +371,7 @@ class GradeActivity : BaseActivity(), GradeClickListener, PermissionListener  {
                             docRef.get().addOnSuccessListener { document ->
                                 if (document != null) {
                                     Log.e("grade activity", "DocumentSnapshot data: ${document.data}")
-                                    /*version = document.data!!.get("TestContentVersion").toString()
+                                    *//*version = document.data!!.get("TestContentVersion").toString()
                                     url = document.data!!.get("TestContentUrl").toString()
 
                                     Log.e("grade activity","version......."+version)
@@ -354,7 +379,7 @@ class GradeActivity : BaseActivity(), GradeClickListener, PermissionListener  {
 
                                     databaseHandler!!.insertTESTCONTENTDOWNLOAD(version,url,"",0)
 
-                                    downloadDataFromBackground(this@GradeActivity,url,version,"")*/
+                                    downloadDataFromBackground(this@GradeActivity,url,version,"")*//*
                                     for(i in 0 until (document.data!!.size - 4)){
                                         if(i == 0){
                                             var version = document.data!!.get("BasicVersion").toString()
@@ -416,12 +441,12 @@ class GradeActivity : BaseActivity(), GradeClickListener, PermissionListener  {
                                 val docRef = db.collection("testcontentdownload").document("nJUIWEtshPEmAXjqn7y4")
                                 docRef.get().addOnSuccessListener { document ->
                                         if (document != null) {
-                                            /*Log.e("grade activity", "DocumentSnapshot data: ${document.data}")
+                                            *//*Log.e("grade activity", "DocumentSnapshot data: ${document.data}")
                                             version = document.data!!.get("TestContentVersion").toString()
                                             url = document.data!!.get("TestContentUrl").toString()
 
                                             Log.e("grade activity","version......."+version)
-                                            Log.e("grade activity","url......."+url)*/
+                                            Log.e("grade activity","url......."+url)*//*
                                             var testcontentlist: List<TestDownload>? = databaseHandler!!.gettestContent()
                                             for(i in 0 until (document.data!!.size - 4)){
                                                 if(i == 0){
@@ -496,7 +521,7 @@ class GradeActivity : BaseActivity(), GradeClickListener, PermissionListener  {
                                             }
 
                                             navigateToDashboard("GRADE 6")
-                                           /* var dbversion = databaseHandler!!.gettesttopicversion()
+                                           *//* var dbversion = databaseHandler!!.gettesttopicversion()
                                             if(dbversion != version) {
 
                                                 downloadDataFromBackground(this@GradeActivity,url,version,"")
@@ -505,7 +530,7 @@ class GradeActivity : BaseActivity(), GradeClickListener, PermissionListener  {
                                             }else{
 
                                                 navigateToDashboard("GRADE 6")
-                                            }*/
+                                            }*//*
 
                                         } else {
                                             Log.e("grade activity", "No such document")
@@ -525,7 +550,7 @@ class GradeActivity : BaseActivity(), GradeClickListener, PermissionListener  {
                     }
 
 
-                }
+                }*/
 
 
             }
@@ -535,7 +560,24 @@ class GradeActivity : BaseActivity(), GradeClickListener, PermissionListener  {
             val activeNetwork: NetworkInfo? = connectivityManager.activeNetworkInfo
             val isConnected: Boolean = activeNetwork?.isConnected == true
             Log.d("isConnected",isConnected.toString()+"!")
-            if(isNetworkConnected()) {
+           /* if(isNetworkConnected()) {
+                downloadServiceFromBackground(this@GradeActivity,db)
+            }*/
+            sharedPrefs.setBooleanPrefVal(this@GradeActivity, ConstantPath.IS_LOGGED_IN, true)
+            sharedPrefs.setBooleanPrefVal(this@GradeActivity, ConstantPath.IS_FIRST_TIME, true)
+
+
+            Log.d("anonymous auth done","true")
+            TedPermission.with(this@GradeActivity)
+                .setPermissionListener(this@GradeActivity)
+                .setDeniedMessage(
+                    "If you reject permission,you can not use this service\n"
+                            + "\nPlease turn on permissions at [Setting] > [Permission]"
+                )
+                .setPermissions(Manifest.permission.INTERNET)
+                .check()
+
+            /*if(isNetworkConnected()) {
 
                 Log.e("grade activity", "task is successful.............")
                 val docRef = db.collection("testcontentdownload").document("nJUIWEtshPEmAXjqn7y4")
@@ -581,11 +623,10 @@ class GradeActivity : BaseActivity(), GradeClickListener, PermissionListener  {
                             }
 
 
-                            // Sign in success, update UI with the signed-in user's information
-                           // val user = auth!!.currentUser
+
                             sharedPrefs.setBooleanPrefVal(this@GradeActivity, ConstantPath.IS_LOGGED_IN, true)
                             sharedPrefs.setBooleanPrefVal(this@GradeActivity, ConstantPath.IS_FIRST_TIME, true)
-                           // sharedPrefs.setPrefVal(this@GradeActivity, ConstantPath.UID, user!!.uid)
+
 
                             Log.d("anonymous auth done","true")
                             TedPermission.with(this@GradeActivity)
@@ -618,7 +659,7 @@ class GradeActivity : BaseActivity(), GradeClickListener, PermissionListener  {
                 mSnackBar?.duration = BaseTransientBottomBar.LENGTH_INDEFINITE
                 mSnackBar?.setAction("Retry", { signin(sharedPrefs) })
                 mSnackBar?.show()
-            }
+            }*/
         }
     }
 

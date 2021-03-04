@@ -14,13 +14,11 @@
         <value>https://www.yomplex.com/#contact-us</value>
     </entry>
     <entry>
-        <key>TestContentVersion</key>
-        <value>25</value>
+        <key>subscriptionenddate</key>
+        <value>31 Jul 2021</value>
     </entry>
-    <entry>
-        <key>TestContentUrl</key>
-        <value>https://yomplex.s3.ap-south-1.amazonaws.com/appcontent/testv1.zip</value>
-    </entry>
+
+
     <!--<entry>
         <key>android_latest_version_name</key>
         <value>3.1</value>

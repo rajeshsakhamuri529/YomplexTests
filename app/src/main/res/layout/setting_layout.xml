@@ -20,7 +20,7 @@
             android:layout_height="wrap_content"
             android:text="@string/str_settings"
             android:textSize="@dimen/_18ssp"
-            android:layout_marginLeft="@dimen/_20sdp"
+            android:layout_marginLeft="@dimen/_15sdp"
 
             android:layout_marginTop="@dimen/_18sdp"
             android:textColor="@color/chapters_text"
@@ -355,6 +355,44 @@
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/signout"
+                    android:layout_marginTop="@dimen/_25sdp"
+                    android:layout_centerInParent="true">
+
+                    <TextView
+                        android:id="@+id/txt_subscription"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Subscription valid until: "
+                        android:textStyle="bold"
+                        android:textColor="#AAAAAA"
+                        android:textSize="15dp"
+                        android:fontFamily="@font/lato_regular"
+                        android:layout_marginTop="8dp"
+
+
+                        />
+                    <TextView
+                        android:id="@+id/txt_sub_date"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="31 July 2021"
+                        android:layout_toRightOf="@+id/txt_subscription"
+                        android:textStyle="bold"
+                        android:textColor="#AAAAAA"
+                        android:textSize="15dp"
+                        android:fontFamily="@font/lato_regular"
+                        android:layout_marginTop="8dp"
+
+
+                        />
+
+
+                </RelativeLayout>
+
             </RelativeLayout>
 
         </RelativeLayout>
@@ -364,25 +402,41 @@
         android:id="@+id/cl_terms_and_conditions"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/versionRL"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="@dimen/_5sdp">
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginBottom="@dimen/_20sdp">
 
         <TextView
+            android:id="@+id/privacytxt"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/t_amp_c_privacy"
             android:textStyle="bold"
-            android:textColor="#B1B1B1"
-            android:textSize="15dp"
+            android:textColor="#AAAAAA"
+            android:textSize="@dimen/_10sdp"
             android:fontFamily="@font/lato_regular"
-            android:padding="@dimen/_5sdp"
+
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
 
 
             app:layout_constraintBottom_toBottomOf="parent"
             />
+        <ImageView
+            android:layout_width="@dimen/_8sdp"
+            android:layout_height="@dimen/_8sdp"
+            android:src="@drawable/ic_right_arrow"
+            android:layout_toRightOf="@+id/privacytxt"
+            android:layout_centerInParent="true"
+            android:tint="#AAAAAA"
+            android:layout_marginLeft="@dimen/_3sdp"
+
+            android:layout_centerHorizontal="true"></ImageView>
+
+
 
     </RelativeLayout>
 
@@ -391,8 +445,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="@dimen/_10sdp">
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginBottom="@dimen/_20sdp">
 
         <TextView
             android:id="@+id/versionname"
@@ -400,7 +457,9 @@
             android:layout_height="wrap_content"
             android:fontFamily="@font/lato_bold"
             android:text="V3131"
-            android:textColor="#B1B1B1"
+
+
+            android:textColor="#AAAAAA"
             android:textSize="@dimen/_10sdp" />
 
 

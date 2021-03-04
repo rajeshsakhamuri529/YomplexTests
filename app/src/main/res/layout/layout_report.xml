@@ -7,6 +7,7 @@
     android:background="@color/white"
     android:layout_width="match_parent"
     android:layout_height="@dimen/_350sdp">
+
 <RelativeLayout
     android:id="@+id/solution"
     android:layout_width="match_parent"
@@ -15,6 +16,38 @@
     android:background="#FFFFFF">
 
     <RelativeLayout
+        android:id="@+id/successRL"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:visibility="gone">
+        <TextView
+            android:id="@+id/text1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/_13ssp"
+            android:text="Thank you for reporting the issue:)"
+            android:textColor="#424242"
+
+            android:fontFamily="@font/lato_regular"
+            android:layout_centerHorizontal="true"/>
+
+        <TextView
+            android:id="@+id/text2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/_13ssp"
+            android:layout_below="@+id/text1"
+            android:text="We will look into this asap!"
+            android:textColor="#424242"
+            android:layout_marginTop="@dimen/_5sdp"
+            android:fontFamily="@font/lato_regular"
+            android:layout_centerHorizontal="true"/>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/solution1"
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -45,6 +78,7 @@
 
 
         <RelativeLayout
+            android:id="@+id/solution2"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_below="@+id/tv_solution"
@@ -54,11 +88,14 @@
             android:layout_marginTop="@dimen/_15sdp">
 
 
+
+
             <RadioGroup
                 android:id="@+id/radioGroup"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
+                android:visibility="visible"
                 android:layout_marginTop="@dimen/_10sdp"
                 android:layout_marginLeft="@dimen/_10sdp">
 
@@ -97,9 +134,11 @@
             </RadioGroup>
 
             <RelativeLayout
+                android:id="@+id/edittextRL"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/radioGroup"
+                android:visibility="visible"
                 android:layout_marginTop="@dimen/_20sdp"
                 android:layout_centerHorizontal="true"
                 android:layout_marginStart="@dimen/_5sdp"
@@ -108,6 +147,7 @@
                 android:background="@drawable/inactive_answer_overlay">
 
                 <EditText
+                    android:id="@+id/infoedt"
                     android:layout_height="wrap_content"
                     android:layout_width="match_parent"
                     android:inputType="textMultiLine"
@@ -115,10 +155,11 @@
                     android:textSize="@dimen/_14sdp"
                     android:hint="Additional Information"
                     android:minLines="6"
-                    android:paddingLeft="@dimen/_2sdp"
+                    android:padding="@dimen/_3sdp"
                     android:textColor="#424242"
+                    android:textCursorDrawable="@null"
                     android:fontFamily="@font/lato_regular"
-                    android:background="@color/answer_bg_inactive"
+                    android:background="@android:color/transparent"
                     android:textColorHint="#c0c0c0"
                     android:gravity="top|left"
                     android:maxLines="10"
@@ -153,7 +194,24 @@
                     android:layout_centerVertical="true"
                     android:textColor="#424242"/>
 
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/_25sdp"
+                    android:id="@+id/btn_done"
+                    android:layout_marginRight="@dimen/_15sdp"
+                    android:textSize="@dimen/_11sdp"
+                    android:letterSpacing="0.1"
+                    android:visibility="gone"
+                    android:layout_centerInParent="true"
+                    android:fontFamily="@font/lato_bold"
+                    style="@style/Widget.AppCompat.Button.Borderless"
+                    android:background="@drawable/submit_active_background"
+                    android:text="DONE"
+                    android:layout_centerVertical="true"
+                    android:textColor="@color/white"/>
+
                     <LinearLayout
+                        android:id="@+id/submitLL"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_centerHorizontal="true"

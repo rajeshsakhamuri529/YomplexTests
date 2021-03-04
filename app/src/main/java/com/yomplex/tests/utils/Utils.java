@@ -514,8 +514,24 @@ public class Utils {
 
         return true;
     }
+
+    public static boolean deleteFolder(File removableFolder) {
+        File[] files = removableFolder.listFiles();
+        if (files != null && files.length > 0) {
+            for (File file : files) {
+                boolean success;
+                if (file.isDirectory())
+                    success = deleteFolder(file);
+                else success = file.delete();
+                if (!success) return false;
+            }
+        }
+        return removableFolder.delete();
+    }
+
     public static void saveBitmap(Bitmap bitmap,Context context) {
-        File imagePath = new File(context.getExternalFilesDir(null) + "/screenshot.png"); ////File imagePath
+        File imagePath = new File(context.getCacheDir() + "/screenshot.png"); ////File imagePath
+        Log.e("test quiz","imagePath........"+imagePath);
         FileOutputStream fos;
         try {
             fos = new FileOutputStream(imagePath);
@@ -530,7 +546,7 @@ public class Utils {
     }
 
     public static void store(Bitmap bm, String fileName,Context context){
-        String dirPath = context.getExternalFilesDir(null).getAbsolutePath() + "/Screenshots";
+        String dirPath = context.getCacheDir().getAbsolutePath() + "/Screenshots";
         File dir = new File(dirPath);
         if(!dir.exists())
             dir.mkdirs();

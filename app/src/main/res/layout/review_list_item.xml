@@ -137,7 +137,7 @@
                             android:textStyle="bold"
 
                             android:layout_centerVertical="true"
-                            android:textColor="#424242"
+                            android:textColor="#C0C0C0"
 
 
                             android:fontFamily="@font/lato_bold"

@@ -14,6 +14,7 @@ public class TestQuizFinal {
     private String options;
     private String status;
     private String testtype;
+    private String readdata;
 
 
 
@@ -22,7 +23,7 @@ public class TestQuizFinal {
     }
 
     public TestQuizFinal(String serialno, String title, String typeofPlay,
-                         int totalQuestions, String answerstatus, String questionAnswers, String questionPathType, String pdate, String timetaken, String options, String status,String testtype){
+                         int totalQuestions, String answerstatus, String questionAnswers, String questionPathType, String pdate, String timetaken, String options, String status,String testtype,String readdata){
 
         this.serialNo = serialno;
         this.title = title;
@@ -36,7 +37,16 @@ public class TestQuizFinal {
         this.options = options;
         this.status = status;
         this.testtype = testtype;
+        this.readdata = readdata;
 
+    }
+
+    public String getReaddata() {
+        return readdata;
+    }
+
+    public void setReaddata(String readdata) {
+        this.readdata = readdata;
     }
 
     public String getStatus() {

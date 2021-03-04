@@ -1,13 +1,16 @@
 package com.yomplex.tests.fragment
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.os.SystemClock
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.yomplex.tests.R
+import com.yomplex.tests.activity.DashBoardActivity
 import com.yomplex.tests.activity.TestReviewActivity
 import com.yomplex.tests.adapter.ReviewAdapter
 import com.yomplex.tests.database.QuizGameDataBase
@@ -20,9 +23,9 @@ import com.yomplex.tests.utils.VerticalSpaceItemDecoration
 import kotlinx.android.synthetic.main.review_ll.view.*
 
 
-class ReviewFragment: Fragment(), TestQuizReviewClickListener {
+class ReviewFragment: Fragment(), View.OnClickListener, TestQuizReviewClickListener {
 
-
+    var mLastClickTime:Long = 0;
     var adapter: ReviewAdapter?= null
     var databaseHandler: QuizGameDataBase?= null
     var testquizlist: List<TestQuizFinal>? = null
@@ -40,11 +43,11 @@ class ReviewFragment: Fragment(), TestQuizReviewClickListener {
         testquizlist = databaseHandler!!.getTestQuizList()
 
         if(testquizlist!!.size == 0){
-            view.tv_no_review.visibility = View.VISIBLE
+            view.rl_no_review.visibility = View.VISIBLE
             view.rcv_review.visibility = View.GONE
         }else{
             view.rcv_review.visibility = View.VISIBLE
-            view.tv_no_review.visibility = View.GONE
+            view.rl_no_review.visibility = View.GONE
 
 
             adapter = ReviewAdapter(context!!, testquizlist!!,this)
@@ -54,6 +57,57 @@ class ReviewFragment: Fragment(), TestQuizReviewClickListener {
             //rcv_chapter.addItemDecoration(itemDecorator)
             //rcv_chapter.addItemDecoration(DividerItemDecoration(context,))
             view.rcv_review.adapter = adapter
+        }
+
+        view.tv_no_review.setOnClickListener(this)
+        view.tv_no_review2.setOnClickListener(this)
+
+    }
+
+    override fun onClick(v: View?) {
+        if (SystemClock.elapsedRealtime() - mLastClickTime < 2000) {
+            return;
+        }
+        mLastClickTime = SystemClock.elapsedRealtime()
+        when (v!!.id) {
+            R.id.tv_no_review -> {
+                Log.e("tests fragment","on click.....info rl.....");
+                sound = sharedPrefs?.getBooleanPrefVal(activity!!, ConstantPath.SOUNDS) ?: true
+                if(!sound){
+                    // mediaPlayer = MediaPlayer.create(this,R.raw.amount_low)
+                    //  mediaPlayer.start()
+                    if (Utils.loaded) {
+                        Utils.soundPool.play(Utils.soundID, Utils.volume, Utils.volume, 1, 0, 1f);
+                        Log.e("Test", "Played sound...volume..."+ Utils.volume);
+                        //Toast.makeText(context,"end",Toast.LENGTH_SHORT).show()
+                    }
+                }
+
+                val i = Intent(activity, DashBoardActivity::class.java)
+                i.putExtra("fragment", "tests")
+                startActivity(i)
+                (activity as Activity).overridePendingTransition(0, 0)
+
+            }
+            R.id.tv_no_review2 -> {
+                Log.e("tests fragment","on click.....info rl.....");
+                sound = sharedPrefs?.getBooleanPrefVal(activity!!, ConstantPath.SOUNDS) ?: true
+                if(!sound){
+                    // mediaPlayer = MediaPlayer.create(this,R.raw.amount_low)
+                    //  mediaPlayer.start()
+                    if (Utils.loaded) {
+                        Utils.soundPool.play(Utils.soundID, Utils.volume, Utils.volume, 1, 0, 1f);
+                        Log.e("Test", "Played sound...volume..."+ Utils.volume);
+                        //Toast.makeText(context,"end",Toast.LENGTH_SHORT).show()
+                    }
+                }
+
+                val i = Intent(activity, DashBoardActivity::class.java)
+                i.putExtra("fragment", "tests")
+                startActivity(i)
+                (activity as Activity).overridePendingTransition(0, 0)
+
+            }
         }
     }
 
@@ -77,6 +131,7 @@ class ReviewFragment: Fragment(), TestQuizReviewClickListener {
         intent.putExtra("title", topic.title)
         intent.putExtra("playeddate", topic.pdate)
         intent.putExtra("lastplayed", topic.typeofPlay)
+        intent.putExtra("readdata", topic.readdata)
         intent.putExtra(ConstantPath.QUIZ_COUNT, topic.totalQuestions)
 
         startActivity(intent)

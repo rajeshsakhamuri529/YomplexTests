@@ -1,10 +1,11 @@
 <resources>
-    <string name="app_name">YomplexTests</string>
+    <string name="app_name">Yomplex JEE Test Prep</string>
     <string name="str_chapter">Chapters</string>
     <string name="str_topics">Practice</string>
     <string name="topics">Topics</string>
     <string name="quiz">QUIZ</string>
     <string name="tests">TESTS</string>
+    <string name="tiny_tests">TINY TESTS</string>
     <string name="review">REVIEW</string>
     <string name="home">HOME</string>
     <string name="str_daily_chanllenge">Daily Challenges</string>
@@ -37,7 +38,7 @@
     <string name="terms_amp_conditions"><![CDATA[Terms & Conditions]]></string>
     <string name="notifications_admin_channel_name">adminChannelName</string>
     <string name="notifications_admin_channel_description">adminChannelDescription</string>
-    <string name="t_amp_c_privacy">Privacy policy</string>
+    <string name="t_amp_c_privacy">PRIVACY POLICY</string>
     <string name="feedback">Feedback</string>
     <string name="write_to_us">Write to us</string>
     <string name="sign_out">Sign Out</string>
@@ -49,8 +50,25 @@
     <string name="text2">Short quizzes on each topic help you master important concepts from the JEE syllabus. Questions are frequently updated.</string>
     <string name="text3">Short tests based on the JEE syllabus &amp; past papers help you master time-management &amp; accuracy. Detailed solutions are provided.</string>
     <string name="text4">Tiny Textbooks, specially designed  by experts, contain reference formulas, difficult concepts, etc. More books are being added based on student and teacher suggestions. Save offline and study when you want.</string>
-
+    <string name="text5">Got 12 minutes? Take a Tiny Test! Each Test contains questions based on the JEE syllabus &amp; past papers. help you learn with concentration and make no mistakes! This helps you get in the right mindset for exams where each little mistake is expensive!</string>
     <string name="revision_practice">Revision &amp; Practice</string>
 
     <string name="str_quiz">Score a <b>4</b> in one</string>
+
+    <string name="emoji">&#129300;</string>
+
+
+    <string name="tips_text1">Work regularly! Try to solve at least one Test per Topic every week.</string>
+    <string name="tips_text2">Go through the Hints in the Test Reviews. Make sure you understand each concept well!</string>
+    <string name="tips_text3">Dont worry if you don\'t perfect scores at first. Regular practice will improve your performance.</string>
+
+    <string name="topics_text1"><b>Algebra:</b> logic, sets, relations, complex numbers, quadratic equations, matrix, determinant.</string>
+    <string name="topics_text2"><b>Geometry:</b> analytic geometry in 2 &amp; 3 dimensions, vectors.</string>
+    <string name="topics_text3"><b>Calculus 1:</b> functions, trigonometric functions, limits, continuity, derivatives.</string>
+    <string name="topics_text4"><b>Calculus 2:</b> integrals, differential equations.</string>
+    <string name="topics_text5"><b>Others:</b> binomial theorem, sequences &amp; series, permutations, combinations, probability, statistics.</string>
+
+    <string name="empty_review_msg"><u>Take a Test</u></string>
+
+
 </resources>

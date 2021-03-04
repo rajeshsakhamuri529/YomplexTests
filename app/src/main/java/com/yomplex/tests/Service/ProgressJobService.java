@@ -56,7 +56,7 @@ public class ProgressJobService extends JobIntentService {
      */
     public static void enqueueWork(Context context, String url, String version, ServiceResultReceiver workerResultReceiver) {
         dataBase = new QuizGameDataBase(context);
-        File f =  new File((context.getExternalFilesDir(null)).getAbsolutePath());
+        File f =  new File((context.getCacheDir()).getAbsolutePath());
         dirpath = f.getAbsolutePath();
         ProgressJobService.context1 = context;
         Intent intent = new Intent(context, ProgressJobService.class);
@@ -112,14 +112,14 @@ public class ProgressJobService extends JobIntentService {
                                 public void onDownloadComplete() {
                                     Log.e("ProgressJobService","onDownloadComplete.....");
                                     try{
-                                        File dirFile = new File(context1.getExternalFilesDir(null),"test");
+                                        File dirFile = new File(context1.getCacheDir(),"test");
                                         FileUtils.deleteDirectory(dirFile);
                                     }catch (Exception e){
 
                                     }
                                     boolean iszip = Utils.unpackZip(dirpath,"/testcontent.rar");
                                     if(iszip){
-                                        File dirFile = new File(context1.getExternalFilesDir(null),"testcontent.rar");
+                                        File dirFile = new File(context1.getCacheDir(),"testcontent.rar");
                                         dirFile.delete();
                                         dataBase.updatetestcontentversion(version,"");
                                         dataBase.updatetestcontentdownloadstatus(1,"");

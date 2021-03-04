@@ -116,22 +116,22 @@ class DashBoardActivity : BaseActivity(),
         mTracker!!.setScreenName("Dashboard")
         mTracker!!.send(HitBuilders.ScreenViewBuilder().build())
 
-        var testcontentlist: List<TestDownload>? = databaseHandler!!.gettestContent()
+        /*var testcontentlist: List<TestDownload>? = databaseHandler!!.gettestContent()
         if(testcontentlist!!.size <= 0){
 
-            /*version = sharedPrefs!!.getPrefVal(this,"testversion")!!
+            *//*version = sharedPrefs!!.getPrefVal(this,"testversion")!!
             url = sharedPrefs!!.getPrefVal(this,"testurl")!!
 
             Log.e("dashboard activity","version....."+version);
             Log.e("dashboard activity","url....."+url);
             databaseHandler!!.insertTESTCONTENTDOWNLOAD(version,url,"",0)
-            downloadDataFromBackground(this@DashBoardActivity,url,version)*/
+            downloadDataFromBackground(this@DashBoardActivity,url,version)*//*
 
             val docRef = db.collection("testcontentdownload").document("nJUIWEtshPEmAXjqn7y4")
             docRef.get().addOnSuccessListener { document ->
                 if (document != null) {
                     Log.e("grade activity", "DocumentSnapshot data: ${document.data}")
-                    /*version = document.data!!.get("TestContentVersion").toString()
+                    *//*version = document.data!!.get("TestContentVersion").toString()
                     url = document.data!!.get("TestContentUrl").toString()
 
 
@@ -139,7 +139,7 @@ class DashBoardActivity : BaseActivity(),
                     //sharedPrefs.setBooleanPrefVal(this@GradeActivity, ConstantPath.IS_FIRST_TIME, true)
                     //if(hasPermissions(this@GradeActivity, *PERMISSIONS)){
                         // var url = databaseHandler!!.gettesttopicurl()
-                        downloadDataFromBackground(this@DashBoardActivity,url,version)*/
+                        downloadDataFromBackground(this@DashBoardActivity,url,version)*//*
                     for(i in 0 until (document.data!!.size - 4)){
                         if(i == 0){
                             var version = document.data!!.get("BasicVersion").toString()
@@ -191,7 +191,7 @@ class DashBoardActivity : BaseActivity(),
                     //navigateToDashboard("GRADE 6")
 
                 }
-        }
+        }*/
 
 
         try{
@@ -267,7 +267,7 @@ class DashBoardActivity : BaseActivity(),
             }
             else if(fragment == "Settings"){
                 loadFragment(SettingFragment())
-                val revisionItem = navigation.getMenu().getItem(4)
+                val revisionItem = navigation.getMenu().getItem(2)
                 // Select home item
                 navigation.setSelectedItemId(revisionItem.getItemId());
             }else{
@@ -457,7 +457,7 @@ class DashBoardActivity : BaseActivity(),
 
 
             }
-            R.id.nav_videos -> {
+            /*R.id.nav_videos -> {
                 val fragmentManager = supportFragmentManager
                 val currentFragment = fragmentManager.findFragmentById(R.id.fragment_container)
                 sound = sharedPrefs?.getBooleanPrefVal(this!!, ConstantPath.SOUNDS) ?: true
@@ -479,7 +479,7 @@ class DashBoardActivity : BaseActivity(),
                 }
 
 
-            }
+            }*/
 
 
             R.id.nav_settings -> {
@@ -515,6 +515,7 @@ class DashBoardActivity : BaseActivity(),
         val currentFragment = fragmentManager.findFragmentById(R.id.fragment_container)
 
         if(currentFragment!! is TestsFragment) {
+            Log.e("dash board","on back pressed.....test fragment");
             if(backPressedTime+2000>System.currentTimeMillis()){
                 backPressToastMessage!!.cancel()
                 finishAffinity()
@@ -526,7 +527,8 @@ class DashBoardActivity : BaseActivity(),
             }
             backPressedTime=System.currentTimeMillis()
         }else if(currentFragment!! is SettingFragment) {
-            if(backPressedTime+2000>System.currentTimeMillis()){
+            Log.e("dash board","on back pressed.....settings fragment");
+            /*if(backPressedTime+2000>System.currentTimeMillis()){
                 backPressToastMessage!!.cancel()
                 finishAffinity()
                 return
@@ -535,7 +537,28 @@ class DashBoardActivity : BaseActivity(),
                 backPressToastMessage = Toast.makeText(this, R.string.exit_message, Toast.LENGTH_SHORT)
                 backPressToastMessage!!.show()
             }
-            backPressedTime=System.currentTimeMillis()
+            backPressedTime=System.currentTimeMillis()*/
+            loadFragment(TestsFragment())
+            val revisionItem = navigation.getMenu().getItem(0)
+            // Select home item
+            navigation.setSelectedItemId(revisionItem.getItemId());
+        }else if(currentFragment!! is ReviewFragment) {
+            Log.e("dash board","on back pressed.....review fragment");
+            /*if(backPressedTime+2000>System.currentTimeMillis()){
+                backPressToastMessage!!.cancel()
+                finishAffinity()
+
+                return
+            }
+            else{
+                backPressToastMessage = Toast.makeText(this, R.string.exit_message, Toast.LENGTH_SHORT)
+                backPressToastMessage!!.show()
+            }
+            backPressedTime=System.currentTimeMillis()*/
+            loadFragment(TestsFragment())
+            val revisionItem = navigation.getMenu().getItem(0)
+            // Select home item
+            navigation.setSelectedItemId(revisionItem.getItemId());
         }
 
     }

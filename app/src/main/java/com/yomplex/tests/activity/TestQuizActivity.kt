@@ -64,6 +64,7 @@ import com.yomplex.tests.utils.ConstantPath.*
 import com.yomplex.tests.utils.SharedPrefs
 import com.yomplex.tests.utils.UniqueUUid
 import com.yomplex.tests.utils.Utils
+import com.yomplex.tests.utils.Utils.listAssetFiles
 
 
 import kotlinx.android.synthetic.main.activity_test_quiz.*
@@ -130,6 +131,7 @@ class TestQuizActivity : BaseActivity(), View.OnClickListener {
     var dbTrackingStatus: DatabaseReference? = null
     var dbTrackingHintStatus: DatabaseReference? = null
     var courseId: String? = ""
+    var originaltopicName: String? = ""
     var topicId: String? = ""
     var topicLevel: String? = ""
     var complete: String? = ""
@@ -166,6 +168,8 @@ class TestQuizActivity : BaseActivity(), View.OnClickListener {
     var oPath: String? = null
     var topicStatusVM: TopicStatusVM? = null
     var dynamicPath: String? = null
+    var readdata: String? = null
+    var filename = ""
     var folderName: String? = null
     var gradeTitle: String? = null
     var unAnsweredList: ArrayList<Int>? = null
@@ -258,6 +262,23 @@ class TestQuizActivity : BaseActivity(), View.OnClickListener {
         lastplayed = intent.getStringExtra("LAST_PLAYED")!!
         displayno = intent.getIntExtra("DISPLAY_NO", -1)!!
         comingfrom = intent.getStringExtra("comingfrom")!!
+        readdata = intent.getStringExtra("readdata")
+
+        originaltopicName = intent.getStringExtra("topicnameoriginal")!!
+
+        if (originaltopicName.equals("CALCULUS 1")) {
+            filename = "/jee-calculus-1"
+        } else if (originaltopicName.equals("CALCULUS 2")) {
+            filename = "/jee-calculus-2"
+        } else if (originaltopicName.equals("ALGEBRA")) {
+            filename = "/ii-algebra"
+        } else if (originaltopicName.equals("OTHER")) {
+            filename = "/other"
+        } else if (originaltopicName.equals("GEOMETRY")) {
+            filename = "/iii-geometry"
+        }
+
+
         quizTimer = Timer()
         sharedPrefs = SharedPrefs()
         animationFadeIn = AnimationUtils.loadAnimation(this, R.anim.fade_in_700)
@@ -333,14 +354,14 @@ class TestQuizActivity : BaseActivity(), View.OnClickListener {
         minutescountDownTimer = object: CountDownTimer(longtime, 1000) {
             override fun onTick(millisUntilFinished:Long) {
                 millisUntil = millisUntilFinished
-                Log.e("test quiz activity","millisUntilFinished.........."+millisUntil)
+               // Log.e("test quiz activity","millisUntilFinished.........."+millisUntil)
 
                 var f = (millisUntil / 1000).toFloat()
                 var f1 = (f / 60.0).toDouble()
 
                 timeuntilfinish = Math.ceil(f1).toInt();
 
-                Log.e("test quiz","timeuntilfinish......."+timeuntilfinish);
+               // Log.e("test quiz","timeuntilfinish......."+timeuntilfinish);
 
                 timetaken = timeCountInMilliSeconds - timeuntilfinish;
                 var minutes = TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished);
@@ -348,9 +369,9 @@ class TestQuizActivity : BaseActivity(), View.OnClickListener {
 
                 var seconds = TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished);
 
-                Log.e("test quiz","seconds......."+seconds);
+             //   Log.e("test quiz","seconds......."+seconds);
 
-                Log.e("test quiz","millisUntilFinished/1000......."+millisUntilFinished/1000);
+             //   Log.e("test quiz","millisUntilFinished/1000......."+millisUntilFinished/1000);
                 isTimerRunning = true
                 if (timeuntilfinish == 1) {
                     //minutescountDownTimer.cancel()
@@ -465,6 +486,9 @@ class TestQuizActivity : BaseActivity(), View.OnClickListener {
 
         report_rl = view.findViewById(R.id.report_rl)
         share_rl = view.findViewById(R.id.share_rl)
+
+        report_rl!!.visibility = View.GONE
+        share_rl!!.visibility = View.GONE
         /*webView_option2?.setInitialScale(1);
         webView_option2?.getSettings()?.setLoadWithOverviewMode(true)
         webView_option2?.getSettings()?.setUseWideViewPort(true)*/
@@ -684,7 +708,7 @@ class TestQuizActivity : BaseActivity(), View.OnClickListener {
                     }
                 }
 
-                Toast.makeText(this, "share clicked....", Toast.LENGTH_LONG).show()
+
                 //var rootView = findViewById(android.R.id.content);
                 /**/
                 sharedialog!!.show()
@@ -914,7 +938,12 @@ class TestQuizActivity : BaseActivity(), View.OnClickListener {
         }
         Log.e("test question activity","hint alert dialog....hint path..."+hintPath);
         webview.webViewClient = hint
-        webview.loadUrl(WEBVIEW_FILE_PATH + hintPath)
+        if(readdata.equals("files")){
+            webview.loadUrl(WEBVIEW_FILE_PATH + hintPath)
+        }else{
+            webview.loadUrl(hintPath)
+        }
+
         webview.setBackgroundColor(0)
         buttonEffect(btn_gotIt,false)
         // alertDialog = dialogBuilder.create()
@@ -950,14 +979,90 @@ class TestQuizActivity : BaseActivity(), View.OnClickListener {
         dialog!!.setContentView(R.layout.layout_report)
         // val webview = dialog!!.findViewById(R.id.webview_hint) as WebView
         val close = dialog!!.findViewById(R.id.btn_cancel) as Button
+        val submit_btn = dialog!!.findViewById(R.id.submit_btn) as Button
+
+        val radioGroup = dialog!!.findViewById(R.id.radioGroup) as RadioGroup
+
+        val successRL = dialog!!.findViewById(R.id.successRL) as RelativeLayout
+        val edittextRL = dialog!!.findViewById(R.id.edittextRL) as RelativeLayout
+        val btn_done = dialog!!.findViewById(R.id.btn_done) as Button
+
+        val infoedt = dialog!!.findViewById(R.id.infoedt) as EditText
+        submit_btn.setOnClickListener {
+            Log.e("test quiz","showDialogForReport....submit btn click....");
+            sound = sharedPrefs?.getBooleanPrefVal(this, SOUNDS) ?: true
+            if(!sound){
+                // mediaPlayer = MediaPlayer.create(this,R.raw.amount_low)
+                //  mediaPlayer.start()
+                if (Utils.loaded) {
+                    Utils.soundPool.play(Utils.soundID, Utils.volume, Utils.volume, 1, 0, 1f);
+                    Log.e("Test", "Played sound...volume..."+ Utils.volume);
+                    //Toast.makeText(context,"end",Toast.LENGTH_SHORT).show()
+                }
+            }
+            var selectedId = radioGroup.checkedRadioButtonId
+            Log.e("test quiz","selected id......"+selectedId);
+            if(selectedId > 0){
+                val radioButton = dialog!!.findViewById(selectedId) as RadioButton
+
+                btn_done.visibility = View.VISIBLE
+                successRL.visibility = View.VISIBLE
+                edittextRL.visibility = View.GONE
+                radioGroup.visibility = View.GONE
+                submit_btn.visibility = View.GONE
+                close.visibility = View.GONE
+                Toast.makeText(this, radioButton.text, Toast.LENGTH_LONG).show()
+
+                val reportsModel = ReportsModel()
+                var userid = sharedPrefs!!.getPrefVal(this, ConstantPath.UID)
+                var email = sharedPrefs!!.getPrefVal(this, "email")
+                Log.e("test quiz activity","userid......."+userid)
+                testQuiz = databaseHandler!!.getQuizTopicsForTimerLastPlayed(topicName!!.toLowerCase())
+
+                reportsModel.useremail = email
+                reportsModel.reportissuetype = ""+radioButton.text
+                reportsModel.additionalinfo = infoedt.text.toString()
+                reportsModel.coursename = testQuiz.testtype
+                reportsModel.questionpath = dbQPaths
 
 
 
+                firestore!!.collection("reportissuecollection")
+                    .add(reportsModel)
+                    .addOnCompleteListener(object : OnCompleteListener<DocumentReference> {
+                        override fun onComplete(task: Task<DocumentReference>) {
+                            if (task.isSuccessful) {
+                                Log.e("reportissuecollection", "reportissuecollection added successfully")
+                            } else {
+                                Log.e("reportissuecollection", task.exception.toString())
+                            }
+                        }
+                    })
 
 
+
+            }else{
+                Toast.makeText(this, "Please select the report issue.", Toast.LENGTH_LONG).show()
+            }
+            //dialog!!.dismiss()
+        }
         //buttonEffect(btn_gotIt,false)
         // alertDialog = dialogBuilder.create()
         close.setOnClickListener {
+            sound = sharedPrefs?.getBooleanPrefVal(this, SOUNDS) ?: true
+            if(!sound){
+                // mediaPlayer = MediaPlayer.create(this,R.raw.amount_low)
+                //  mediaPlayer.start()
+                if (Utils.loaded) {
+                    Utils.soundPool.play(Utils.soundID, Utils.volume, Utils.volume, 1, 0, 1f);
+                    Log.e("Test", "Played sound...volume..."+ Utils.volume);
+                    //Toast.makeText(context,"end",Toast.LENGTH_SHORT).show()
+                }
+            }
+            dialog!!.dismiss()
+        }
+
+        btn_done.setOnClickListener {
             sound = sharedPrefs?.getBooleanPrefVal(this, SOUNDS) ?: true
             if(!sound){
                 // mediaPlayer = MediaPlayer.create(this,R.raw.amount_low)
@@ -1018,8 +1123,8 @@ class TestQuizActivity : BaseActivity(), View.OnClickListener {
             var bitmap: Bitmap = Bitmap.createBitmap(v1.getDrawingCache());
             v1.setDrawingCacheEnabled(false);
             Utils.saveBitmap(bitmap,this@TestQuizActivity)
-            val dirFile = File(getExternalFilesDir(null), "/screenshot.png")
-
+            val dirFile = File(this@TestQuizActivity.getCacheDir(), "/screenshot.png")
+            Log.e("test quiz","dir file........"+dirFile);
             //var uri = Uri.fromFile(dirFile);
             var photoURI = FileProvider.getUriForFile(this@TestQuizActivity,
         BuildConfig.APPLICATION_ID + ".files",dirFile);
@@ -1347,7 +1452,7 @@ class TestQuizActivity : BaseActivity(), View.OnClickListener {
         pathsbuilder = StringBuilder()
         typebuilder = StringBuilder()
         optionsbuilder = StringBuilder()
-        val dirFile = File(getExternalFilesDir(null),topicName!!.toLowerCase()+"/"+"test/")
+        val dirFile = File(getCacheDir(),topicName!!.toLowerCase()+filename)
         for (i in 0 until totalQuestion!!)
         {
             questionsItem = arrayMap!!.get(listWithUniqueString!!.get(positionList!![i]))
@@ -1362,11 +1467,17 @@ class TestQuizActivity : BaseActivity(), View.OnClickListener {
                 Log.e("test quiz","randomPosition....."+randomPosition)
                 Log.e("test quiz","questionsItem!!.get(randomPosition).id......"+questionsItem!!.get(randomPosition).id)
                 Log.e("test quiz","dbQPaths....."+dbQPaths)
+                Log.e("test quiz","readdata....."+readdata)
+
+                if(readdata.equals("files")){
+                    paths = dirFile.absolutePath +"/" + dbQPaths
+                    Log.e("test quiz","localBlobcityPath1....."+dirFile.absolutePath)
+                }else{
+                    paths = topicName!!.toLowerCase() +"/test/" + dbQPaths
+                }
 
 
-                paths = dirFile.absolutePath +"/" + dbQPaths
 
-                Log.e("test quiz","localBlobcityPath1....."+dirFile.absolutePath)
                // Log.e("test quiz","dbQPaths....."+dbQPaths)
                 type = questionsItem!!.get(randomPosition).type
 
@@ -1379,42 +1490,79 @@ class TestQuizActivity : BaseActivity(), View.OnClickListener {
             }
 
             Log.e("test question activity","......for....i....."+i+"........"+paths);
-            var file = File(paths)
-            Log.e("test quiz","file..........."+file.absolutePath)
-            var listFile = file.listFiles()
-            Log.e("test quiz","listFile..........."+listFile)
-            if(optionsbuilder.length == 0){
-                var options = StringBuilder()
-                for (filename in listFile) {
-                    if (filename.name.contains("opt")) {
-                        if (!filename.name.contains("opt5")) {
-                            //listOfOptions!!.add(filename)
-                            if (options.length == 0) {
-                                options.append(filename)
-                            } else {
-                                options.append("#" + filename)
+            if(readdata.equals("files")){
+                var file = File(paths)
+                Log.e("test quiz","file..........."+file.absolutePath)
+                var listFile = file.listFiles()
+                Log.e("test quiz","listFile..........."+listFile)
+                if(optionsbuilder.length == 0){
+                    var options = StringBuilder()
+                    for (filename in listFile) {
+                        if (filename.name.contains("opt")) {
+                            if (!filename.name.contains("opt5")) {
+                                //listOfOptions!!.add(filename)
+                                if (options.length == 0) {
+                                    options.append(filename)
+                                } else {
+                                    options.append("#" + filename)
+                                }
                             }
                         }
                     }
-                }
 
-                optionsbuilder.append(""+(i+1)+"~"+options.toString())
-            }else{
-                var options = StringBuilder()
-                for (filename in listFile) {
-                    if (filename.name.contains("opt")) {
-                        if (!filename.name.contains("opt5")) {
-                            //listOfOptions!!.add(filename)
-                            if (options.length == 0) {
-                                options.append(filename)
-                            } else {
-                                options.append("#" + filename)
+                    optionsbuilder.append(""+(i+1)+"~"+options.toString())
+                }else{
+                    var options = StringBuilder()
+                    for (filename in listFile) {
+                        if (filename.name.contains("opt")) {
+                            if (!filename.name.contains("opt5")) {
+                                //listOfOptions!!.add(filename)
+                                if (options.length == 0) {
+                                    options.append(filename)
+                                } else {
+                                    options.append("#" + filename)
+                                }
                             }
                         }
                     }
+                    optionsbuilder.append(","+(i+1)+"~"+options.toString())
                 }
-                optionsbuilder.append(","+(i+1)+"~"+options.toString())
+            }else{
+                if(optionsbuilder.length == 0){
+                    var options = StringBuilder()
+                    for (filename in listAssetFiles(paths, applicationContext)!!) {
+                        if (filename.contains("opt")) {
+                            if (!filename.contains("opt5")) {
+                                //listOfOptions!!.add(filename)
+                                if (options.length == 0) {
+                                    options.append(filename)
+                                } else {
+                                    options.append("-" + filename)
+                                }
+                            }
+                        }
+                    }
+
+                    optionsbuilder.append(""+(i+1)+"~"+options.toString())
+                }else{
+                    var options = StringBuilder()
+                    for (filename in listAssetFiles(paths, applicationContext)!!) {
+                        if (filename.contains("opt")) {
+                            if (!filename.contains("opt5")) {
+                                //listOfOptions!!.add(filename)
+                                if (options.length == 0) {
+                                    options.append(filename)
+                                } else {
+                                    options.append("-" + filename)
+                                }
+                            }
+                        }
+                    }
+                    optionsbuilder.append(","+(i+1)+"~"+options.toString())
+                }
             }
+
+
 
 
         }
@@ -1459,7 +1607,7 @@ class TestQuizActivity : BaseActivity(), View.OnClickListener {
 
 
         var testquizfinal:TestQuizFinal
-        testquizfinal = TestQuizFinal(testQuiz.serialNo,testQuiz.title,testQuiz.lastplayed,totalQuestion!!,answerbuilder.toString(),questionanswerbuilder.toString(),pathsbuilder.toString(),currentDate,"",optionsbuilder.toString(),"0",testQuiz.testtype)
+        testquizfinal = TestQuizFinal(testQuiz.serialNo,testQuiz.title,testQuiz.lastplayed,totalQuestion!!,answerbuilder.toString(),questionanswerbuilder.toString(),pathsbuilder.toString(),currentDate,"",optionsbuilder.toString(),"0",testQuiz.testtype,readdata)
         databaseHandler!!.insertquizplayFinal(testquizfinal);
 
 
@@ -1883,53 +2031,46 @@ class TestQuizActivity : BaseActivity(), View.OnClickListener {
         Log.e("test question activity","testPath................"+ path)
         var questionPath = ""
         //Log.d("list", "!" + listAssetFiles(path, applicationContext))
-        /*for (filename in listAssetFiles(path, applicationContext)!!) {
-            if (filename.contains("opt")) {
-                if (!filename.contains("opt5")) {
-                    listOfOptions!!.add(filename)
-                }
-            }
-            if (filename.contains("question")) {
-                questionPath = WEBVIEW_PATH + path + "/" + filename
-            }
-            if (filename.contains("hint")) {
-                hintPath = WEBVIEW_PATH + path + "/" + filename
-                showDialog()
-                *//*webview_hint.settings.javaScriptEnabled = true
-                val hint = object : WebViewClient() {
 
-                    override fun onPageFinished(view: WebView?, url: String?) {
-                        Log.d("onPageFinished", url + "!")
-                        injectCSS(view, "Hint")
-                        // view!!.loadUrl("javascript:document.getElementsByTagName('html')[0].innerHTML+='<style>*{color:#ffffff}</style>';")
+        if(readdata.equals("files")){
+            val file = File(path)
+            val listFile = file.listFiles()
+            if(listFile.size > 0){
+                for (file1 in listFile){
+                    if (file1.name.contains("question")) {
+                        questionPath = file1.absolutePath
+                    }
+                    if (file1.name.contains("hint")) {
+                        hintPath = file1.absolutePath
+                        showDialog()
+                    }
+
+                    if (file1.name.contains("opt")) {
+                        listOfOptions!!.add(file1.absolutePath)
+                    }
+
+
+                }
+
+            }
+        }else{
+            for (filename in listAssetFiles(path, applicationContext)!!) {
+                if (filename.contains("opt")) {
+                    if (!filename.contains("opt5")) {
+                        listOfOptions!!.add(filename)
                     }
                 }
-                Log.e("test question activity","hint alert dialog....hint path..."+hintPath);
-                webview_hint.webViewClient = hint
-                webview_hint.loadUrl(hintPath)
-                webview_hint.setBackgroundColor(0)*//*
-            }
-        }*/
-        val file = File(path)
-        val listFile = file.listFiles()
-        if(listFile.size > 0){
-            for (file1 in listFile){
-                if (file1.name.contains("question")) {
-                    questionPath = file1.absolutePath
+                if (filename.contains("question")) {
+                    questionPath = WEBVIEW_PATH + path + "/" + filename
                 }
-                if (file1.name.contains("hint")) {
-                    hintPath = file1.absolutePath
+                if (filename.contains("hint")) {
+                    hintPath = WEBVIEW_PATH + path + "/" + filename
                     showDialog()
+
                 }
-
-                if (file1.name.contains("opt")) {
-                    listOfOptions!!.add(file1.absolutePath)
-                }
-
-
             }
-
         }
+
 
         Log.e("test quiz","question path...."+questionPath)
         Log.e("test quiz","listOfOptions!!.get(0)...."+listOfOptions!!.get(0))
@@ -1978,7 +2119,7 @@ class TestQuizActivity : BaseActivity(), View.OnClickListener {
                 override fun run() {
                     webViewAnimation()
                 }
-            }, 500)
+            }, 1000)
             webViewPathAndLoad(path, type)
         }
 
@@ -2031,8 +2172,14 @@ class TestQuizActivity : BaseActivity(), View.OnClickListener {
 
             }, 500)
 
-            opt1Path = WEBVIEW_FILE_PATH + listOfOptions!!.get(0)
-            opt2Path = WEBVIEW_FILE_PATH + listOfOptions!!.get(1)
+            if(readdata.equals("files")){
+                opt1Path = WEBVIEW_FILE_PATH + listOfOptions!!.get(0)
+                opt2Path = WEBVIEW_FILE_PATH + listOfOptions!!.get(1)
+            }else{
+                opt1Path = WEBVIEW_PATH + path + "/" + listOfOptions!!.get(0)
+                opt2Path = WEBVIEW_PATH + path + "/" + listOfOptions!!.get(1)
+            }
+
 
 
             webView_option1!!.settings.javaScriptEnabled = true
@@ -2064,17 +2211,32 @@ class TestQuizActivity : BaseActivity(), View.OnClickListener {
             webView_option1_opacity!!.webViewClient = OpacitywebviewClient
             webView_option2_opacity!!.webViewClient = OpacitywebviewClient
 
-            if (Utils.jsoupWrapper(WEBVIEW_FILE_PATH + listOfOptions!!.get(0), this)) {
-                webView_option1!!.loadUrl(opt1Path!!)
-                webView_option2!!.loadUrl(opt2Path!!)
-                webView_option1_opacity!!.loadUrl(opt1Path!!)
-                webView_option2_opacity!!.loadUrl(opt2Path!!)
-            } else {
-                webView_option1!!.loadUrl(opt2Path!!)
-                webView_option2!!.loadUrl(opt1Path!!)
-                webView_option1_opacity!!.loadUrl(opt2Path!!)
-                webView_option2_opacity!!.loadUrl(opt1Path!!)
+            if(readdata.equals("files")){
+                if (Utils.jsoupWrapper(WEBVIEW_FILE_PATH + listOfOptions!!.get(0), this)) {
+                    webView_option1!!.loadUrl(opt1Path!!)
+                    webView_option2!!.loadUrl(opt2Path!!)
+                    webView_option1_opacity!!.loadUrl(opt1Path!!)
+                    webView_option2_opacity!!.loadUrl(opt2Path!!)
+                } else {
+                    webView_option1!!.loadUrl(opt2Path!!)
+                    webView_option2!!.loadUrl(opt1Path!!)
+                    webView_option1_opacity!!.loadUrl(opt2Path!!)
+                    webView_option2_opacity!!.loadUrl(opt1Path!!)
+                }
+            }else{
+                if (Utils.jsoupWrapper(path + "/" + listOfOptions!!.get(0), this)) {
+                    webView_option1!!.loadUrl(opt1Path)
+                    webView_option2!!.loadUrl(opt2Path)
+                    webView_option1_opacity!!.loadUrl(opt1Path)
+                    webView_option2_opacity!!.loadUrl(opt2Path)
+                } else {
+                    webView_option1!!.loadUrl(opt2Path)
+                    webView_option2!!.loadUrl(opt1Path)
+                    webView_option1_opacity!!.loadUrl(opt2Path)
+                    webView_option2_opacity!!.loadUrl(opt1Path)
+                }
             }
+
 
         }
         webView_question!!.setBackgroundColor(0)
@@ -2120,8 +2282,15 @@ class TestQuizActivity : BaseActivity(), View.OnClickListener {
             //webView_question!!.loadData(html, "text/html", "UTF-8");
         }*/
 
-        webView_question!!.loadUrl(WEBVIEW_FILE_PATH + questionPath)
-        webView_share_question!!.loadUrl(WEBVIEW_FILE_PATH + questionPath)
+        if(readdata.equals("files")){
+            webView_question!!.loadUrl(WEBVIEW_FILE_PATH + questionPath)
+            webView_share_question!!.loadUrl(WEBVIEW_FILE_PATH + questionPath)
+        }else{
+            webView_question!!.loadUrl(questionPath)
+            webView_share_question!!.loadUrl(questionPath)
+        }
+
+
 
     }
 
@@ -2177,10 +2346,18 @@ class TestQuizActivity : BaseActivity(), View.OnClickListener {
 
     private fun webViewPathAndLoad(path: String, type: Int) {
 
-        opt1Path = WEBVIEW_FILE_PATH + listOfOptions!!.get(0)
-        opt2Path = WEBVIEW_FILE_PATH + listOfOptions!!.get(1)
-        opt3Path = WEBVIEW_FILE_PATH + listOfOptions!!.get(2)
-        opt4Path = WEBVIEW_FILE_PATH + listOfOptions!!.get(3)
+        if(readdata.equals("files")){
+            opt1Path = WEBVIEW_FILE_PATH + listOfOptions!!.get(0)
+            opt2Path = WEBVIEW_FILE_PATH + listOfOptions!!.get(1)
+            opt3Path = WEBVIEW_FILE_PATH + listOfOptions!!.get(2)
+            opt4Path = WEBVIEW_FILE_PATH + listOfOptions!!.get(3)
+        }else{
+            opt1Path = WEBVIEW_PATH + path + "/" + listOfOptions!!.get(0)
+            opt2Path = WEBVIEW_PATH + path + "/" + listOfOptions!!.get(1)
+            opt3Path = WEBVIEW_PATH + path + "/" + listOfOptions!!.get(2)
+            opt4Path = WEBVIEW_PATH + path + "/" + listOfOptions!!.get(3)
+        }
+
         Log.d("webViewPathAndLoad", opt1Path + " ! " + opt2Path)
 
         val sdf = SimpleDateFormat("dd-MM-yyyy")
@@ -3139,7 +3316,6 @@ class TestQuizActivity : BaseActivity(), View.OnClickListener {
         intent.putExtra(TOPIC_ID, topicId)
         intent.putExtra(TOPIC_POSITION, dbPosition)
         intent.putExtra(IS_LEVEL_COMPLETE, isLevelCompleted)
-
         intent.putExtra(DYNAMIC_PATH, dynamicPath)
         intent.putExtra(COURSE_ID, courseId)
         intent.putExtra(COURSE_NAME, courseName)
@@ -3151,6 +3327,8 @@ class TestQuizActivity : BaseActivity(), View.OnClickListener {
         intent.putExtra("DISPLAY_NO", displayno)
         intent.putExtra("LAST_PLAYED", lastplayed)
         intent.putExtra("comingfrom", comingfrom)
+        intent.putExtra("readdata", readdata)
+        intent.putExtra("topicnameoriginal", originaltopicName)
         startActivity(intent)
         finish()
     }
@@ -3250,7 +3428,18 @@ class TestQuizActivity : BaseActivity(), View.OnClickListener {
 
         val tv_quit = dialogView.findViewById(R.id.tv_quit1) as Button
         val tv_return = dialogView.findViewById(R.id.tv_return1) as Button
+
         tv_quit.setOnClickListener {
+            sound = sharedPrefs?.getBooleanPrefVal(this, SOUNDS) ?: true
+            if(!sound){
+                // mediaPlayer = MediaPlayer.create(this,R.raw.amount_low)
+                //  mediaPlayer.start()
+                if (Utils.loaded) {
+                    Utils.soundPool.play(Utils.soundID, Utils.volume, Utils.volume, 1, 0, 1f);
+                    Log.e("Test", "Played sound...volume..."+ Utils.volume);
+                    //Toast.makeText(context,"end",Toast.LENGTH_SHORT).show()
+                }
+            }
             if (countQuestion >= 0) {
                 if (isFirstAnswerGiven) {
                     addAllDataInDb(false, true)
@@ -3286,6 +3475,16 @@ class TestQuizActivity : BaseActivity(), View.OnClickListener {
         val fast = fastblur(map, 10);
         val draw = BitmapDrawable(getResources(), fast);*/
         tv_return.setOnClickListener {
+            sound = sharedPrefs?.getBooleanPrefVal(this, SOUNDS) ?: true
+            if(!sound){
+                // mediaPlayer = MediaPlayer.create(this,R.raw.amount_low)
+                //  mediaPlayer.start()
+                if (Utils.loaded) {
+                    Utils.soundPool.play(Utils.soundID, Utils.volume, Utils.volume, 1, 0, 1f);
+                    Log.e("Test", "Played sound...volume..."+ Utils.volume);
+                    //Toast.makeText(context,"end",Toast.LENGTH_SHORT).show()
+                }
+            }
             alertDialog.dismiss()
         }
         //alertDialog.getWindow().setBackgroundDrawable(draw);
