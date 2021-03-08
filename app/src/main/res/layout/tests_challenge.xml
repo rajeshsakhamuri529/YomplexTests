@@ -103,7 +103,7 @@
                         android:id="@+id/tv_review"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="This Week"
+                        android:text="Best Score This Week"
                         android:textSize="@dimen/_14ssp"
                         android:layout_centerVertical="true"
 
@@ -118,6 +118,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="("
+                        android:visibility="gone"
                         android:textSize="@dimen/_14ssp"
                         android:layout_centerVertical="true"
                         android:layout_marginLeft="@dimen/_15sdp"
@@ -131,7 +132,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text=" Score: "
-
+                        android:visibility="gone"
                         android:textSize="@dimen/_14ssp"
                         android:layout_centerVertical="true"
 
@@ -145,6 +146,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="0 / 20"
+                        android:visibility="gone"
                         android:textSize="@dimen/_14ssp"
                         android:layout_centerVertical="true"
 
@@ -158,6 +160,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text=" )"
+                        android:visibility="gone"
                         android:textSize="@dimen/_14ssp"
                         android:layout_centerVertical="true"
 
@@ -212,7 +215,7 @@
                             android:id="@+id/tv_week"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Past Week"
+                            android:text="Performance"
                             android:textSize="@dimen/_14ssp"
                             android:layout_centerVertical="true"
 

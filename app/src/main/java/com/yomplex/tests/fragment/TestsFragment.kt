@@ -57,6 +57,7 @@ import com.yomplex.tests.interfaces.TestQuizReviewClickListener
 import com.yomplex.tests.model.*
 import com.yomplex.tests.utils.*
 import com.yomplex.tests.utils.ConstantPath.TOPIC_SIZE
+import kotlinx.android.synthetic.main.activity_test_quiz.*
 import kotlinx.android.synthetic.main.tests_challenge.*
 import kotlinx.android.synthetic.main.tests_challenge.view.*
 import org.apache.commons.io.FileUtils
@@ -192,18 +193,17 @@ class TestsFragment: Fragment(),View.OnClickListener, TestClickListener,
         tfRegular = Typeface.createFromAsset(activity!!.getAssets(), "lato_black.ttf")
         tfLight = Typeface.createFromAsset(activity!!.getAssets(), "lato_black.ttf")
 
-        /*val xAxis = view.barchart.getXAxis()
-        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM)
-        xAxis.setDrawGridLines(false)
 
-        view.barchart.getAxisLeft().setDrawGridLines(false)*/
+
 
         val xAxisFormatter: IAxisValueFormatter = MyAxisValueFormatter1()
 
         val xAxis = view.barchart.getXAxis()
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM)
-        //xAxis.labelRotationAngle = 90f
+        xAxis.labelRotationAngle = 45f
+        xAxis.textColor = getResources().getColor(R.color.chart_text_color)
         xAxis.setTypeface(tfLight)
+        xAxis.axisLineColor = getResources().getColor(R.color.chart_axis_color)
         xAxis.setDrawGridLines(false)
         xAxis.setGranularity(1f) // only intervals of 1 day
         xAxis.setLabelCount(7)
@@ -213,9 +213,11 @@ class TestsFragment: Fragment(),View.OnClickListener, TestClickListener,
 
         val leftAxis = view.barchart.getAxisLeft()
         leftAxis.setTypeface(tfLight)
+        leftAxis.textColor = getResources().getColor(R.color.chart_text_color)
         leftAxis.setDrawGridLinesBehindData(true)
         leftAxis.setLabelCount(5, false)
         leftAxis.setValueFormatter(custom)
+        leftAxis.axisLineColor = getResources().getColor(R.color.chart_axis_color)
         leftAxis.setPosition(YAxis.YAxisLabelPosition.OUTSIDE_CHART)
         leftAxis.setSpaceTop(15f)
         leftAxis.setAxisMinimum(0f) // this replaces setStartAtZero(true)
@@ -223,6 +225,9 @@ class TestsFragment: Fragment(),View.OnClickListener, TestClickListener,
 
         val rightAxis = view.barchart.getAxisRight()
         rightAxis.setDrawGridLines(true)
+        rightAxis.textColor = getResources().getColor(R.color.chart_text_color)
+        rightAxis.axisLineColor = getResources().getColor(R.color.chart_axis_color)
+        rightAxis.isGranularityEnabled = false
         rightAxis.setTypeface(tfLight)
         rightAxis.setLabelCount(5, false)
         rightAxis.setValueFormatter(custom)
@@ -251,12 +256,19 @@ class TestsFragment: Fragment(),View.OnClickListener, TestClickListener,
              var total = databaseHandler!!.getWeekTotalScore(getWeekOfYear()-(n-1));
              Log.e("test fragment","count value......."+count);
              entries.add(BarEntry( count.toFloat(),total.toFloat()))
-             if(total <= 15){
+             if(total >= 0 && total <=7){
                  //gradientFills
-                 gradientFills.add(Fill(getResources().getColor(R.color.button_close_text)))
-             }else{
-                 gradientFills.add(Fill(getResources().getColor(R.color.chart_color)))
+                 gradientFills.add(Fill(getResources().getColor(R.color.chart_orange_color)))
+             }else if(total >= 8 && total <=11){
+                 gradientFills.add(Fill(getResources().getColor(R.color.chart_purple_color)))
+             }else if(total >= 12 && total <=15){
+                 gradientFills.add(Fill(getResources().getColor(R.color.chart_blue_color)))
+             }else if(total >= 16 && total <=20){
+                 gradientFills.add(Fill(getResources().getColor(R.color.chart_green_color)))
              }
+             /*else{
+                 gradientFills.add(Fill(getResources().getColor(R.color.chart_color)))
+             }*/
          }
 
 
@@ -269,18 +281,22 @@ class TestsFragment: Fragment(),View.OnClickListener, TestClickListener,
             Color.rgb(106, 150, 31),
             Color.rgb(179, 100, 53)
         )
-
-        view.barchart.getAxisLeft().setDrawGridLines(false)
+        view.barchart.getAxisRight().setEnabled(false)
+        view.barchart.getAxisLeft().setDrawGridLines(true)
+        view.barchart.getAxisLeft().gridColor = getResources().getColor(R.color.chart_axis_color)
+        //view.barchart.setNoDataText(noDataText)
         val dataSets = java.util.ArrayList<IBarDataSet>()
         dataSets.add(bardataset)
 
         val data = BarData(dataSets)
         data.setDrawValues(false)
+        data.isHighlightEnabled = false
+        data.setValueTextColor(getResources().getColor(R.color.chart_color))
         data.setValueTextSize(10f)
         data.setValueTypeface(tfLight)
         data.barWidth = 0.5f
 
-
+        view.barchart.setBorderWidth(20f)
        // var  data = BarData(bardataset);
         view.barchart.setData(data); // set the data and list of labels into chart
        // view.barchart.setDescription("Set Bar Chart Description Here");  // set the description
@@ -380,23 +396,8 @@ class TestsFragment: Fragment(),View.OnClickListener, TestClickListener,
 
         branchesItemList = topicResponseModel.branches
         sharedPrefs?.setIntPrefVal(context!!, ConstantPath.TOPIC_SIZE, branchesItemList!!.size)
-        /*val branchesItemList2 = ArrayList<BranchesItem>()
-        val index1 = branchesItemList!![0].topic.index.toString()
-        tv_topic_number1.text = index1
-        tv_topic_name1.text = branchesItemList!![0].topic.title
-
-        val index2 = branchesItemList!![1].topic.index.toString()
-        tv_topic_number2.text = index2
-        tv_topic_name2.text = branchesItemList!![1].topic.title
-        branchesItemList!!.forEachIndexed { index, branchesItem ->
-            if (index>1){
-                branchesItemList2.add(branchesItem)
-            }
-        }*/
 
 
-        /*rl_chapter_one.setOnClickListener(this)
-        rl_chapter_two.setOnClickListener(this)*/
     }
 
     override fun onReceiveResult(resultCode: Int, resultData: Bundle?) {
@@ -413,83 +414,8 @@ class TestsFragment: Fragment(),View.OnClickListener, TestClickListener,
             }
         }
     }
-    /*private fun showDataFromBackground(
-        mainActivity: Activity,
-        url:String,
-        version:String,
-        mResultReceiver: ServiceResultReceiver
-    ) {
-        ProgressJobService.enqueueWork(mainActivity, url,version, mResultReceiver)
-    }*/
-
-    /*private fun downdata(url:String){
-        val dirpath = File((activity!!.getExternalFilesDir(null))!!.absolutePath)
-
-        val downloadId = PRDownloader.download(url, dirpath.absolutePath, "/testcontent.rar")
-            .build()
-            .setOnStartOrResumeListener {
-                Log.e("downdata", "onStartOrResume.....")
-                isdownload = true
-
-            }
-            .setOnPauseListener { Log.e("downdata", "onPause.....") }
-            .setOnCancelListener { Log.e("downdata", "onCancel.....") }
-            .setOnProgressListener { progress ->
-                Log.e(
-                    "downdata",
-                    "onProgress.....$progress")
-                isdownload = true
-            }
-            .start(object : OnDownloadListener {
-                override fun onDownloadComplete() {
-                    Log.e("downdata", "onDownloadComplete.....")
-                    try {
-                        val dirFile = File(activity!!.getExternalFilesDir(null), "test")
-                        FileUtils.deleteDirectory(dirFile)
-                    } catch (e: Exception) {
-
-                    }
-
-                    val iszip = Utils.unpackZip(dirpath.absolutePath, "/testcontent.rar")
-                    if (iszip) {
-                        val dirFile = File(activity!!.getExternalFilesDir(null), "testcontent.rar")
-                        dirFile.delete()
-
-                        databaseHandler!!.updatetestcontentversion(version,"")
-                        databaseHandler!!.updatetestcontentdownloadstatus(1,"")
-
-                        if(alertDialog != null){
-                           alertDialog!!.dismiss()
-                        }
-                      //  test_btn.isEnabled = true
-                        isdownload = false
-                        readFileLocally()
-                        gotoStartScreen("")
-                    }
-
-                }
 
 
-                override fun onError(error: Error?) {
-
-                    Log.e("downdata", "onerror.....$error")
-                    // JobService.enqueueWork(context1,url,version);
-                  //  test_btn.isEnabled = true
-                    isdownload = false
-                    if(alertDialog != null){
-                        alertDialog!!.dismiss()
-                    }
-                    //if(activity != null){
-                        Toast.makeText(activity,"Please check your network connection.",Toast.LENGTH_LONG).show()
-                //}
-
-                }
-
-
-
-
-            })
-    }*/
     override fun onClick(topicName: String) {
         var filename = ""
         var originalfilename = topicName
@@ -773,9 +699,9 @@ class TestsFragment: Fragment(),View.OnClickListener, TestClickListener,
            // jsonStringBasic =  Utils.readFromFile("$folderPath/basic.json")
             lastplayed = "basic"
 
-            databaseHandler!!.deleteAllQuizTopicsLatPlayed(topictype.toLowerCase())
+         //   databaseHandler!!.deleteAllQuizTopicsLatPlayed(topictype.toLowerCase())
 
-            databaseHandler!!.insertquiztopiclastplayed(topic.title,topic.displayNo,lastplayed,topictype.toLowerCase());
+          //  databaseHandler!!.insertquiztopiclastplayed(topic.title,topic.displayNo,lastplayed,topictype.toLowerCase());
         }else{
 
             if(branchesItemList!!.size == (testQuiz.serialNo).toInt()){
@@ -785,9 +711,9 @@ class TestsFragment: Fragment(),View.OnClickListener, TestClickListener,
                 jsonStringBasic = loadJSONFromAsset("$folderPath/basic.json")
                 //jsonStringBasic =  Utils.readFromFile("$folderPath/basic.json")
                 lastplayed = "basic"
-                databaseHandler!!.deleteAllQuizTopicsLatPlayed(topictype.toLowerCase())
+             //   databaseHandler!!.deleteAllQuizTopicsLatPlayed(topictype.toLowerCase())
 
-                databaseHandler!!.insertquiztopiclastplayed(topic.title,topic.displayNo,lastplayed,topictype.toLowerCase());
+             //   databaseHandler!!.insertquiztopiclastplayed(topic.title,topic.displayNo,lastplayed,topictype.toLowerCase());
             }else{
                 topic = branchesItemList!![((testQuiz.serialNo).toInt())-1].topic
                 folderPath = localPath+topic.folderName
@@ -796,9 +722,9 @@ class TestsFragment: Fragment(),View.OnClickListener, TestClickListener,
                     jsonStringBasic = loadJSONFromAsset("$folderPath/intermediate.json")
                     //jsonStringBasic =  Utils.readFromFile("$folderPath/intermediate.json")
                     lastplayed = "intermediate"
-                    databaseHandler!!.deleteAllQuizTopicsLatPlayed(topictype.toLowerCase())
+                //    databaseHandler!!.deleteAllQuizTopicsLatPlayed(topictype.toLowerCase())
 
-                    databaseHandler!!.insertquiztopiclastplayed(topic.title,topic.displayNo,lastplayed,topictype.toLowerCase());
+                 //   databaseHandler!!.insertquiztopiclastplayed(topic.title,topic.displayNo,lastplayed,topictype.toLowerCase());
                 }else{
                     topic = branchesItemList!![((testQuiz.serialNo).toInt())].topic
                     folderPath = localPath+topic.folderName
@@ -806,9 +732,9 @@ class TestsFragment: Fragment(),View.OnClickListener, TestClickListener,
                     jsonStringBasic = loadJSONFromAsset("$folderPath/basic.json")
                    // jsonStringBasic =  Utils.readFromFile("$folderPath/basic.json")
                     lastplayed = "basic"
-                    databaseHandler!!.deleteAllQuizTopicsLatPlayed(topictype.toLowerCase())
+                 //   databaseHandler!!.deleteAllQuizTopicsLatPlayed(topictype.toLowerCase())
 
-                    databaseHandler!!.insertquiztopiclastplayed(topic.title,topic.displayNo,lastplayed,topictype.toLowerCase());
+                  //  databaseHandler!!.insertquiztopiclastplayed(topic.title,topic.displayNo,lastplayed,topictype.toLowerCase());
 
                 }
             }
@@ -870,9 +796,9 @@ class TestsFragment: Fragment(),View.OnClickListener, TestClickListener,
             jsonStringBasic =  Utils.readFromFile("$folderPath/basic.json")
             lastplayed = "basic"
 
-            databaseHandler!!.deleteAllQuizTopicsLatPlayed(topictype.toLowerCase())
+            //databaseHandler!!.deleteAllQuizTopicsLatPlayed(topictype.toLowerCase())
 
-            databaseHandler!!.insertquiztopiclastplayed(topic.title,topic.displayNo,lastplayed,topictype.toLowerCase());
+           // databaseHandler!!.insertquiztopiclastplayed(topic.title,topic.displayNo,lastplayed,topictype.toLowerCase());
         }else{
 
             if(branchesItemList!!.size == (testQuiz.serialNo).toInt()){
@@ -881,9 +807,9 @@ class TestsFragment: Fragment(),View.OnClickListener, TestClickListener,
                 Log.e("test fragment","testQuiz.folderPath......"+folderPath)
                 jsonStringBasic =  Utils.readFromFile("$folderPath/basic.json")
                 lastplayed = "basic"
-                databaseHandler!!.deleteAllQuizTopicsLatPlayed(topictype.toLowerCase())
+             //   databaseHandler!!.deleteAllQuizTopicsLatPlayed(topictype.toLowerCase())
 
-                databaseHandler!!.insertquiztopiclastplayed(topic.title,topic.displayNo,lastplayed,topictype.toLowerCase());
+              //  databaseHandler!!.insertquiztopiclastplayed(topic.title,topic.displayNo,lastplayed,topictype.toLowerCase());
             }else{
                 topic = branchesItemList!![((testQuiz.serialNo).toInt())-1].topic
                 folderPath = localPath+topic.folderName
@@ -891,18 +817,18 @@ class TestsFragment: Fragment(),View.OnClickListener, TestClickListener,
                 if(testQuiz.lastplayed.equals("basic")){
                     jsonStringBasic =  Utils.readFromFile("$folderPath/intermediate.json")
                     lastplayed = "intermediate"
-                    databaseHandler!!.deleteAllQuizTopicsLatPlayed(topictype.toLowerCase())
+                 //   databaseHandler!!.deleteAllQuizTopicsLatPlayed(topictype.toLowerCase())
 
-                    databaseHandler!!.insertquiztopiclastplayed(topic.title,topic.displayNo,lastplayed,topictype.toLowerCase());
+                  //  databaseHandler!!.insertquiztopiclastplayed(topic.title,topic.displayNo,lastplayed,topictype.toLowerCase());
                 }else{
                     topic = branchesItemList!![((testQuiz.serialNo).toInt())].topic
                     folderPath = localPath+topic.folderName
                     Log.e("test fragment","testQuiz.folderPath......"+folderPath)
                     jsonStringBasic =  Utils.readFromFile("$folderPath/basic.json")
                     lastplayed = "basic"
-                    databaseHandler!!.deleteAllQuizTopicsLatPlayed(topictype.toLowerCase())
+                  //  databaseHandler!!.deleteAllQuizTopicsLatPlayed(topictype.toLowerCase())
 
-                    databaseHandler!!.insertquiztopiclastplayed(topic.title,topic.displayNo,lastplayed,topictype.toLowerCase());
+                  //  databaseHandler!!.insertquiztopiclastplayed(topic.title,topic.displayNo,lastplayed,topictype.toLowerCase());
 
                 }
             }

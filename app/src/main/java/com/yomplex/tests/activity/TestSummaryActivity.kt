@@ -254,13 +254,13 @@ class TestSummaryActivity : BaseActivity(), View.OnClickListener {
         if(count == 0){
             tv_correct.text = ""+count
             totalLL.background = resources.getDrawable(R.drawable.test_summary_0_0)
-            summaryTxt.text = "seriously?"
+            summaryTxt.text = "oops!"
             tv_correct.setTextColor(resources.getColor(R.color.seriously))
             summaryTxt.setTextColor(resources.getColor(R.color.seriously))
         }else if(count == 1){
             tv_correct.text = ""+count
             totalLL.background = resources.getDrawable(R.drawable.test_summary_0_0)
-            summaryTxt.text = "not good"
+            summaryTxt.text = "better than 0"
             tv_correct.setTextColor(resources.getColor(R.color.not_good))
             summaryTxt.setTextColor(resources.getColor(R.color.not_good))
         }else if(count == 2){
@@ -272,7 +272,7 @@ class TestSummaryActivity : BaseActivity(), View.OnClickListener {
         }else if(count == 3){
             tv_correct.text = ""+count
             totalLL.background = resources.getDrawable(R.drawable.test_summary_3_3)
-            summaryTxt.text = "good"
+            summaryTxt.text = "pretty good!"
             tv_correct.setTextColor(resources.getColor(R.color.good))
             summaryTxt.setTextColor(resources.getColor(R.color.good))
 
@@ -824,6 +824,7 @@ class TestSummaryActivity : BaseActivity(), View.OnClickListener {
         intent.putExtra(ConstantPath.CARD_NO, "")
         intent.putExtra("topicnameoriginal", originaltopicName)
         startActivity(intent)
+        //finish()
     }
 
 
@@ -898,13 +899,14 @@ class TestSummaryActivity : BaseActivity(), View.OnClickListener {
         intent.putExtra(ConstantPath.FOLDER_PATH, localPath)
         intent.putExtra(ConstantPath.TITLE_TOPIC, gradeTitle!!)
         intent.putExtra("LAST_PLAYED", lastplayed)
-        intent.putExtra("comingfrom", comingfrom)
+        intent.putExtra("comingfrom", "Test")
         intent.putExtra(ConstantPath.TOPIC_LEVEL, "")
         intent.putExtra(ConstantPath.LEVEL_COMPLETED, "")
         intent.putExtra(ConstantPath.CARD_NO, "")
         intent.putExtra("readdata", "files")
         intent.putExtra("topicnameoriginal", originaltopicName)
         startActivity(intent)
+        //finish()
     }
 
 

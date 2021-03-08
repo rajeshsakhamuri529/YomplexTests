@@ -46,6 +46,7 @@ class TestsAdapter(val context: Context,
     override fun onBindViewHolder(holder: TestsAdapter.TestsViewHolder, position: Int) {
 
         holder.tv_topic_name.text = testtypeslist[position]
+
         for(i in 0 until testscorelist.size) {
             if(testscorelist.get(i).testtype.equals(testtypeslist[position].replace("\\s".toRegex(), "").toLowerCase())){
                 holder.tv_score.text = testscorelist.get(i).highestscore
@@ -68,8 +69,8 @@ class TestsAdapter(val context: Context,
 
                 break
             }else{
-                holder.tv_score.text = ""
-                holder.tv_score.setTextColor(context.resources.getColor(R.color.topic_text))
+                holder.tv_score.text = "0"
+                holder.tv_score.setTextColor(context.resources.getColor(R.color.lives_text))
                 holder.totalRL.background = context.resources.getDrawable(R.drawable.rounded_square)
             }
 

@@ -39,13 +39,12 @@
                 android:layout_height="@dimen/_20sdp"
 
                 android:layout_alignParentEnd="true">
+
                 <ImageView
                     android:layout_width="@dimen/_15sdp"
                     android:layout_height="@dimen/_15sdp"
-                    android:src="@drawable/ic_report"
-                    android:layout_centerHorizontal="true"
                     android:layout_centerVertical="true"
-                    >
+                    android:src="@drawable/ic_report">
 
                 </ImageView>
 

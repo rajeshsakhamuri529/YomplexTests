@@ -535,7 +535,7 @@ class TestReviewActivity : BaseActivity(), View.OnClickListener {
                 override fun run() {
                     webViewAnimation()
                 }
-            }, 1500)
+            }, 1000)
             webViewPathAndLoad(path, type)
         }
 
@@ -548,7 +548,7 @@ class TestReviewActivity : BaseActivity(), View.OnClickListener {
                 override fun run() {
                     webViewAnimation()
                 }
-            }, 1500)
+            }, 1000)
             webViewPathAndLoad(path, type)
         }
 
@@ -561,7 +561,7 @@ class TestReviewActivity : BaseActivity(), View.OnClickListener {
                 override fun run() {
                     webViewAnimation()
                 }
-            }, 1500)
+            }, 1000)
             webViewPathAndLoad(path, type)
         }
 
@@ -594,7 +594,7 @@ class TestReviewActivity : BaseActivity(), View.OnClickListener {
                     webView_option2!!.startAnimation(animationFadeIn1000)
                 }
 
-            }, 1500)
+            }, 1000)
             if(readdata.equals("files")){
                 opt1Path = WEBVIEW_FILE_PATH + listOfOptions!!.get(0)
                 opt2Path = WEBVIEW_FILE_PATH + listOfOptions!!.get(1)
@@ -688,10 +688,10 @@ class TestReviewActivity : BaseActivity(), View.OnClickListener {
                 webView_question!!.visibility = View.VISIBLE
                 webView_question!!.startAnimation(animationFadeIn500)
             }
-        }, 1500)
+        }, 1000)
 
 
-        if (type != 2210) {
+        if (type != 2201) {
             webView_question!!.settings.javaScriptEnabled = true
             webView_question!!.webViewClient = qa
         }
@@ -1126,18 +1126,27 @@ class TestReviewActivity : BaseActivity(), View.OnClickListener {
         child = layoutInflater.inflate(R.layout.webview_2201_layout, null)
         ll_inflate.addView(child)
         initializeView(child!!)
+        sharechild = layoutInflater.inflate(R.layout.webview_2201_share_layout, null)
+        share_ll_inflate!!.addView(sharechild)
+        initializeShareView(sharechild!!)
     }
 
     private fun inflateView2100() {
         child = layoutInflater.inflate(R.layout.webview_2100_layout, null)
         ll_inflate.addView(child)
         initializeView(child!!)
+        sharechild = layoutInflater.inflate(R.layout.webview_2100_share_layout, null)
+        share_ll_inflate!!.addView(sharechild)
+        initializeShareView(sharechild!!)
     }
 
     private fun inflateView2210() {
         child = layoutInflater.inflate(R.layout.webview_2210_layout, null)
         ll_inflate.addView(child)
         initializeView(child!!)
+        sharechild = layoutInflater.inflate(R.layout.webview_2210_share_layout, null)
+        share_ll_inflate!!.addView(sharechild)
+        initializeShareView(sharechild!!)
     }
     @SuppressLint("ClickableViewAccessibility")
     private fun initializeShareView(view: View) {
@@ -1146,6 +1155,43 @@ class TestReviewActivity : BaseActivity(), View.OnClickListener {
         webView_share_option2 = view.findViewById(R.id.webView_option2)
         webView_share_option3 = view.findViewById(R.id.webView_option3)
         webView_share_option4 = view.findViewById(R.id.webView_option4)
+
+
+        webView_share_question!!.setOnLongClickListener {
+            true
+        }
+        webView_share_question!!.setLongClickable(false)
+        // Below line prevent vibration on Long click
+        webView_share_question!!.setHapticFeedbackEnabled(false);
+
+        webView_share_option1!!.setOnLongClickListener {
+            true
+        }
+        webView_share_option1!!.setLongClickable(false)
+        // Below line prevent vibration on Long click
+        webView_share_option1!!.setHapticFeedbackEnabled(false);
+
+        webView_share_option2!!.setOnLongClickListener {
+            true
+        }
+        webView_share_option2!!.setLongClickable(false)
+        // Below line prevent vibration on Long click
+        webView_share_option2!!.setHapticFeedbackEnabled(false);
+
+
+        webView_share_option3!!.setOnLongClickListener {
+            true
+        }
+        webView_share_option3!!.setLongClickable(false)
+        // Below line prevent vibration on Long click
+        webView_share_option3!!.setHapticFeedbackEnabled(false);
+
+        webView_share_option4!!.setOnLongClickListener {
+            true
+        }
+        webView_share_option4!!.setLongClickable(false)
+        // Below line prevent vibration on Long click
+        webView_share_option4!!.setHapticFeedbackEnabled(false);
 
 
     }
@@ -1162,6 +1208,46 @@ class TestReviewActivity : BaseActivity(), View.OnClickListener {
         webView_option2_opacity = view.findViewById(R.id.webView_option2_opacity)
         webView_option3_opacity = view.findViewById(R.id.webView_option3_opacity)
         webView_option4_opacity = view.findViewById(R.id.webView_option4_opacity)
+
+
+        webView_question!!.setOnLongClickListener {
+            true
+        }
+        webView_question!!.setLongClickable(false)
+        // Below line prevent vibration on Long click
+        webView_question!!.setHapticFeedbackEnabled(false);
+
+        webView_option1!!.setOnLongClickListener {
+            true
+        }
+        webView_option1!!.setLongClickable(false)
+        // Below line prevent vibration on Long click
+        webView_option1!!.setHapticFeedbackEnabled(false);
+
+        webView_option2!!.setOnLongClickListener {
+            true
+        }
+        webView_option2!!.setLongClickable(false)
+        // Below line prevent vibration on Long click
+        webView_option2!!.setHapticFeedbackEnabled(false);
+
+
+        webView_option3!!.setOnLongClickListener {
+            true
+        }
+        webView_option3!!.setLongClickable(false)
+        // Below line prevent vibration on Long click
+        webView_option3!!.setHapticFeedbackEnabled(false);
+
+        webView_option4!!.setOnLongClickListener {
+            true
+        }
+        webView_option4!!.setLongClickable(false)
+        // Below line prevent vibration on Long click
+        webView_option4!!.setHapticFeedbackEnabled(false);
+
+
+
         /*webView_option2?.setInitialScale(1);
         webView_option2?.getSettings()?.setLoadWithOverviewMode(true)
         webView_option2?.getSettings()?.setUseWideViewPort(true)*/

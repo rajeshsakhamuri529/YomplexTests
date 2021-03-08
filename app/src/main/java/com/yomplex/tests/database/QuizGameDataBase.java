@@ -55,6 +55,7 @@ public class QuizGameDataBase extends SQLiteOpenHelper {
     private static final String TABLE_QUIZ_WITH_TIMER_FINAL = "quizwithtimer";
     private static final String KEY_TYPE_OF_PLAY = "typeofplay";
     private static final String KEY_READ_DATA = "readdata";
+    private static final String KEY_ORIGINAL_TEST_NAME = "originalname";
     private static final String KEY_ANSWER_STATUS = "answerstatus";
     private static final String KEY_PRESENT_DATE = "pdate";
     private static final String KEY_TIME_TAKEN = "timetaken";
@@ -125,6 +126,7 @@ public class QuizGameDataBase extends SQLiteOpenHelper {
             + KEY_STATUS + " TEXT, "
             + KEY_PRESENT_DATE + " TEXT,"
             + KEY_READ_DATA + " TEXT,"
+            + KEY_ORIGINAL_TEST_NAME + " TEXT,"
             + KEY_TEST_TYPE + " TEXT)";
 
     String CREATE_TABLE_TEST_CONTENT_DOWNLOAD = "CREATE TABLE " + TABLE_TEST_CONTENT_DOWNLOAD + "("
@@ -924,6 +926,8 @@ public class QuizGameDataBase extends SQLiteOpenHelper {
         values.put(KEY_STATUS, testQuizFinal.getStatus());
         values.put(KEY_TEST_TYPE, testQuizFinal.getTesttype());
         values.put(KEY_READ_DATA, testQuizFinal.getReaddata());
+        values.put(KEY_ORIGINAL_TEST_NAME, testQuizFinal.getOriginalname());
+
 
         // Inserting Row
         db.insert(TABLE_QUIZ_WITH_TIMER_FINAL, KEY_SERIAL_NUMBER, values);
@@ -963,6 +967,8 @@ public class QuizGameDataBase extends SQLiteOpenHelper {
                 testQuizFinal.setStatus(cur.getString(cur.getColumnIndex(KEY_STATUS)));
                 testQuizFinal.setTesttype(cur.getString(cur.getColumnIndex(KEY_TEST_TYPE)));
                 testQuizFinal.setReaddata(cur.getString(cur.getColumnIndex(KEY_READ_DATA)));
+                testQuizFinal.setOriginalname(cur.getString(cur.getColumnIndex(KEY_ORIGINAL_TEST_NAME)));
+
 
                 dailychallengeList.add(testQuizFinal);
 

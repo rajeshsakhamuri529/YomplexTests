@@ -32,17 +32,19 @@
 
             <RelativeLayout
                 android:id="@+id/report_rl"
-                android:layout_width="@dimen/_30sdp"
-                android:layout_height="@dimen/_30sdp"
+                android:layout_width="@dimen/_20sdp"
+                android:layout_height="@dimen/_20sdp"
 
                 android:layout_alignParentEnd="true">
                 <ImageView
-                    android:layout_width="@dimen/_20sdp"
-                    android:layout_height="@dimen/_20sdp"
-                    android:src="@drawable/ic_error_black"
-                    android:layout_centerHorizontal="true"
+                    android:layout_width="@dimen/_15sdp"
+                    android:layout_height="@dimen/_15sdp"
+                    android:src="@drawable/ic_report"
+
+
                     android:layout_centerVertical="true"
-                    android:tint="#424242">
+
+                    >
 
                 </ImageView>
 
@@ -50,17 +52,19 @@
 
             <RelativeLayout
                 android:id="@+id/share_rl"
-                android:layout_width="@dimen/_30sdp"
-                android:layout_height="@dimen/_30sdp"
-                android:layout_marginRight="@dimen/_5sdp"
+                android:layout_width="@dimen/_20sdp"
+                android:layout_height="@dimen/_20sdp"
+                android:layout_marginRight="@dimen/_3sdp"
                 android:layout_toLeftOf="@+id/report_rl">
                 <ImageView
-                    android:layout_width="@dimen/_20sdp"
-                    android:layout_height="@dimen/_20sdp"
-                    android:src="@drawable/test_share"
-                    android:layout_centerHorizontal="true"
+                    android:layout_width="@dimen/_15sdp"
+                    android:layout_height="@dimen/_15sdp"
+                    android:src="@drawable/ic_share"
+
+
                     android:layout_centerVertical="true"
-                    android:tint="#424242">
+
+                    >
 
                 </ImageView>
 

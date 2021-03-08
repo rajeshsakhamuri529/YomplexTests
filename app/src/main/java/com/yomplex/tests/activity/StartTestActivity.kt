@@ -23,6 +23,7 @@ import androidx.lifecycle.ViewModelProviders
 
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.yomplex.tests.R
+import com.yomplex.tests.database.QuizGameDataBase
 import com.yomplex.tests.model.Topic
 import com.yomplex.tests.model.TopicOneBasicResponseModel
 import com.yomplex.tests.utils.ConstantPath
@@ -58,6 +59,7 @@ class StartTestActivity : BaseActivity(), View.OnClickListener {
     lateinit var circles: Array<ImageView?>
     var mLastClickTime:Long = 0;
     private lateinit var firebaseAnalytics: FirebaseAnalytics
+    var databaseHandler: QuizGameDataBase?= null
     override var layoutID: Int = R.layout.activity_start_quiz_timer
 
     override fun initView() {
@@ -92,7 +94,13 @@ class StartTestActivity : BaseActivity(), View.OnClickListener {
         totalQuestion = questionResponseModel.questionCount
         firebaseAnalytics = FirebaseAnalytics.getInstance(this)
 
+        Log.e("start test","last played....."+lastplayed)
+        Log.e("start test","topic.title....."+topic.title)
+        Log.e("start test","topic.displayNo....."+topic.displayNo)
+        Log.e("start test","topicName....."+topicName)
 
+
+        databaseHandler = QuizGameDataBase(this);
 
         tv_quiz_title.text = originaltopicName
 
@@ -120,6 +128,18 @@ class StartTestActivity : BaseActivity(), View.OnClickListener {
 
     }
 
+    override fun onBackPressed() {
+        super.onBackPressed()
+        if(comingfrom.equals("Test")){
+            val intent = Intent(this, DashBoardActivity::class.java)
+            intent.putExtra("fragment","tests")
+            startActivity(intent)
+            finish()
+        }else{
+            finish()
+        }
+    }
+
     override fun onClick(v: View?) {
         if (SystemClock.elapsedRealtime() - mLastClickTime < 2000) {
             return;
@@ -137,7 +157,15 @@ class StartTestActivity : BaseActivity(), View.OnClickListener {
                         //Toast.makeText(context,"end",Toast.LENGTH_SHORT).show()
                     }
                 }
-                finish()
+                if(comingfrom.equals("Test")){
+                    val intent = Intent(this, DashBoardActivity::class.java)
+                    intent.putExtra("fragment","tests")
+                    startActivity(intent)
+                    finish()
+                }else{
+                    finish()
+                }
+
             }
             R.id.btn_start -> {
                 sound = sharedPrefs?.getBooleanPrefVal(this, ConstantPath.SOUNDS) ?: true
@@ -150,6 +178,10 @@ class StartTestActivity : BaseActivity(), View.OnClickListener {
                         //Toast.makeText(context,"end",Toast.LENGTH_SHORT).show()
                     }
                 }
+
+                databaseHandler!!.deleteAllQuizTopicsLatPlayed(topicName!!.toLowerCase())
+
+                databaseHandler!!.insertquiztopiclastplayed(topic.title,topic.displayNo,lastplayed,topicName!!.toLowerCase());
 
                 /*val bundle = Bundle()
                 bundle.putString("Category", "Test")

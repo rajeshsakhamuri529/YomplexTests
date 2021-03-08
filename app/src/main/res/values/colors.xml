@@ -98,5 +98,13 @@
 
     <color name="chart_color">#40C073</color>
 
+    <color name="chart_axis_color">#C0C0C0</color>
+
+    <color name="chart_text_color">#929292</color>
+
+    <color name="chart_orange_color">#FF9300</color>
+    <color name="chart_purple_color">#D783FF</color>
+    <color name="chart_blue_color">#7A81FF</color>
+    <color name="chart_green_color">#21BF73</color>
 
 </resources>

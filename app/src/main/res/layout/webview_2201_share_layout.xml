@@ -1,39 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:id="@+id/ll_quiz"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:layout_below="@id/view"
-        android:layout_marginTop="@dimen/_5sdp"
-        android:layout_marginLeft="@dimen/_20sdp"
-        android:layout_marginRight="@dimen/_20sdp"
-        tools:context=".activity.TestQuizActivity">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/ll_quiz"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:layout_below="@id/view"
+    android:layout_marginTop="@dimen/_5sdp"
+    android:layout_marginLeft="@dimen/_20sdp"
+    android:layout_marginRight="@dimen/_20sdp"
+    tools:context=".activity.TestQuizActivity">
 
     <WebView
-            android:id="@+id/webView_question"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_marginTop="@dimen/_10sdp"
-            android:scrollbars="none"
-            android:layout_alignParentTop="true"
-            android:layout_above="@id/wv_2201_ll"
-            android:layout_gravity="center_horizontal"/>
+        android:id="@+id/webView_share_question"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="@dimen/_10sdp"
+        android:scrollbars="none"
+        android:layout_alignParentTop="true"
+        android:layout_above="@id/wv_2201_ll"
+        android:layout_gravity="center_horizontal"/>
 
     <LinearLayout
-            android:id="@+id/wv_2201_ll"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
+        android:id="@+id/wv_2201_ll"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
         android:weightSum="2"
-            android:layout_alignParentBottom="true">
+        android:layout_alignParentBottom="true">
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="@dimen/_30sdp">
 
             <RelativeLayout
+                android:id="@+id/yomplex_rl"
+                android:layout_width="@dimen/_80sdp"
+                android:layout_height="@dimen/_30sdp"
+
+                android:layout_alignParentEnd="true">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="yomplex.com"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerInParent="true"
+                    android:layout_alignParentEnd="true"
+                    android:textColor="@color/light_blue"
+                    android:fontFamily="@font/lato_bold">
+
+
+                </TextView>
+
+            </RelativeLayout>
+
+            <!--<RelativeLayout
                 android:id="@+id/report_rl"
                 android:layout_width="@dimen/_20sdp"
                 android:layout_height="@dimen/_20sdp"
@@ -71,7 +93,7 @@
 
                 </ImageView>
 
-            </RelativeLayout>
+            </RelativeLayout>-->
 
         </RelativeLayout>
 

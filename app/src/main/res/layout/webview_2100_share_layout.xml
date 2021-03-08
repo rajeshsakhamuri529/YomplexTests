@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/ll_quiz"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginLeft="@dimen/_20sdp"
+    android:layout_marginTop="@dimen/_5sdp"
+    android:layout_marginRight="@dimen/_20sdp"
+    tools:context=".activity.TestQuizActivity">
+
+    <WebView
+        android:id="@+id/webView_share_question"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/_10sdp"
+        android:scrollbars="none"
+        android:layout_above="@id/wv_2100_ll"
+        android:layout_alignParentTop="true"/>
+
+    <LinearLayout
+        android:id="@+id/wv_2100_ll"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:orientation="vertical">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_30sdp">
+
+            <RelativeLayout
+                android:id="@+id/yomplex_rl"
+                android:layout_width="@dimen/_80sdp"
+                android:layout_height="@dimen/_30sdp"
+
+                android:layout_alignParentEnd="true">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="yomplex.com"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerInParent="true"
+                    android:layout_alignParentEnd="true"
+                    android:textColor="@color/light_blue"
+                    android:fontFamily="@font/lato_bold">
+
+
+                </TextView>
+
+            </RelativeLayout>
+
+            <!--<RelativeLayout
+                android:id="@+id/report_rl"
+                android:layout_width="@dimen/_20sdp"
+                android:layout_height="@dimen/_20sdp"
+
+                android:layout_alignParentEnd="true">
+                <ImageView
+                    android:layout_width="@dimen/_15sdp"
+                    android:layout_height="@dimen/_15sdp"
+                    android:src="@drawable/ic_report"
+
+
+                    android:layout_centerVertical="true"
+
+                    >
+
+                </ImageView>
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/share_rl"
+                android:layout_width="@dimen/_20sdp"
+                android:layout_height="@dimen/_20sdp"
+                android:layout_marginRight="@dimen/_3sdp"
+                android:layout_toLeftOf="@+id/report_rl">
+                <ImageView
+                    android:layout_width="@dimen/_15sdp"
+                    android:layout_height="@dimen/_15sdp"
+                    android:src="@drawable/ic_share"
+
+
+                    android:layout_centerVertical="true"
+
+                    >
+
+                </ImageView>
+
+            </RelativeLayout>-->
+
+        </RelativeLayout>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_75sdp"
+            android:layout_above="@id/webView_option2"
+            android:layout_marginBottom="@dimen/_5sdp"
+            android:layout_gravity="center">
+
+            <WebView
+                android:id="@+id/webView_option1"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clickable="true"
+                android:scrollbars="none"
+                android:textAlignment="center"/>
+
+
+            <WebView
+                android:visibility="gone"
+                android:id="@+id/webView_option1_opacity"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clickable="true"
+                android:scrollbars="none"
+                android:textAlignment="center"/>
+
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_75sdp"
+            android:foregroundGravity="center"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_gravity="center">
+
+            <WebView
+                android:id="@+id/webView_option2"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clickable="true"
+                android:scrollbars="none"
+                android:textAlignment="center"/>
+
+            <WebView
+                android:visibility="gone"
+                android:id="@+id/webView_option2_opacity"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clickable="true"
+                android:scrollbars="none"
+                android:textAlignment="center"/>
+
+        </FrameLayout>
+
+    </LinearLayout>
+
+
+    <!--<WebView
+            android:id="@+id/webView_option3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:layout_gravity="center_horizontal"/>
+
+    <WebView
+            android:id="@+id/webView_option4"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:layout_gravity="center_horizontal"/>-->
+
+
+</RelativeLayout>

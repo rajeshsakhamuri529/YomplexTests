@@ -108,7 +108,7 @@ class ReviewAdapter(val context: Context,
             holder.tv_challenge_date.text = ""+diff1 + "  days ago"
         }
 
-        if(branchesItemList[position].timetaken.equals("0")){
+        /*if(branchesItemList[position].timetaken.equals("0")){
             holder.tv_challenge_time.text =  "1"
             holder.tv_challenge_time_mins.text = "min"
         }else if(branchesItemList[position].timetaken.equals("1")){
@@ -117,8 +117,10 @@ class ReviewAdapter(val context: Context,
         }else{
             holder.tv_challenge_time.text = branchesItemList[position].timetaken
             holder.tv_challenge_time_mins.text = "mins"
-        }
+        }*/
 
+
+        holder.tv_challenge_time.text = branchesItemList[position].originalname
         holder.tv_challenge_score.text = ""+count+" / "+branchesItemList[position].totalQuestions
 
         holder.rootLayout.setOnClickListener(View.OnClickListener {

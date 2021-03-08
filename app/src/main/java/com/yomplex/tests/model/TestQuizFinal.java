@@ -15,6 +15,7 @@ public class TestQuizFinal {
     private String status;
     private String testtype;
     private String readdata;
+    private String originalname;
 
 
 
@@ -23,7 +24,7 @@ public class TestQuizFinal {
     }
 
     public TestQuizFinal(String serialno, String title, String typeofPlay,
-                         int totalQuestions, String answerstatus, String questionAnswers, String questionPathType, String pdate, String timetaken, String options, String status,String testtype,String readdata){
+                         int totalQuestions, String answerstatus, String questionAnswers, String questionPathType, String pdate, String timetaken, String options, String status,String testtype,String readdata,String originalname){
 
         this.serialNo = serialno;
         this.title = title;
@@ -38,6 +39,7 @@ public class TestQuizFinal {
         this.status = status;
         this.testtype = testtype;
         this.readdata = readdata;
+        this.originalname = originalname;
 
     }
 
@@ -143,5 +145,13 @@ public class TestQuizFinal {
 
     public void setTesttype(String testtype) {
         this.testtype = testtype;
+    }
+
+    public String getOriginalname() {
+        return originalname;
+    }
+
+    public void setOriginalname(String originalname) {
+        this.originalname = originalname;
     }
 }

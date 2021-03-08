@@ -57,7 +57,7 @@ import static android.content.Context.AUDIO_SERVICE;
 
 public class Utils {
 
-    public static final int DATABASE_VERSION = 16;
+    public static final int DATABASE_VERSION = 1;
 
     public static SoundPool soundPool;
     public static SoundPool soundPool1;
