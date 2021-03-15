@@ -312,13 +312,13 @@ class GradeActivity : BaseActivity(), GradeClickListener, PermissionListener  {
             }else{
 
                 Log.e("grade activity","sharedPrefs.getBooleanPrefVal(this, ISNOTLOGIN)...."+sharedPrefs.getBooleanPrefVal(this, ISNOTLOGIN))
-                val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+                /*val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
                 val activeNetwork: NetworkInfo? = connectivityManager.activeNetworkInfo
                 val isConnected: Boolean = activeNetwork?.isConnected == true
                 Log.d("isConnected",isConnected.toString()+"!")
                 if(isNetworkConnected()) {
                     downloadServiceFromBackground(this@GradeActivity,db)
-                }
+                }*/
                 navigateToDashboard("GRADE 6")
                 /*if(!sharedPrefs.getBooleanPrefVal(this, ISNOTLOGIN)){
                     //this block is for not sign in users

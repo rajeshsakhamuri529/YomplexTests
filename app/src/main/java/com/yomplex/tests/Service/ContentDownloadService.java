@@ -33,9 +33,13 @@ import com.yomplex.tests.utils.Utils;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class ContentDownloadService extends JobIntentService {
@@ -394,6 +398,14 @@ public class ContentDownloadService extends JobIntentService {
                                                     }
                                                 }
                                             });
+                                            SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd");
+                                            String date = dataBase.getContentDate();
+                                            if(date != null){
+                                                dataBase.updateContentDate(format1.format(Utils.date),1);
+                                            }else{
+                                                //Log.e("content download","date......................."+format1.format(Utils.date));
+                                                dataBase.insertContentUpdateDate(format1.format(Utils.date));
+                                            }
                                             dataBase.updatetestcontentversion(version,testtype);
                                             dataBase.updatetestcontentdownloadstatus(1,testtype);
                                             dataBase.updatetestcontenturl(url,testtype);
@@ -425,7 +437,14 @@ public class ContentDownloadService extends JobIntentService {
                                                 }
                                             });
 
-
+                                            SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd");
+                                            String date = dataBase.getContentDate();
+                                            if(date != null){
+                                                dataBase.updateContentDate(format1.format(Utils.date),1);
+                                            }else{
+                                                //Log.e("content download","date......................."+format1.format(Utils.date));
+                                                dataBase.insertContentUpdateDate(format1.format(Utils.date));
+                                            }
                                             dataBase.updatetestcontentversion(version,testtype);
                                             dataBase.updatetestcontentdownloadstatus(1,testtype);
                                             dataBase.updatetestcontenturl(url,testtype);
@@ -456,6 +475,14 @@ public class ContentDownloadService extends JobIntentService {
                                                     }
                                                 }
                                             });
+                                            SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd");
+                                            String date = dataBase.getContentDate();
+                                            if(date != null){
+                                                dataBase.updateContentDate(format1.format(Utils.date),1);
+                                            }else{
+                                                //Log.e("content download","date......................."+format1.format(Utils.date));
+                                                dataBase.insertContentUpdateDate(format1.format(Utils.date));
+                                            }
                                             dataBase.updatetestcontentversion(version,testtype);
                                             dataBase.updatetestcontentdownloadstatus(1,testtype);
                                             dataBase.updatetestcontenturl(url,testtype);
@@ -486,6 +513,14 @@ public class ContentDownloadService extends JobIntentService {
                                                     }
                                                 }
                                             });
+                                            SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd");
+                                            String date = dataBase.getContentDate();
+                                            if(date != null){
+                                                dataBase.updateContentDate(format1.format(Utils.date),1);
+                                            }else{
+                                               // Log.e("content download","date......................."+format1.format(Utils.date));
+                                                dataBase.insertContentUpdateDate(format1.format(Utils.date));
+                                            }
                                             dataBase.updatetestcontentversion(version,testtype);
                                             dataBase.updatetestcontentdownloadstatus(1,testtype);
                                             dataBase.updatetestcontenturl(url,testtype);
@@ -516,6 +551,14 @@ public class ContentDownloadService extends JobIntentService {
                                                     }
                                                 }
                                             });
+                                            SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd");
+                                            String date = dataBase.getContentDate();
+                                            if(date != null){
+                                                dataBase.updateContentDate(format1.format(Utils.date),1);
+                                            }else{
+                                                //Log.e("content download","date......................."+format1.format(Utils.date));
+                                                dataBase.insertContentUpdateDate(format1.format(Utils.date));
+                                            }
                                             dataBase.updatetestcontentversion(version,testtype);
                                             dataBase.updatetestcontentdownloadstatus(1,testtype);
                                             dataBase.updatetestcontenturl(url,testtype);

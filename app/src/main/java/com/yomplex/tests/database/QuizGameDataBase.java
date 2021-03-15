@@ -61,7 +61,7 @@ public class QuizGameDataBase extends SQLiteOpenHelper {
     private static final String KEY_TIME_TAKEN = "timetaken";
 
     private static final String KEY_ID = "id";
-
+    private static final String TABLE_CONTENT_CHECK_DATE = "contentcheckdate";
 
     private static final String TABLE_CHALLENGE_STATUS = "challenge_status";
     private static final String KEY_DATE = "date";
@@ -110,6 +110,12 @@ public class QuizGameDataBase extends SQLiteOpenHelper {
             + KEY_CHALLENGE_TEST_CORRECT_ANSWERS + " INTEGER, "
             + KEY_CHALLENGE_TEST_STATUS + " INTEGER,"
             + KEY_TEST_TYPE + " TEXT)";
+
+
+    String CREATE_TABLE_CONTENT_CHECK_DATE = "CREATE TABLE " + TABLE_CONTENT_CHECK_DATE + "("
+            + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+            + KEY_DATE + " TEXT)";
+
 
 
     String CREATE_QUIZ_TABLE_WITH_TIMER = "CREATE TABLE " + TABLE_QUIZ_WITH_TIMER_FINAL + "("
@@ -167,6 +173,9 @@ public class QuizGameDataBase extends SQLiteOpenHelper {
         db.execSQL(CREATE_TABLE_CHALLENGE);
         db.execSQL(CREATE_TABLE_CHALLENGE_WEEKLY);
 
+        db.execSQL(CREATE_TABLE_CONTENT_CHECK_DATE);
+
+
 
 
     }
@@ -186,8 +195,64 @@ public class QuizGameDataBase extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_CHALLENGE);
 
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_CHALLENGE_WEEKLY);
+
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_CONTENT_CHECK_DATE);
         // Create tables again
         onCreate(db);
+    }
+
+
+
+    public void insertContentUpdateDate(String date) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+
+        values.put(KEY_DATE, date);
+
+        // Inserting Row
+        db.insert(TABLE_CONTENT_CHECK_DATE, null, values);
+        //2nd argument is String containing nullColumnHack
+        db.close(); // Closing database connection
+    }
+
+    public int updateContentDate(String date,int id) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        //values.put(KEY_NAME, contact.getName());
+        values.put(KEY_DATE, date);
+
+        // updating row
+        return db.update(TABLE_CONTENT_CHECK_DATE, values, KEY_ID + " = ?",
+                new String[] { String.valueOf(id) });
+    }
+
+    public String getContentDate() {
+        //DailyChallenge dailyChallenge=new DailyChallenge();
+       // Log.e("quiz database","getWeekTotalScore....weekofyear..."+weekofyear);
+        String date = null;
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cur = db.rawQuery("SELECT * FROM " + TABLE_CONTENT_CHECK_DATE , new String[]{});
+
+        //Cursor cur = db.rawQuery("SELECT * FROM " + TABLE_QUIZ_WITH_TIMER_FINAL + " WHERE " + KEY_TITLE + "='" + title+"' AND "+KEY_PRESENT_DATE + " ='"+pdate+"' AND "+KEY_TYPE_OF_PLAY +"= '"+typeofplay+"'", new String[]{});
+        //count = cur.getCount();
+        if (cur.moveToFirst()) {
+            do {
+
+                date = (cur.getString(cur.getColumnIndex(KEY_DATE)));
+
+
+
+            } while (cur.moveToNext());
+        }
+        cur.close();
+        db.close();
+
+        Log.e("quiz game database","date.........."+date);
+        // return contact
+        return date;
     }
 
     public void insertQuizPlayScore(QuizScore quizscore) {

@@ -20,6 +20,7 @@ import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
 import com.github.mikephil.charting.components.Legend
 import com.github.mikephil.charting.components.LegendEntry
@@ -177,7 +178,7 @@ class TestsFragment: Fragment(),View.OnClickListener, TestClickListener,
       //  }
 
         //uncomment it for enable date(testing purpose)
-        /*val format = SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH)
+       /* val format = SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH)
 
         view.tv_date.setText(""+format.format(Utils.date))
         view.dateRL.setOnClickListener(this)*/
@@ -311,6 +312,34 @@ class TestsFragment: Fragment(),View.OnClickListener, TestClickListener,
         //bardataset.setColors(COLORFUL_COLORS.toMutableList());
         view.barchart.animateY(0);
 
+
+        val format1 = SimpleDateFormat("yyyy-MM-dd")
+
+        var dbdate = databaseHandler!!.getContentDate()
+        if(dbdate != null){
+            try{
+                Log.e("tests fragment","db date......"+dbdate)
+                Log.e("tests fragment","Utils.date......"+Utils.date)
+                Log.e("tests fragment","format1.parse(dbdate)......"+format1.parse(dbdate))
+                var s = format1.format(Utils.date)
+                Log.e("tests fragment","format1.parse(s)......"+format1.parse(s))
+
+
+                if(format1.parse(dbdate) < format1.parse(s)){
+                    val connectivityManager = activity!!.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+                    val activeNetwork: NetworkInfo? = connectivityManager.activeNetworkInfo
+                    val isConnected: Boolean = activeNetwork?.isConnected == true
+                    Log.d("isConnected",isConnected.toString()+"!")
+                    if(isNetworkConnected()) {
+                        downloadServiceFromBackground(activity!!,db)
+                    }
+
+                }
+            }catch (e:Exception){
+
+            }
+
+        }
 
 
 

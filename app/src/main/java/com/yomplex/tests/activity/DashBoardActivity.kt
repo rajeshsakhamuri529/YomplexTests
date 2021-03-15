@@ -202,7 +202,7 @@ class DashBoardActivity : BaseActivity(),
         }*/
 
 
-        try{
+        /*try{
             auth = FirebaseAuth.getInstance()
             val docRef = db.collection("users")
             docRef.whereEqualTo("username",auth!!.currentUser!!.email)
@@ -229,7 +229,7 @@ class DashBoardActivity : BaseActivity(),
 
         }catch (e:Exception){
 
-        }
+        }*/
 
 
 
