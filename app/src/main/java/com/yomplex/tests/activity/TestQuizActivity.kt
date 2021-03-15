@@ -55,6 +55,9 @@ import androidx.lifecycle.ViewModelProviders
 
 
 import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.analytics.ktx.logEvent
+import com.google.firebase.ktx.Firebase
 import com.yomplex.tests.BuildConfig
 import com.yomplex.tests.R
 import com.yomplex.tests.database.QuizGameDataBase
@@ -237,6 +240,15 @@ class TestQuizActivity : BaseActivity(), View.OnClickListener {
 
     override var layoutID: Int = R.layout.activity_test_quiz
 
+    override fun onResume() {
+        super.onResume()
+        firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW) {
+            param(FirebaseAnalytics.Param.SCREEN_NAME, "StartScreen<"+originaltopicName+">")
+            param(FirebaseAnalytics.Param.SCREEN_CLASS, "TestQuizActivity")
+        }
+    }
+
+
     @RequiresApi(Build.VERSION_CODES.KITKAT)
     override fun initView() {
         window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
@@ -304,7 +316,10 @@ class TestQuizActivity : BaseActivity(), View.OnClickListener {
         showDialogForShare()
         testStartTime = System.currentTimeMillis();
 
-        firebaseAnalytics = FirebaseAnalytics.getInstance(this)
+        //firebaseAnalytics = FirebaseAnalytics.getInstance(this)
+
+        firebaseAnalytics = Firebase.analytics
+
         // assigning values after converting to milliseconds
 
         val makeVertical = RotateAnimation(0F, -90F, RELATIVE_TO_SELF, 0.5f, RELATIVE_TO_SELF, 0.5f)
@@ -847,11 +862,11 @@ class TestQuizActivity : BaseActivity(), View.OnClickListener {
             bundle.putString("Label", topicName)
             firebaseAnalytics?.logEvent("TestPlay", bundle)*/
 
-            val bundle = Bundle()
+            /*val bundle = Bundle()
             bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, topicName)
             bundle.putString(FirebaseAnalytics.Param.ITEM_ID, "Test")
             // bundle.putString("Label", "TestGo")
-            firebaseAnalytics?.logEvent("TestSubmit", bundle)
+            firebaseAnalytics?.logEvent("TestSubmit", bundle)*/
 
             navigateToSummaryScreenNew()
         }
@@ -3504,11 +3519,17 @@ class TestQuizActivity : BaseActivity(), View.OnClickListener {
             firebaseAnalytics?.logEvent("TestPlay", bundle)*/
 
 
-            val bundle = Bundle()
+            /*val bundle = Bundle()
             bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, topicName)
             bundle.putString(FirebaseAnalytics.Param.ITEM_ID, "Test")
             // bundle.putString("Label", "TestGo")
-            firebaseAnalytics?.logEvent("TestQuit", bundle)
+            firebaseAnalytics?.logEvent("TestQuit", bundle)*/
+
+            firebaseAnalytics.logEvent("QuizQuit") {
+               // param(FirebaseAnalytics.Param.SCREEN_NAME, "StartScreen<"+originaltopicName+">")
+               // param(FirebaseAnalytics.Param.SCREEN_CLASS, "TestQuizActivity")
+            }
+
 
           //  updateHandler.removeCallbacksAndMessages(null);
            // updateHandler.removeCallbacks(runnable);

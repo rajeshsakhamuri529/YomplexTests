@@ -58,7 +58,7 @@ class StartTestActivity : BaseActivity(), View.OnClickListener {
     lateinit var topic: Topic
     lateinit var circles: Array<ImageView?>
     var mLastClickTime:Long = 0;
-    private lateinit var firebaseAnalytics: FirebaseAnalytics
+    //private lateinit var firebaseAnalytics: FirebaseAnalytics
     var databaseHandler: QuizGameDataBase?= null
     override var layoutID: Int = R.layout.activity_start_quiz_timer
 
@@ -92,7 +92,7 @@ class StartTestActivity : BaseActivity(), View.OnClickListener {
         val listWithDuplicateKeys = ArrayList<String>()
 
         totalQuestion = questionResponseModel.questionCount
-        firebaseAnalytics = FirebaseAnalytics.getInstance(this)
+        //firebaseAnalytics = FirebaseAnalytics.getInstance(this)
 
         Log.e("start test","last played....."+lastplayed)
         Log.e("start test","topic.title....."+topic.title)
@@ -189,11 +189,11 @@ class StartTestActivity : BaseActivity(), View.OnClickListener {
                 bundle.putString("Label", topic.title)
                 firebaseAnalytics?.logEvent("TestLaunch", bundle)*/
 
-                val bundle = Bundle()
+                /*val bundle = Bundle()
                 bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, topic.title)
                 bundle.putString(FirebaseAnalytics.Param.ITEM_ID, "Test")
                 // bundle.putString("Label", "TestGo")
-                firebaseAnalytics?.logEvent("Launch", bundle)
+                firebaseAnalytics?.logEvent("Launch", bundle)*/
 
                 val intent = Intent(this!!, TestQuizActivity::class.java)
                 intent.putExtra(ConstantPath.TOPIC, topic)
@@ -211,7 +211,7 @@ class StartTestActivity : BaseActivity(), View.OnClickListener {
                 intent.putExtra(ConstantPath.TOPIC_LEVEL, "")
                 intent.putExtra(ConstantPath.LEVEL_COMPLETED, "")
                 intent.putExtra(ConstantPath.CARD_NO, "")
-                intent.putExtra("readdata", "files")
+                intent.putExtra("readdata", readdata)
                 intent.putExtra("DISPLAY_NO", topic.displayNo)
                 intent.putExtra("topicnameoriginal", originaltopicName)
                 startActivity(intent)

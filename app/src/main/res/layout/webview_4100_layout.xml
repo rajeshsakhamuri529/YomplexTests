@@ -54,7 +54,7 @@
                 android:id="@+id/share_rl"
                 android:layout_width="@dimen/_20sdp"
                 android:layout_height="@dimen/_20sdp"
-                android:layout_marginRight="@dimen/_3sdp"
+                android:layout_marginRight="@dimen/_4sdp"
                 android:layout_toLeftOf="@+id/report_rl">
 
                 <ImageView

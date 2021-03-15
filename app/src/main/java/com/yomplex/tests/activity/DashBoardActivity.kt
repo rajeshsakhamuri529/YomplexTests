@@ -37,15 +37,20 @@ import com.google.android.gms.analytics.Tracker
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.Task
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreSettings
 import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.SetOptions
+import com.google.firebase.ktx.Firebase
 
 
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
+import com.google.firebase.remoteconfig.ktx.remoteConfig
+import com.google.firebase.remoteconfig.ktx.remoteConfigSettings
 import com.yomplex.tests.BuildConfig
 import com.yomplex.tests.R
 import com.yomplex.tests.Service.JobService
@@ -67,6 +72,7 @@ import java.util.*
 class DashBoardActivity : BaseActivity(),
     BottomNavigationView.OnNavigationItemSelectedListener {
 
+    private lateinit var firebaseAnalytics: FirebaseAnalytics
     private var fragment: Fragment? = null
     lateinit var gradeTitle: String
     private var backPressedTime: Long = 0
@@ -82,7 +88,8 @@ class DashBoardActivity : BaseActivity(),
     private val FEEDBACK_CONFIG_KEY = "feedback"
     private val WRITETOUS_CONFIG_KEY = "writetous"
     private val db: FirebaseFirestore = FirebaseFirestore.getInstance()
-    var remoteConfig: FirebaseRemoteConfig? = null
+    //var remoteConfig: FirebaseRemoteConfig? = null
+    var remoteConfig = Firebase.remoteConfig
     var version : String = ""
     var url : String = ""
     var mTracker: Tracker? = null
@@ -107,14 +114,15 @@ class DashBoardActivity : BaseActivity(),
         }
 
         databaseHandler = QuizGameDataBase(this);
+
         //getPlayerForCorrect(this)
         //getPlayerForwrong(this)
         /*gradeTitle = intent.getStringExtra(TITLE_TOPIC)*/
-        sAnalytics = GoogleAnalytics.getInstance(this);
+       /* sAnalytics = GoogleAnalytics.getInstance(this);
         mTracker = Utils.getDefaultTracker(sAnalytics);
 
         mTracker!!.setScreenName("Dashboard")
-        mTracker!!.send(HitBuilders.ScreenViewBuilder().build())
+        mTracker!!.send(HitBuilders.ScreenViewBuilder().build())*/
 
         /*var testcontentlist: List<TestDownload>? = databaseHandler!!.gettestContent()
         if(testcontentlist!!.size <= 0){
@@ -234,9 +242,12 @@ class DashBoardActivity : BaseActivity(),
 
 
         sharedPrefs = SharedPrefs()
-        remoteConfig = FirebaseRemoteConfig.getInstance()
 
-        val configSettings = FirebaseRemoteConfigSettings.Builder()
+        firebaseAnalytics = Firebase.analytics
+        firebaseAnalytics.setUserProperty("email", sharedPrefs!!.getPrefVal(this,"email"))
+     //   remoteConfig = FirebaseRemoteConfig.getInstance()
+
+       /* val configSettings = FirebaseRemoteConfigSettings.Builder()
             .setDeveloperModeEnabled(BuildConfig.DEBUG)
             .build()
 
@@ -246,7 +257,13 @@ class DashBoardActivity : BaseActivity(),
         // when you need to adjust those defaults, you set an updated value for only the values you
         // want to change in the Firebase console. See Best Practices in the README for more
         // information.
-        remoteConfig!!.setDefaults(R.xml.remote_config_defaults)
+        remoteConfig!!.setDefaults(R.xml.remote_config_defaults)*/
+        val configSettings = remoteConfigSettings {
+            minimumFetchIntervalInSeconds = 3600
+        }
+        remoteConfig.setConfigSettingsAsync(configSettings)
+
+        remoteConfig!!.setDefaultsAsync(R.xml.remote_config_defaults)
         fetchVersion()
      //   action = sharedPrefs!!.getPrefVal(this,"action")!!
         data = sharedPrefs!!.getPrefVal(this,"screen")!!
@@ -319,7 +336,7 @@ class DashBoardActivity : BaseActivity(),
 
 
     fun fetchVersion(){
-        var cacheExpiration: Long = 3600 // 1 hour in seconds.
+        /*var cacheExpiration: Long = 3600 // 1 hour in seconds.
         // If your app is using developer mode, cacheExpiration is set to 0, so each fetch will
         // retrieve values from the service.
         if (remoteConfig!!.getInfo().getConfigSettings().isDeveloperModeEnabled()) {
@@ -334,7 +351,23 @@ class DashBoardActivity : BaseActivity(),
                     remoteConfig!!.activateFetched()
                 }
                 displayUpdateAlert()
-            })
+            })*/
+
+
+
+
+        remoteConfig.fetch(0)
+            .addOnCompleteListener(this) { task ->
+                if (task.isSuccessful) {
+                    val updated = task.result
+                    remoteConfig.activate()
+                    Log.e("grade activity", "Config params updated: $updated")
+                    //Toast.makeText(this, "Fetch and activate succeeded", Toast.LENGTH_SHORT).show()
+                } else {
+                    //Toast.makeText(this, "Fetch failed", Toast.LENGTH_SHORT).show()
+                }
+                displayUpdateAlert()
+            }
     }
 
     fun displayUpdateAlert(){
@@ -424,6 +457,7 @@ class DashBoardActivity : BaseActivity(),
                         //Toast.makeText(context,"end",Toast.LENGTH_SHORT).show()
                     }
                 }
+                fetchVersion()
                 if(currentFragment!! is TestsFragment){
                     fragment = currentFragment
                 }else{
@@ -447,6 +481,7 @@ class DashBoardActivity : BaseActivity(),
                         //Toast.makeText(context,"end",Toast.LENGTH_SHORT).show()
                     }
                 }
+                fetchVersion()
                 if(currentFragment!! is ReviewFragment){
                     fragment = currentFragment
                 }else{
@@ -495,6 +530,7 @@ class DashBoardActivity : BaseActivity(),
                         //Toast.makeText(context,"end",Toast.LENGTH_SHORT).show()
                     }
                 }
+                fetchVersion()
                 if(currentFragment!! is SettingFragment){
                     fragment = currentFragment
                 }else{

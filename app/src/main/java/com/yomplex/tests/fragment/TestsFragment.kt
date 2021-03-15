@@ -15,10 +15,7 @@ import android.os.Handler
 import android.os.SystemClock
 
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.view.Window
+import android.view.*
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
@@ -37,8 +34,12 @@ import com.github.mikephil.charting.utils.Fill
 
 
 import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.analytics.ktx.logEvent
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreSettings
+import com.google.firebase.ktx.Firebase
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.yomplex.tests.R
@@ -122,9 +123,14 @@ class TestsFragment: Fragment(),View.OnClickListener, TestClickListener,
         mServiceResultReceiver?.setReceiver(this)
         databaseHandler = QuizGameDataBase(context);
 
-        firebaseAnalytics = FirebaseAnalytics.getInstance(activity!!)
+        //firebaseAnalytics = FirebaseAnalytics.getInstance(activity!!)
+        firebaseAnalytics = Firebase.analytics
+       // firebaseAnalytics.setCurrentScreen(activity!!, "Test", null /* class override */)
 
-        firebaseAnalytics.setCurrentScreen(activity!!, "Test", null /* class override */)
+        firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW) {
+            param(FirebaseAnalytics.Param.SCREEN_NAME, "TestsTab")
+            param(FirebaseAnalytics.Param.SCREEN_CLASS, "TestsFragment")
+        }
         //view.test_btn.setOnClickListener(this)
 
 
@@ -169,10 +175,12 @@ class TestsFragment: Fragment(),View.OnClickListener, TestClickListener,
             //rcv_chapter.addItemDecoration(DividerItemDecoration(context,))
             view.rcv_tests.adapter = adapter
       //  }
-        val format = SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH)
+
+        //uncomment it for enable date(testing purpose)
+        /*val format = SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH)
 
         view.tv_date.setText(""+format.format(Utils.date))
-        view.dateRL.setOnClickListener(this)
+        view.dateRL.setOnClickListener(this)*/
         view.infoRl.setOnClickListener(this)
 
         //code for bar chart
@@ -337,7 +345,7 @@ class TestsFragment: Fragment(),View.OnClickListener, TestClickListener,
         calendar.add(Calendar.DATE, -1)
         return calendar.time
     }*/
-    private fun readFileFromAssets(topicname: String){
+    private fun readFileFromAssets(topicname: String,originalfilename:String){
         //Toast.makeText(activity,"content read from assets",Toast.LENGTH_SHORT).show()
         val courseJsonString = (activity!! as DashBoardActivity).loadJSONFromAsset( topicname+"/test/" + "Courses.json")
         Log.d("courseJsonString",courseJsonString+"!");
@@ -361,10 +369,12 @@ class TestsFragment: Fragment(),View.OnClickListener, TestClickListener,
 
         branchesItemList = topicResponseModel.branches
         sharedPrefs?.setIntPrefVal(context!!,TOPIC_SIZE, branchesItemList!!.size)
+
+        gotoStartScreenThroughAssets(topicname,originalfilename)
     }
 
 
-    private fun readFileLocally(topicname:String,filename:String) {
+    private fun readFileLocally(topicname:String,filename:String,originalfilename:String) {
         //Toast.makeText(activity,"content read from local storage",Toast.LENGTH_SHORT).show()
         val dirFile = File(activity!!.getCacheDir(),topicname+filename)
         Log.e("test fragment","dir file....."+dirFile.absolutePath)
@@ -397,6 +407,8 @@ class TestsFragment: Fragment(),View.OnClickListener, TestClickListener,
         branchesItemList = topicResponseModel.branches
         sharedPrefs?.setIntPrefVal(context!!, ConstantPath.TOPIC_SIZE, branchesItemList!!.size)
 
+        gotoStartScreen(topicname,originalfilename)
+
 
     }
 
@@ -406,7 +418,7 @@ class TestsFragment: Fragment(),View.OnClickListener, TestClickListener,
                 //showData(resultData.getString("data"))
                 Log.e("test fragment","onReceiveResult....."+resultData.getString("data"))
                 if (resultData.getString("data") == "success") {
-                    readFileLocally("","")
+                    readFileLocally("","","")
                     gotoStartScreen("","")
                 }else if(resultData.getString("data") == "failure"){
 
@@ -418,25 +430,67 @@ class TestsFragment: Fragment(),View.OnClickListener, TestClickListener,
 
     override fun onClick(topicName: String) {
         var filename = ""
+        var firestoreversionkey=""
         var originalfilename = topicName
         if (topicName.equals("CALCULUS 1")) {
             filename = "/jee-calculus-1"
+            firestoreversionkey = "Calculus1Version"
         } else if (topicName.equals("CALCULUS 2")) {
             filename = "/jee-calculus-2"
+            firestoreversionkey = "Calculus2Version"
         } else if (topicName.equals("ALGEBRA")) {
             filename = "/ii-algebra"
+            firestoreversionkey = "AlgebraVersion"
         } else if (topicName.equals("OTHER")) {
             filename = "/other"
+            firestoreversionkey = "BasicVersion"
         } else if (topicName.equals("GEOMETRY")) {
             filename = "/iii-geometry"
+            firestoreversionkey = "GeometryVersion"
         }
         Log.e("test fragment","on click filename...."+filename)
+        var topicname = topicName.replace("\\s".toRegex(), "")
+        /*var version:String = ""
+        var testcontentlist1: List<TestDownload>? = databaseHandler!!.gettestContent()
+
+        for(i in 0 until testcontentlist1!!.size) {
+            if (testcontentlist1.get(i).testtype.equals(topicname.toLowerCase())) {
+                version = testcontentlist1.get(i).testversion
+                break
+            }
+        }
+        try{
+            val docRef = db.collection("testcontentdownload").document("nJUIWEtshPEmAXjqn7y4")
+            docRef.get().addOnSuccessListener {
+                if (it != null) {
+                    val firestoreversion = it.getData()!!.get(firestoreversionkey)!!.toString()
+                    Log.e("test fragment","version....."+version)
+                    Log.e("test fragment","firestoreversion....."+firestoreversion)
+                    if(version.equals(firestoreversion)){
+
+                    }else{
+                        databaseHandler!!.updatetestcontentdownloadstatus(0,topicname.toLowerCase())
+                        if(isNetworkConnected()) {
+                            downloadServiceFromBackground(activity!!,db)
+                        }
+                    }
+
+                }
+            }
+
+
+        }catch (e:Exception){
+
+        }*/
+
+
+
 
         /*var topicname = ""
         if(topicName.equals("OTHER")){
             topicname ="basic"
         }else{*/
-           var topicname = topicName.replace("\\s".toRegex(), "")
+
        // }
 
         var downloadstatus:Int = -1
@@ -462,7 +516,7 @@ class TestsFragment: Fragment(),View.OnClickListener, TestClickListener,
             }
         }
         if(downloadstatus == 1){
-
+           // Toast.makeText(context,"download status 1...read from local...",Toast.LENGTH_SHORT).show()
             val dirFile = File(activity!!.getCacheDir(),topicname.toLowerCase()+filename)
             val size = File(activity!!.getCacheDir(),topicname.toLowerCase()+filename)
                 .walkTopDown()
@@ -484,12 +538,12 @@ class TestsFragment: Fragment(),View.OnClickListener, TestClickListener,
                         if(isNetworkConnected()) {
                             downloadServiceFromBackground(activity!!,db)
                         }
-                        readFileFromAssets(topicname.toLowerCase())
-                        gotoStartScreenThroughAssets(topicname,originalfilename)
+                        readFileFromAssets(topicname.toLowerCase(),originalfilename)
+
                     }else{
                         Log.e("test fragment","files.size.....not...empty.");
-                        readFileLocally(topicname.toLowerCase(),filename)
-                        gotoStartScreen(topicname,originalfilename)
+                        readFileLocally(topicname.toLowerCase(),filename,originalfilename)
+
 
 
                     }
@@ -498,12 +552,13 @@ class TestsFragment: Fragment(),View.OnClickListener, TestClickListener,
 
 
         }else{
+          //  Toast.makeText(context,"download status 0...read from assets...",Toast.LENGTH_SHORT).show()
             databaseHandler!!.updatetestcontentdownloadstatus(0,topicname.toLowerCase())
             if(isNetworkConnected()) {
                 downloadServiceFromBackground(activity!!,db)
             }
-            readFileFromAssets(topicname.toLowerCase())
-            gotoStartScreenThroughAssets(topicname,originalfilename)
+            readFileFromAssets(topicname.toLowerCase(),originalfilename)
+            //gotoStartScreenThroughAssets(topicname,originalfilename)
         }
 
         //gotoReviewScreen(topicname)
@@ -543,6 +598,10 @@ class TestsFragment: Fragment(),View.OnClickListener, TestClickListener,
                         //Toast.makeText(context,"end",Toast.LENGTH_SHORT).show()
                     }
                 }
+                firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW) {
+                    param(FirebaseAnalytics.Param.SCREEN_NAME, "InfoPopup")
+                    param(FirebaseAnalytics.Param.SCREEN_CLASS, "TestFragment")
+                }
                 showDialog()
 
             }
@@ -578,6 +637,11 @@ class TestsFragment: Fragment(),View.OnClickListener, TestClickListener,
             dialog!!.dismiss()
         }
         dialog!!.show()
+        var layoutParams =  WindowManager.LayoutParams();
+            layoutParams.copyFrom(dialog!!.getWindow()!!.getAttributes());
+            layoutParams.width = WindowManager.LayoutParams.MATCH_PARENT;
+            layoutParams.height = WindowManager.LayoutParams.MATCH_PARENT;
+        dialog!!.getWindow()!!.setAttributes(layoutParams);
 
 
     }
@@ -715,7 +779,11 @@ class TestsFragment: Fragment(),View.OnClickListener, TestClickListener,
 
              //   databaseHandler!!.insertquiztopiclastplayed(topic.title,topic.displayNo,lastplayed,topictype.toLowerCase());
             }else{
-                topic = branchesItemList!![((testQuiz.serialNo).toInt())-1].topic
+                if(((testQuiz.serialNo).toInt())-1 < branchesItemList!!.size){
+                    topic = branchesItemList!![((testQuiz.serialNo).toInt())-1].topic
+                }else{
+                    topic = branchesItemList!![0].topic
+                }
                 folderPath = localPath+topic.folderName
                 Log.e("test fragment","testQuiz.folderPath......"+folderPath)
                 if(testQuiz.lastplayed.equals("basic")){
@@ -750,11 +818,11 @@ class TestsFragment: Fragment(),View.OnClickListener, TestClickListener,
         bundle.putString("Label", topic.title)
         firebaseAnalytics?.logEvent("Test", bundle)*/
 
-        val bundle = Bundle()
+        /*val bundle = Bundle()
         bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, topic.title)
         bundle.putString(FirebaseAnalytics.Param.ITEM_ID, "Test")
         // bundle.putString("Label", "TestGo")
-        firebaseAnalytics?.logEvent("Test", bundle)
+        firebaseAnalytics?.logEvent("Test", bundle)*/
 
 
         Log.e("chapter fragment.....","jsonStringBasic......."+jsonStringBasic);
@@ -789,6 +857,8 @@ class TestsFragment: Fragment(),View.OnClickListener, TestClickListener,
         var testQuiz:TestQuiz
         testQuiz = databaseHandler!!.getQuizTopicsForTimerLastPlayed(topictype.toLowerCase())
         Log.e("test fragment","testQuiz.lastplayed......"+testQuiz.lastplayed)
+        Log.e("test fragment","testQuiz.serialno......"+testQuiz.serialNo)
+        Log.e("test fragment","branchesItemList.size......"+branchesItemList!!.size)
         if(testQuiz.lastplayed == null){
             topic = branchesItemList!![0].topic
             folderPath = localPath+topic.folderName
@@ -811,7 +881,12 @@ class TestsFragment: Fragment(),View.OnClickListener, TestClickListener,
 
               //  databaseHandler!!.insertquiztopiclastplayed(topic.title,topic.displayNo,lastplayed,topictype.toLowerCase());
             }else{
-                topic = branchesItemList!![((testQuiz.serialNo).toInt())-1].topic
+                if(((testQuiz.serialNo).toInt())-1 < branchesItemList!!.size){
+                    topic = branchesItemList!![((testQuiz.serialNo).toInt())-1].topic
+                }else{
+                    topic = branchesItemList!![0].topic
+                }
+
                 folderPath = localPath+topic.folderName
                 Log.e("test fragment","testQuiz.folderPath......"+folderPath)
                 if(testQuiz.lastplayed.equals("basic")){

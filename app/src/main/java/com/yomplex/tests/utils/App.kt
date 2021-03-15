@@ -64,8 +64,8 @@ class App : Application() {
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     Log.d(TAG, "remote config is fetched.")
-                    //firebaseRemoteConfig.activate();
-                    firebaseRemoteConfig.activateFetched()
+                    firebaseRemoteConfig.activate();
+                    //firebaseRemoteConfig.activateFetched()
                 }
             }
     }

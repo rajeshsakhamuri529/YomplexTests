@@ -15,19 +15,28 @@ import com.downloader.OnProgressListener;
 import com.downloader.OnStartOrResumeListener;
 import com.downloader.PRDownloader;
 import com.downloader.Progress;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.SetOptions;
 import com.yomplex.tests.database.QuizGameDataBase;
 import com.yomplex.tests.model.TestDownload;
+import com.yomplex.tests.utils.ConstantPath;
+import com.yomplex.tests.utils.SharedPrefs;
 import com.yomplex.tests.utils.Utils;
 
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ContentDownloadService extends JobIntentService {
 
@@ -43,12 +52,19 @@ public class ContentDownloadService extends JobIntentService {
     private static QuizGameDataBase dataBase;
     private static Context context1;
     private static String dirpath;
+    private static String usermail,userid;
+    private static FirebaseFirestore firestore;
+    private static SharedPrefs sharedPrefs = null;
     /**
      * Convenience method for enqueuing work in to this service.
      */
     public static void enqueueWork(Context context, FirebaseFirestore db) {
         dataBase = new QuizGameDataBase(context);
         ContentDownloadService.context1 = context;
+        firestore = db;
+        sharedPrefs = new SharedPrefs();
+        usermail = sharedPrefs.getPrefVal(context1,"email");
+        userid = sharedPrefs.getPrefVal(context1, ConstantPath.UID);
         File f =  new File((context.getCacheDir()).getAbsolutePath());
         dirpath = f.getAbsolutePath();
         List<Integer> statuslist = dataBase.gettesttopicdownloadstatus();
@@ -360,6 +376,24 @@ public class ContentDownloadService extends JobIntentService {
                                             dirFile.delete();
                                        //     File dirFile1 = new File(context1.getCacheDir(),testtype+"/test");
                                         //    boolean isdeleted = Utils.deleteFolder(dirFile1);
+                                            CollectionReference docRef = firestore.collection("usercontentversion");
+                                            docRef.whereEqualTo("useremail",usermail).whereEqualTo("userid",userid)
+                                                    .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                                @Override
+                                                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                                    if (task.isSuccessful()) {
+                                                       List<DocumentSnapshot> myListOfDocuments = task.getResult().getDocuments();
+                                                        if(task.getResult().size() > 0){
+
+                                                            Map<String, Object> data = new HashMap<>();
+                                                            data.put("calculus1version", version);
+
+                                                            firestore.collection("usercontentversion").document(task.getResult().getDocuments().get(0).getId())
+                                                                    .set(data, SetOptions.merge());
+                                                        }
+                                                    }
+                                                }
+                                            });
                                             dataBase.updatetestcontentversion(version,testtype);
                                             dataBase.updatetestcontentdownloadstatus(1,testtype);
                                             dataBase.updatetestcontenturl(url,testtype);
@@ -371,6 +405,27 @@ public class ContentDownloadService extends JobIntentService {
                                             dirFile.delete();
                                         //    File dirFile1 = new File(context1.getCacheDir(),testtype+"/test");
                                           //  boolean isdeleted = Utils.deleteFolder(dirFile1);
+
+                                            CollectionReference docRef = firestore.collection("usercontentversion");
+                                            docRef.whereEqualTo("useremail",usermail).whereEqualTo("userid",userid)
+                                                    .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                                @Override
+                                                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                                    if (task.isSuccessful()) {
+                                                        List<DocumentSnapshot> myListOfDocuments = task.getResult().getDocuments();
+                                                        if(task.getResult().size() > 0){
+
+                                                            Map<String, Object> data = new HashMap<>();
+                                                            data.put("algebraversion", version);
+
+                                                            firestore.collection("usercontentversion").document(task.getResult().getDocuments().get(0).getId())
+                                                                    .set(data, SetOptions.merge());
+                                                        }
+                                                    }
+                                                }
+                                            });
+
+
                                             dataBase.updatetestcontentversion(version,testtype);
                                             dataBase.updatetestcontentdownloadstatus(1,testtype);
                                             dataBase.updatetestcontenturl(url,testtype);
@@ -382,6 +437,25 @@ public class ContentDownloadService extends JobIntentService {
                                             dirFile.delete();
                                           //  File dirFile1 = new File(context1.getCacheDir(),testtype+"/test");
                                            // boolean isdeleted = Utils.deleteFolder(dirFile1);
+
+                                            CollectionReference docRef = firestore.collection("usercontentversion");
+                                            docRef.whereEqualTo("useremail",usermail).whereEqualTo("userid",userid)
+                                                    .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                                @Override
+                                                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                                    if (task.isSuccessful()) {
+                                                        List<DocumentSnapshot> myListOfDocuments = task.getResult().getDocuments();
+                                                        if(task.getResult().size() > 0){
+
+                                                            Map<String, Object> data = new HashMap<>();
+                                                            data.put("calculus2version", version);
+
+                                                            firestore.collection("usercontentversion").document(task.getResult().getDocuments().get(0).getId())
+                                                                    .set(data, SetOptions.merge());
+                                                        }
+                                                    }
+                                                }
+                                            });
                                             dataBase.updatetestcontentversion(version,testtype);
                                             dataBase.updatetestcontentdownloadstatus(1,testtype);
                                             dataBase.updatetestcontenturl(url,testtype);
@@ -393,6 +467,25 @@ public class ContentDownloadService extends JobIntentService {
                                             dirFile.delete();
                                            // File dirFile1 = new File(context1.getCacheDir(),testtype+"/test");
                                            // boolean isdeleted = Utils.deleteFolder(dirFile1);
+
+                                            CollectionReference docRef = firestore.collection("usercontentversion");
+                                            docRef.whereEqualTo("useremail",usermail).whereEqualTo("userid",userid)
+                                                    .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                                @Override
+                                                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                                    if (task.isSuccessful()) {
+                                                        List<DocumentSnapshot> myListOfDocuments = task.getResult().getDocuments();
+                                                        if(task.getResult().size() > 0){
+
+                                                            Map<String, Object> data = new HashMap<>();
+                                                            data.put("geometryversion", version);
+
+                                                            firestore.collection("usercontentversion").document(task.getResult().getDocuments().get(0).getId())
+                                                                    .set(data, SetOptions.merge());
+                                                        }
+                                                    }
+                                                }
+                                            });
                                             dataBase.updatetestcontentversion(version,testtype);
                                             dataBase.updatetestcontentdownloadstatus(1,testtype);
                                             dataBase.updatetestcontenturl(url,testtype);
@@ -404,6 +497,25 @@ public class ContentDownloadService extends JobIntentService {
                                             dirFile.delete();
                                            // File dirFile1 = new File(context1.getCacheDir(),testtype+"/test");
                                            // boolean isdeleted = Utils.deleteFolder(dirFile1);
+
+                                            CollectionReference docRef = firestore.collection("usercontentversion");
+                                            docRef.whereEqualTo("useremail",usermail).whereEqualTo("userid",userid)
+                                                    .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                                @Override
+                                                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                                    if (task.isSuccessful()) {
+                                                        List<DocumentSnapshot> myListOfDocuments = task.getResult().getDocuments();
+                                                        if(task.getResult().size() > 0){
+
+                                                            Map<String, Object> data = new HashMap<>();
+                                                            data.put("otherversion", version);
+
+                                                            firestore.collection("usercontentversion").document(task.getResult().getDocuments().get(0).getId())
+                                                                    .set(data, SetOptions.merge());
+                                                        }
+                                                    }
+                                                }
+                                            });
                                             dataBase.updatetestcontentversion(version,testtype);
                                             dataBase.updatetestcontentdownloadstatus(1,testtype);
                                             dataBase.updatetestcontenturl(url,testtype);

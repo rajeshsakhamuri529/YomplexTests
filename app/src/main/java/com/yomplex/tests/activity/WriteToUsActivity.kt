@@ -10,12 +10,16 @@ import android.os.SystemClock
 import android.util.Log
 import android.view.View
 import android.webkit.*
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 
 
 import com.google.android.gms.tasks.OnCompleteListener
+import com.google.firebase.ktx.Firebase
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
+import com.google.firebase.remoteconfig.ktx.remoteConfig
+import com.google.firebase.remoteconfig.ktx.remoteConfigSettings
 import com.yomplex.tests.BuildConfig
 import com.yomplex.tests.R
 import com.yomplex.tests.utils.ConstantPath
@@ -31,7 +35,8 @@ class WriteToUsActivity : AppCompatActivity(), View.OnClickListener {
     var url = ""
     var writetous = ""
     var feedback = ""
-    var remoteConfig: FirebaseRemoteConfig? = null
+    //var remoteConfig: FirebaseRemoteConfig? = null
+    var remoteConfig = Firebase.remoteConfig
     var sharedPrefs: SharedPrefs? = null
     var sound: Boolean = false
     var mLastClickTime:Long = 0;
@@ -42,9 +47,9 @@ class WriteToUsActivity : AppCompatActivity(), View.OnClickListener {
             getWindow().setNavigationBarColor(getResources().getColor(R.color.colorPrimaryDark));
         }
         appBarID.elevation = 20F
-        remoteConfig = FirebaseRemoteConfig.getInstance()
+        //remoteConfig = FirebaseRemoteConfig.getInstance()
 
-        val configSettings = FirebaseRemoteConfigSettings.Builder()
+        /*val configSettings = FirebaseRemoteConfigSettings.Builder()
             .setDeveloperModeEnabled(BuildConfig.DEBUG)
             .build()
 
@@ -54,7 +59,13 @@ class WriteToUsActivity : AppCompatActivity(), View.OnClickListener {
         // when you need to adjust those defaults, you set an updated value for only the values you
         // want to change in the Firebase console. See Best Practices in the README for more
         // information.
-        remoteConfig!!.setDefaults(R.xml.remote_config_defaults)
+        remoteConfig!!.setDefaults(R.xml.remote_config_defaults)*/
+        val configSettings = remoteConfigSettings {
+            minimumFetchIntervalInSeconds = 3600
+        }
+        remoteConfig.setConfigSettingsAsync(configSettings)
+
+        remoteConfig!!.setDefaultsAsync(R.xml.remote_config_defaults)
         fetchVersion()
 
         sharedPrefs = SharedPrefs()
@@ -141,7 +152,7 @@ class WriteToUsActivity : AppCompatActivity(), View.OnClickListener {
 
     }
     fun fetchVersion(){
-        var cacheExpiration: Long = 3600 // 1 hour in seconds.
+        /*var cacheExpiration: Long = 3600 // 1 hour in seconds.
         // If your app is using developer mode, cacheExpiration is set to 0, so each fetch will
         // retrieve values from the service.
         if (remoteConfig!!.getInfo().getConfigSettings().isDeveloperModeEnabled()) {
@@ -162,7 +173,24 @@ class WriteToUsActivity : AppCompatActivity(), View.OnClickListener {
                 Log.e("settings","....feedback...."+feedback);
                 Log.e("settings","....writetous...."+writetous);
                 //displayUpdateAlert()
-            })
+            })*/
+
+        remoteConfig.fetchAndActivate()
+            .addOnCompleteListener(this) { task ->
+                if (task.isSuccessful) {
+                    val updated = task.result
+                    Log.e("grade activity", "Config params updated: $updated")
+                   // Toast.makeText(this, "Fetch and activate succeeded", Toast.LENGTH_SHORT).show()
+                } else {
+                    //Toast.makeText(this, "Fetch failed", Toast.LENGTH_SHORT).show()
+                }
+                writetous = remoteConfig!!.getString(WRITETOUS_CONFIG_KEY)
+                feedback = remoteConfig!!.getString(FEEDBACK_CONFIG_KEY)
+
+                Log.e("settings","....feedback...."+feedback);
+                Log.e("settings","....writetous...."+writetous);
+                //displayUpdateAlert()
+            }
     }
 
     override fun onClick(v: View?) {

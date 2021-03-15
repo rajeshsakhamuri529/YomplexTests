@@ -53,7 +53,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginLeft="@dimen/_5sdp"
-            android:visibility="visible"
+            android:visibility="gone"
             android:layout_toRightOf="@+id/infoRl"
             android:layout_toLeftOf="@+id/settings">
 
@@ -103,7 +103,7 @@
                         android:id="@+id/tv_review"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Best Score This Week"
+                        android:text="This Week's Best Scores"
                         android:textSize="@dimen/_14ssp"
                         android:layout_centerVertical="true"
 
@@ -215,7 +215,7 @@
                             android:id="@+id/tv_week"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Performance"
+                            android:text="Progress Report"
                             android:textSize="@dimen/_14ssp"
                             android:layout_centerVertical="true"
 

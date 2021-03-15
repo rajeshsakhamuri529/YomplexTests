@@ -50,7 +50,7 @@
                             android:layout_height="wrap_content"
                             android:layout_below="@+id/title"
                             android:layout_centerInParent="true"
-                            android:text="Tiny Tests for JEE Mathematics"
+                            android:text="Tiny Tests for JEE Maths"
                             android:textColor="@color/purple"
                             android:fontFamily="@font/lato_black"
                             android:textSize="@dimen/_17sdp"
@@ -417,6 +417,7 @@
                         android:layout_marginLeft="@dimen/_22sdp"
                         android:layout_marginRight="@dimen/_22sdp"
                         android:layout_marginBottom="@dimen/_1sdp"
+                        android:focusableInTouchMode="true"
 
                         android:background="@drawable/sign_in_round"
                         >
@@ -454,6 +455,13 @@
                                 android:textColor="#ffffff"
                                 android:fontFamily="@font/lato_regular" />
                         </RelativeLayout>
+
+                        <RelativeLayout
+                            android:id="@+id/googleSignInFL"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="?android:attr/selectableItemBackground"
+                            android:clickable="true"></RelativeLayout>
 
                     </RelativeLayout>
 

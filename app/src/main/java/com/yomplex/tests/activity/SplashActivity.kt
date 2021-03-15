@@ -16,12 +16,17 @@ import android.util.Log
 import androidx.core.content.ContextCompat.getSystemService
 import android.icu.lang.UCharacter.GraphemeClusterBreak.T
 import androidx.appcompat.app.AlertDialog
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.analytics.ktx.logEvent
+import com.google.firebase.ktx.Firebase
 import com.yomplex.tests.R
 import com.yomplex.tests.utils.ForceUpdateChecker
 
 
 class SplashActivity : BaseActivity(), ForceUpdateChecker.OnUpdateNeededListener {
 
+    private lateinit var firebaseAnalytics: FirebaseAnalytics
     private var mDelayHandler: Handler? = null
     private val SPLASH_DELAY: Long = 1000 //1 seconds
     //var sharedPrefs: SharedPrefs? = null
@@ -40,6 +45,7 @@ class SplashActivity : BaseActivity(), ForceUpdateChecker.OnUpdateNeededListener
     override fun initView() {
 
         Log.d("onCreate","Splash")
+        firebaseAnalytics = Firebase.analytics
         /*val action: String? = intent?.action
         val data: Uri? = intent?.data
         var extras:Bundle? = intent.extras
@@ -78,6 +84,13 @@ class SplashActivity : BaseActivity(), ForceUpdateChecker.OnUpdateNeededListener
 
     override fun onSaveInstanceState(outState: Bundle, outPersistentState: PersistableBundle) {
         super.onSaveInstanceState(outState, outPersistentState)
+    }
+    override fun onResume() {
+        super.onResume()
+        firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW) {
+            param(FirebaseAnalytics.Param.SCREEN_NAME, "SplashScreen")
+            param(FirebaseAnalytics.Param.SCREEN_CLASS, "SplashActivity")
+        }
     }
 
     override fun onNewIntent(intent: Intent?) {

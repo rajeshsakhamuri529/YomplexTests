@@ -32,8 +32,12 @@ import androidx.core.content.FileProvider
 import com.bumptech.glide.Glide
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.Task
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.analytics.ktx.logEvent
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.ktx.Firebase
 import com.yomplex.tests.BuildConfig
 import com.yomplex.tests.R
 import com.yomplex.tests.database.QuizGameDataBase
@@ -130,7 +134,16 @@ class TestReviewActivity : BaseActivity(), View.OnClickListener {
     var share_rl: RelativeLayout? = null
     lateinit var testQuiz: TestQuiz
     var firestore: FirebaseFirestore? = null
+    private lateinit var firebaseAnalytics: FirebaseAnalytics
     override var layoutID: Int = R.layout.activity_quiz_time_review
+
+    override fun onResume() {
+        super.onResume()
+        firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW) {
+            param(FirebaseAnalytics.Param.SCREEN_NAME, "ReviewScreen<"+topicName+">")
+            param(FirebaseAnalytics.Param.SCREEN_CLASS, "TestReviewActivity")
+        }
+    }
 
     override fun initView() {
        // getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -165,6 +178,8 @@ class TestReviewActivity : BaseActivity(), View.OnClickListener {
         sharedPrefs = SharedPrefs()
         unAnsweredList = ArrayList<Int>()
         firestore = FirebaseFirestore.getInstance()
+
+        firebaseAnalytics = Firebase.analytics
         //createArrayMapList(dynamicPath!!)
         databaseHandler = QuizGameDataBase(this);
 
@@ -694,6 +709,9 @@ class TestReviewActivity : BaseActivity(), View.OnClickListener {
         if (type != 2201) {
             webView_question!!.settings.javaScriptEnabled = true
             webView_question!!.webViewClient = qa
+
+            webView_share_question!!.settings.javaScriptEnabled = true
+            webView_share_question!!.webViewClient = qa
         }
         /*else {
             var html = Utils.jsoup(questionPath, applicationContext)
@@ -1372,6 +1390,11 @@ class TestReviewActivity : BaseActivity(), View.OnClickListener {
 
                 }
 
+                firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW) {
+                    param(FirebaseAnalytics.Param.SCREEN_NAME, "ReportPopup")
+                    param(FirebaseAnalytics.Param.SCREEN_CLASS, "TestReviewActivity")
+                }
+
                 showDialogForReport()
             }
             R.id.share_rl -> {
@@ -1386,7 +1409,10 @@ class TestReviewActivity : BaseActivity(), View.OnClickListener {
                     }
                 }
 
-
+                firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW) {
+                    param(FirebaseAnalytics.Param.SCREEN_NAME, "Share screen")
+                    param(FirebaseAnalytics.Param.SCREEN_CLASS, "TestReviewActivity")
+                }
                 //var rootView = findViewById(android.R.id.content);
                 /**/
                 sharedialog!!.show()

@@ -22,7 +22,10 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.Task
 import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.analytics.ktx.logEvent
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.ktx.Firebase
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
 import com.yomplex.tests.R
@@ -78,7 +81,13 @@ class SettingFragment : Fragment(), View.OnClickListener {
         databaseHandler1 = DatabaseHandler(activity);
         enddate = sharedPrefs!!.getPrefVal(activity!!,"enddate")!!
         Log.e("settings","end date.........."+enddate);
-        view.txt_sub_date.setText(enddate)
+
+        if(enddate.isEmpty()){
+
+        }else{
+            view.txt_sub_date.setText(enddate)
+        }
+
         /*remoteConfig = FirebaseRemoteConfig.getInstance()
 
         val configSettings = FirebaseRemoteConfigSettings.Builder()
@@ -96,9 +105,16 @@ class SettingFragment : Fragment(), View.OnClickListener {
         // Initialize Firebase Auth
         auth = FirebaseAuth.getInstance()
 
-        firebaseAnalytics = FirebaseAnalytics.getInstance(activity!!)
+       // firebaseAnalytics = FirebaseAnalytics.getInstance(activity!!)
 
-        firebaseAnalytics.setCurrentScreen(activity!!, "Settings", null /* class override */)
+       // firebaseAnalytics.setCurrentScreen(activity!!, "Settings", null /* class override */)
+        firebaseAnalytics = Firebase.analytics
+        // firebaseAnalytics.setCurrentScreen(activity!!, "Test", null /* class override */)
+
+        firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW) {
+            param(FirebaseAnalytics.Param.SCREEN_NAME, "SettingsTab")
+            param(FirebaseAnalytics.Param.SCREEN_CLASS, "SettingFragment")
+        }
 
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(getString(R.string.default_web_client_id))
@@ -307,10 +323,14 @@ class SettingFragment : Fragment(), View.OnClickListener {
                 bundle.putString("Label", "PrivacyPolicy")
                 firebaseAnalytics?.logEvent("Settings", bundle)*/
 
-                val bundle = Bundle()
+                /*val bundle = Bundle()
                 bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "PrivacyPolicy")
                 bundle.putString(FirebaseAnalytics.Param.ITEM_ID, "Settings")
-                firebaseAnalytics?.logEvent("Policy", bundle)
+                firebaseAnalytics?.logEvent("Policy", bundle)*/
+                firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW) {
+                    param(FirebaseAnalytics.Param.SCREEN_NAME, "PrivacyPolicy")
+                    param(FirebaseAnalytics.Param.SCREEN_CLASS, "WriteToUsActivity")
+                }
                 intent = Intent(context, WriteToUsActivity::class.java)
                 intent.putExtra("activityname", "termsandconditions")
                 startActivity(intent)
@@ -333,10 +353,14 @@ class SettingFragment : Fragment(), View.OnClickListener {
                 bundle.putString("Label", "WriteToUs")
                 firebaseAnalytics?.logEvent("Settings", bundle)*/
 
-                val bundle = Bundle()
+                /*val bundle = Bundle()
                 bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "WriteToUs")
                 bundle.putString(FirebaseAnalytics.Param.ITEM_ID, "Settings")
-                firebaseAnalytics?.logEvent("Contact", bundle)
+                firebaseAnalytics?.logEvent("Contact", bundle)*/
+                firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW) {
+                    param(FirebaseAnalytics.Param.SCREEN_NAME, "WriteToUs")
+                    param(FirebaseAnalytics.Param.SCREEN_CLASS, "WriteToUsActivity")
+                }
                 intent = Intent(context, WriteToUsActivity::class.java)
                 intent.putExtra("activityname", "writetous")
                 startActivity(intent)
@@ -353,10 +377,17 @@ class SettingFragment : Fragment(), View.OnClickListener {
                         //Toast.makeText(context,"end",Toast.LENGTH_SHORT).show()
                     }
                 }
-                val bundle = Bundle()
+                /*val bundle = Bundle()
                 bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "Feedback")
                 bundle.putString(FirebaseAnalytics.Param.ITEM_ID, "Settings")
-                firebaseAnalytics?.logEvent("Feedback", bundle)
+                firebaseAnalytics?.logEvent("Feedback", bundle)*/
+                //firebaseAnalytics = Firebase.analytics
+                // firebaseAnalytics.setCurrentScreen(activity!!, "Test", null /* class override */)
+
+                firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW) {
+                    param(FirebaseAnalytics.Param.SCREEN_NAME, "Feedback")
+                    param(FirebaseAnalytics.Param.SCREEN_CLASS, "WriteToUsActivity")
+                }
                 intent = Intent(context, WriteToUsActivity::class.java)
                 intent.putExtra("activityname", "feedback")
                 startActivity(intent)
@@ -405,10 +436,15 @@ class SettingFragment : Fragment(), View.OnClickListener {
             bundle.putString("Label", "SignOut")
             firebaseAnalytics?.logEvent("Settings", bundle)*/
 
-            val bundle = Bundle()
+            /*val bundle = Bundle()
             bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "SignOut")
             bundle.putString(FirebaseAnalytics.Param.ITEM_ID, "Settings")
-            firebaseAnalytics?.logEvent("SignOut", bundle)
+            firebaseAnalytics?.logEvent("SignOut", bundle)*/
+
+            firebaseAnalytics.logEvent("SignOut") {
+                //param(FirebaseAnalytics.Param.SCREEN_NAME, "PrivacyPolicy")
+               // param(FirebaseAnalytics.Param.SCREEN_CLASS, "WriteToUsActivity")
+            }
 
             databaseHandler!!.deleteAllQuizTopicsLatPlayed("")
             databaseHandler!!.deleteAllQuizPlayFinal()

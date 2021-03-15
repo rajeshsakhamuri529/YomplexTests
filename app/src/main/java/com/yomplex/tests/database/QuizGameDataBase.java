@@ -691,6 +691,7 @@ public class QuizGameDataBase extends SQLiteOpenHelper {
 
     // code to update the single contact
     public int updatetestcontentdownloadstatus(int status,String type) {
+        Log.e("quiz game database","updatetestcontentdownloadstatus...statys.....type..."+status+"....."+type);
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();

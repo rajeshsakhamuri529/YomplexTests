@@ -20,8 +20,11 @@ import android.widget.Toast
 import com.blobcity.viewmodel.TopicStatusVM
 import com.bumptech.glide.Glide
 import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.analytics.ktx.logEvent
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreSettings
+import com.google.firebase.ktx.Firebase
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.yomplex.tests.R
@@ -82,6 +85,14 @@ class TestSummaryActivity : BaseActivity(), View.OnClickListener {
     private val db: FirebaseFirestore = FirebaseFirestore.getInstance()
     override var layoutID: Int = R.layout.activity_quiz_time_summary
 
+    override fun onResume() {
+        super.onResume()
+        firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW) {
+            param(FirebaseAnalytics.Param.SCREEN_NAME, "SummaryScreen<"+originaltopicName+">")
+            param(FirebaseAnalytics.Param.SCREEN_CLASS, "TestSummaryActivity")
+        }
+    }
+
     override fun initView() {
         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -118,7 +129,8 @@ class TestSummaryActivity : BaseActivity(), View.OnClickListener {
             .setCacheSizeBytes(FirebaseFirestoreSettings.CACHE_SIZE_UNLIMITED)
             .build()
         db.firestoreSettings = settings
-        firebaseAnalytics = FirebaseAnalytics.getInstance(this)
+        //firebaseAnalytics = FirebaseAnalytics.getInstance(this)
+        firebaseAnalytics = Firebase.analytics
         val sdf = SimpleDateFormat("dd-MM-yyyy")
         val currentDate = sdf.format(Date())
 
@@ -186,7 +198,7 @@ class TestSummaryActivity : BaseActivity(), View.OnClickListener {
 
         tv_total.text = ""+totalQuestion
         if(count == totalQuestion){
-            firebaseAnalytics.setCurrentScreen(this, "TestSuccess", null /* class override */)
+           // firebaseAnalytics.setCurrentScreen(this, "TestSuccess", null /* class override */)
             //successRL.background = resources.getDrawable(R.drawable.quiz_time_success)
             tv_correct.setTextColor(resources.getColor(R.color.button_close_text))
 
@@ -218,7 +230,7 @@ class TestSummaryActivity : BaseActivity(), View.OnClickListener {
 
 
         }else{
-            firebaseAnalytics.setCurrentScreen(this, "TestFail", null /* class override */)
+          //  firebaseAnalytics.setCurrentScreen(this, "TestFail", null /* class override */)
             //successRL.background = resources.getDrawable(R.drawable.quiz_time_failure)
             tv_correct.setTextColor(resources.getColor(R.color.test_fail))
 
@@ -390,11 +402,15 @@ class TestSummaryActivity : BaseActivity(), View.OnClickListener {
                     bundle.putString("Label", topicName)
                     firebaseAnalytics?.logEvent("TestSuccess", bundle)*/
 
-                    val bundle = Bundle()
+                   /* val bundle = Bundle()
                     bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, topicName)
                     bundle.putString(FirebaseAnalytics.Param.ITEM_ID, "Test")
                     // bundle.putString("Label", "TestGo")
-                    firebaseAnalytics?.logEvent("TestSNewTest", bundle)
+                    firebaseAnalytics?.logEvent("TestSNewTest", bundle)*/
+                    firebaseAnalytics.logEvent("TestSNewTest") {
+                        param(FirebaseAnalytics.Param.SCREEN_NAME, "SummaryScreen")
+                        //param(FirebaseAnalytics.Param.SCREEN_CLASS, "TestSummaryActivity")
+                    }
                 }else{
                     /*val bundle = Bundle()
                     bundle.putString("Category", "Test")
@@ -402,12 +418,17 @@ class TestSummaryActivity : BaseActivity(), View.OnClickListener {
                     bundle.putString("Label", topicName)
                     firebaseAnalytics?.logEvent("TestFail", bundle)*/
 
-                    val bundle = Bundle()
+                    /*val bundle = Bundle()
                     bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, topicName)
                     bundle.putString(FirebaseAnalytics.Param.ITEM_ID, "Test")
                     // bundle.putString("Label", "TestGo")
-                    firebaseAnalytics?.logEvent("TestFNewTest", bundle)
+                    firebaseAnalytics?.logEvent("TestFNewTest", bundle)*/
+                    firebaseAnalytics.logEvent("TestFNewTest") {
+                        param(FirebaseAnalytics.Param.SCREEN_NAME, "SummaryScreen")
+                        //param(FirebaseAnalytics.Param.SCREEN_CLASS, "TestSummaryActivity")
+                    }
                 }
+
                 var downloadstatus:Int = -1
                 var testcontentlist: List<TestDownload>? = databaseHandler!!.gettestContent()
                 for(i in 0 until testcontentlist!!.size) {
@@ -490,11 +511,11 @@ class TestSummaryActivity : BaseActivity(), View.OnClickListener {
 //                    bundle.putString("Label", topicName)
 //                    firebaseAnalytics?.logEvent("TestSuccess", bundle)
 
-                    val bundle = Bundle()
+                   /* val bundle = Bundle()
                     bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, topicName)
                     bundle.putString(FirebaseAnalytics.Param.ITEM_ID, "Test")
                     // bundle.putString("Label", "TestGo")
-                    firebaseAnalytics?.logEvent("TestSReview", bundle)
+                    firebaseAnalytics?.logEvent("TestSReview", bundle)*/
                 }else{
                     /*val bundle = Bundle()
                     bundle.putString("Category", "Test")
@@ -502,11 +523,15 @@ class TestSummaryActivity : BaseActivity(), View.OnClickListener {
                     bundle.putString("Label", topicName)
                     firebaseAnalytics?.logEvent("TestFail", bundle)*/
 
-                    val bundle = Bundle()
+                    /*val bundle = Bundle()
                     bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, topicName)
                     bundle.putString(FirebaseAnalytics.Param.ITEM_ID, "Test")
                     // bundle.putString("Label", "TestGo")
-                    firebaseAnalytics?.logEvent("TestFNewTest", bundle)
+                    firebaseAnalytics?.logEvent("TestFNewTest", bundle)*/
+                }
+                firebaseAnalytics.logEvent("ReviewSummary") {
+                    param(FirebaseAnalytics.Param.SCREEN_NAME, "SummaryScreen")
+                    //param(FirebaseAnalytics.Param.SCREEN_CLASS, "TestSummaryActivity")
                 }
                 val sdf = SimpleDateFormat("dd-MM-yyyy")
                 val currentDate = sdf.format(Date())
@@ -745,9 +770,9 @@ class TestSummaryActivity : BaseActivity(), View.OnClickListener {
             // jsonStringBasic =  Utils.readFromFile("$folderPath/basic.json")
             lastplayed = "basic"
 
-            databaseHandler!!.deleteAllQuizTopicsLatPlayed(topictype.toLowerCase())
+           // databaseHandler!!.deleteAllQuizTopicsLatPlayed(topictype.toLowerCase())
 
-            databaseHandler!!.insertquiztopiclastplayed(topic.title,topic.displayNo,lastplayed,topictype.toLowerCase());
+           // databaseHandler!!.insertquiztopiclastplayed(topic.title,topic.displayNo,lastplayed,topictype.toLowerCase());
         }else{
 
             if(branchesItemList!!.size == (testQuiz.serialNo).toInt()){
@@ -757,20 +782,24 @@ class TestSummaryActivity : BaseActivity(), View.OnClickListener {
                 jsonStringBasic = loadJSONFromAsset("$folderPath/basic.json")
                 //jsonStringBasic =  Utils.readFromFile("$folderPath/basic.json")
                 lastplayed = "basic"
-                databaseHandler!!.deleteAllQuizTopicsLatPlayed(topictype.toLowerCase())
+              //  databaseHandler!!.deleteAllQuizTopicsLatPlayed(topictype.toLowerCase())
 
-                databaseHandler!!.insertquiztopiclastplayed(topic.title,topic.displayNo,lastplayed,topictype.toLowerCase());
+                //databaseHandler!!.insertquiztopiclastplayed(topic.title,topic.displayNo,lastplayed,topictype.toLowerCase());
             }else{
-                topic = branchesItemList!![((testQuiz.serialNo).toInt())-1].topic
+                if(((testQuiz.serialNo).toInt())-1 < branchesItemList!!.size){
+                    topic = branchesItemList!![((testQuiz.serialNo).toInt())-1].topic
+                }else{
+                    topic = branchesItemList!![0].topic
+                }
                 folderPath = localPath+topic.folderName
                 Log.e("test fragment","testQuiz.folderPath......"+folderPath)
                 if(testQuiz.lastplayed.equals("basic")){
                     jsonStringBasic = loadJSONFromAsset("$folderPath/intermediate.json")
                     //jsonStringBasic =  Utils.readFromFile("$folderPath/intermediate.json")
                     lastplayed = "intermediate"
-                    databaseHandler!!.deleteAllQuizTopicsLatPlayed(topictype.toLowerCase())
+                  //  databaseHandler!!.deleteAllQuizTopicsLatPlayed(topictype.toLowerCase())
 
-                    databaseHandler!!.insertquiztopiclastplayed(topic.title,topic.displayNo,lastplayed,topictype.toLowerCase());
+                  //  databaseHandler!!.insertquiztopiclastplayed(topic.title,topic.displayNo,lastplayed,topictype.toLowerCase());
                 }else{
                     topic = branchesItemList!![((testQuiz.serialNo).toInt())].topic
                     folderPath = localPath+topic.folderName
@@ -778,9 +807,9 @@ class TestSummaryActivity : BaseActivity(), View.OnClickListener {
                     jsonStringBasic = loadJSONFromAsset("$folderPath/basic.json")
                     // jsonStringBasic =  Utils.readFromFile("$folderPath/basic.json")
                     lastplayed = "basic"
-                    databaseHandler!!.deleteAllQuizTopicsLatPlayed(topictype.toLowerCase())
+                 //   databaseHandler!!.deleteAllQuizTopicsLatPlayed(topictype.toLowerCase())
 
-                    databaseHandler!!.insertquiztopiclastplayed(topic.title,topic.displayNo,lastplayed,topictype.toLowerCase());
+                   // databaseHandler!!.insertquiztopiclastplayed(topic.title,topic.displayNo,lastplayed,topictype.toLowerCase());
 
                 }
             }
@@ -796,11 +825,11 @@ class TestSummaryActivity : BaseActivity(), View.OnClickListener {
         bundle.putString("Label", topic.title)
         firebaseAnalytics?.logEvent("Test", bundle)*/
 
-        val bundle = Bundle()
+       /* val bundle = Bundle()
         bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, topic.title)
         bundle.putString(FirebaseAnalytics.Param.ITEM_ID, "Test")
         // bundle.putString("Label", "TestGo")
-        firebaseAnalytics?.logEvent("Test", bundle)
+        firebaseAnalytics?.logEvent("Test", bundle)*/
 
 
         Log.e("chapter fragment.....","jsonStringBasic......."+jsonStringBasic);
@@ -843,9 +872,9 @@ class TestSummaryActivity : BaseActivity(), View.OnClickListener {
             jsonStringBasic =  Utils.readFromFile("$folderPath/basic.json")
             lastplayed = "basic"
 
-            databaseHandler!!.deleteAllQuizTopicsLatPlayed(testQuiz.testtype)
+           // databaseHandler!!.deleteAllQuizTopicsLatPlayed(testQuiz.testtype)
 
-            databaseHandler!!.insertquiztopiclastplayed(topic.title,topic.displayNo,lastplayed,testQuiz.testtype);
+          //  databaseHandler!!.insertquiztopiclastplayed(topic.title,topic.displayNo,lastplayed,testQuiz.testtype);
         }else{
 
             if(branchesItemList!!.size == (testQuiz.serialNo).toInt()){
@@ -853,27 +882,31 @@ class TestSummaryActivity : BaseActivity(), View.OnClickListener {
                 folderPath = localPath+topic.folderName
                 jsonStringBasic =  Utils.readFromFile("$folderPath/basic.json")
                 lastplayed = "basic"
-                databaseHandler!!.deleteAllQuizTopicsLatPlayed(testQuiz.testtype)
+             //   databaseHandler!!.deleteAllQuizTopicsLatPlayed(testQuiz.testtype)
 
-                databaseHandler!!.insertquiztopiclastplayed(topic.title,topic.displayNo,lastplayed,testQuiz.testtype);
+              //  databaseHandler!!.insertquiztopiclastplayed(topic.title,topic.displayNo,lastplayed,testQuiz.testtype);
             }else{
-                topic = branchesItemList!![((testQuiz.serialNo).toInt())-1].topic
+                if(((testQuiz.serialNo).toInt())-1 < branchesItemList!!.size){
+                    topic = branchesItemList!![((testQuiz.serialNo).toInt())-1].topic
+                }else{
+                    topic = branchesItemList!![0].topic
+                }
                 folderPath = localPath+topic.folderName
                 if(testQuiz.lastplayed.equals("basic")){
                     jsonStringBasic =  Utils.readFromFile("$folderPath/intermediate.json")
                     lastplayed = "intermediate"
-                    databaseHandler!!.deleteAllQuizTopicsLatPlayed(testQuiz.testtype)
+                //    databaseHandler!!.deleteAllQuizTopicsLatPlayed(testQuiz.testtype)
 
-                    databaseHandler!!.insertquiztopiclastplayed(topic.title,topic.displayNo,lastplayed,testQuiz.testtype);
+                 //   databaseHandler!!.insertquiztopiclastplayed(topic.title,topic.displayNo,lastplayed,testQuiz.testtype);
                 }else{
                     topic = branchesItemList!![((testQuiz.serialNo).toInt())].topic
                     folderPath = localPath+topic.folderName
 
                     jsonStringBasic =  Utils.readFromFile("$folderPath/basic.json")
                     lastplayed = "basic"
-                    databaseHandler!!.deleteAllQuizTopicsLatPlayed(testQuiz.testtype)
+                  //  databaseHandler!!.deleteAllQuizTopicsLatPlayed(testQuiz.testtype)
 
-                    databaseHandler!!.insertquiztopiclastplayed(topic.title,topic.displayNo,lastplayed,testQuiz.testtype);
+                  //  databaseHandler!!.insertquiztopiclastplayed(topic.title,topic.displayNo,lastplayed,testQuiz.testtype);
 
                 }
             }

@@ -48,19 +48,19 @@
                     android:text="YOMPLEX"
                     android:textColor="#424242"
                     android:fontFamily="@font/ribeyemarrow_regular"
-                    android:textSize="@dimen/_14sdp"
+                    android:textSize="@dimen/_12sdp"
                     android:layout_centerHorizontal="true"/>
 
                 <TextView
                     android:id="@+id/titleTxt"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="JEE Maths"
+                    android:text="TinyTests for JEE Maths"
 
 
                     android:textColor="#00ce73"
                     android:fontFamily="@font/lato_black"
-                    android:textSize="@dimen/_14sdp"
+                    android:textSize="@dimen/_12sdp"
                     android:layout_centerHorizontal="true"
                     android:layout_marginLeft="@dimen/_5sdp"/>
 

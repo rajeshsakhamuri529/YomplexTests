@@ -9,6 +9,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.analytics.ktx.logEvent
+import com.google.firebase.ktx.Firebase
 import com.yomplex.tests.R
 import com.yomplex.tests.activity.DashBoardActivity
 import com.yomplex.tests.activity.TestReviewActivity
@@ -31,6 +35,7 @@ class ReviewFragment: Fragment(), View.OnClickListener, TestQuizReviewClickListe
     var testquizlist: List<TestQuizFinal>? = null
     var sharedPrefs: SharedPrefs? = null
     var sound: Boolean = false
+    private lateinit var firebaseAnalytics: FirebaseAnalytics
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.review_ll, container, false)
     }
@@ -41,6 +46,14 @@ class ReviewFragment: Fragment(), View.OnClickListener, TestQuizReviewClickListe
         databaseHandler = QuizGameDataBase(context);
         sharedPrefs = SharedPrefs()
         testquizlist = databaseHandler!!.getTestQuizList()
+
+        firebaseAnalytics = Firebase.analytics
+        // firebaseAnalytics.setCurrentScreen(activity!!, "Test", null /* class override */)
+
+        firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW) {
+            param(FirebaseAnalytics.Param.SCREEN_NAME, "ReviewsTab")
+            param(FirebaseAnalytics.Param.SCREEN_CLASS, "ReviewFragment")
+        }
 
         if(testquizlist!!.size == 0){
             view.rl_no_review.visibility = View.VISIBLE

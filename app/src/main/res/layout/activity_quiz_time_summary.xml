@@ -214,7 +214,7 @@
                     android:textColor="#0080ff"
 
 
-                    android:textSize="@dimen/_30ssp"
+                    android:textSize="@dimen/_28ssp"
                     android:text="ready?"
                     android:gravity="center"
 

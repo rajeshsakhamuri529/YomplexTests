@@ -35,9 +35,12 @@ import com.google.firebase.firestore.FirebaseFirestoreSettings
 import com.google.firebase.firestore.QuerySnapshot
 
 import com.google.firebase.iid.FirebaseInstanceId
+import com.google.firebase.ktx.Firebase
 
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
+import com.google.firebase.remoteconfig.ktx.remoteConfig
+import com.google.firebase.remoteconfig.ktx.remoteConfigSettings
 import com.google.firebase.storage.FileDownloadTask
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
@@ -85,7 +88,7 @@ class GradeActivity : BaseActivity(), GradeClickListener, PermissionListener  {
     private val TEST_CONTENT_VERSION = "TestContentVersion"
     private lateinit var firebaseAnalytics: FirebaseAnalytics
     private val db: FirebaseFirestore = FirebaseFirestore.getInstance()
-    val remoteConfig: FirebaseRemoteConfig = FirebaseRemoteConfig.getInstance()
+    //val remoteConfig: FirebaseRemoteConfig = FirebaseRemoteConfig.getInstance()
     val storage = FirebaseStorage.getInstance()
     var gradeResponseModelList: ArrayList<GradeResponseModel>?= null
     var gradeVersion: Long?= null
@@ -101,6 +104,8 @@ class GradeActivity : BaseActivity(), GradeClickListener, PermissionListener  {
     var databaseHandler: QuizGameDataBase?= null
     var version : String = ""
     var url : String = ""
+
+    var remoteConfig = Firebase.remoteConfig
     override var layoutID: Int = R.layout.activity_splash
 
 
@@ -119,12 +124,18 @@ class GradeActivity : BaseActivity(), GradeClickListener, PermissionListener  {
         }
         firebaseAnalytics = FirebaseAnalytics.getInstance(this)
 
-        val configSettings = FirebaseRemoteConfigSettings.Builder()
+        /*val configSettings = FirebaseRemoteConfigSettings.Builder()
             .setDeveloperModeEnabled(BuildConfig.DEBUG)
             .build()
 
-        remoteConfig!!.setConfigSettings(configSettings)
-        remoteConfig!!.setDefaults(R.xml.remote_config_defaults)
+        remoteConfig!!.setConfigSettings(configSettings)*/
+
+        val configSettings = remoteConfigSettings {
+            minimumFetchIntervalInSeconds = 3600
+        }
+        remoteConfig.setConfigSettingsAsync(configSettings)
+
+        remoteConfig!!.setDefaultsAsync(R.xml.remote_config_defaults)
         fetchVersion()
         //firebaseAnalytics.setCurrentScreen(this, "Signup", null /* class override */)
 
@@ -150,14 +161,14 @@ class GradeActivity : BaseActivity(), GradeClickListener, PermissionListener  {
     }
 
     fun fetchVersion(){
-        var cacheExpiration: Long = 3600 // 1 hour in seconds.
+        /*var cacheExpiration: Long = 3600 // 1 hour in seconds.
         // If your app is using developer mode, cacheExpiration is set to 0, so each fetch will
         // retrieve values from the service.
         if (remoteConfig!!.getInfo().getConfigSettings().isDeveloperModeEnabled()) {
             cacheExpiration = 0
-        }
+        }*/
 
-        remoteConfig!!.fetch(cacheExpiration)
+        /*remoteConfig!!.fetch(cacheExpiration)
             .addOnCompleteListener(this, OnCompleteListener<Void> { task ->
                 if (task.isSuccessful) {
                     // After config data is successfully fetched, it must be activated before newly fetched
@@ -165,14 +176,29 @@ class GradeActivity : BaseActivity(), GradeClickListener, PermissionListener  {
                     remoteConfig!!.activateFetched()
                 }
                 displayUpdateAlert()
-            })
+            })*/
+
+
+        remoteConfig.fetchAndActivate()
+            .addOnCompleteListener(this) { task ->
+                if (task.isSuccessful) {
+                    val updated = task.result
+                    Log.e("grade activity", "Config params updated: $updated")
+                   // Toast.makeText(this, "Fetch and activate succeeded", Toast.LENGTH_SHORT).show()
+                } else {
+                    //Toast.makeText(this, "Fetch failed", Toast.LENGTH_SHORT).show()
+                }
+                displayUpdateAlert()
+            }
+
+
     }
 
     fun displayUpdateAlert() {
 
         val enddate = remoteConfig!!.getString(SUBSCRIPTION_END_DATE)
         sharedPrefs!!.setPrefVal(this,"enddate", enddate)
-       // Toast.makeText(this,"displayUpdateAlert..."+enddate,Toast.LENGTH_LONG).show()
+        //Toast.makeText(this,"displayUpdateAlert..."+enddate,Toast.LENGTH_LONG).show()
         /*val url = remoteConfig!!.getString(TEST_CONTENT_URL)
         val version = remoteConfig!!.getString(TEST_CONTENT_VERSION)
         Log.e("grade activity","displayUpdateAlert.....version......."+version)
@@ -250,13 +276,13 @@ class GradeActivity : BaseActivity(), GradeClickListener, PermissionListener  {
 
             if(sharedPrefs.getBooleanPrefVal(this, ConstantPath.IS_FIRST_TIME)){
 
-                val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+                /*val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
                 val activeNetwork: NetworkInfo? = connectivityManager.activeNetworkInfo
                 val isConnected: Boolean = activeNetwork?.isConnected == true
                 Log.d("isConnected",isConnected.toString()+"!")
                 if(isNetworkConnected()) {
                     downloadServiceFromBackground(this@GradeActivity,db)
-                }
+                }*/
                 navigateToIntro()
 
                 /*var statuslist: List<Int>? = databaseHandler!!.gettesttopicdownloadstatus()
@@ -686,7 +712,7 @@ class GradeActivity : BaseActivity(), GradeClickListener, PermissionListener  {
         remoteConfig.fetch().addOnCompleteListener(object : OnCompleteListener<Void>{
             override fun onComplete(task: Task<Void>) {
                 if (task.isSuccessful){
-                    remoteConfig.activateFetched()
+                    //remoteConfig.activateFetched()
                     gradeVersion = remoteConfig.getValue("gradesVer").asLong()
                     Log.d("getDataFromFirestore",gradeVersion.toString()+"!");
 
