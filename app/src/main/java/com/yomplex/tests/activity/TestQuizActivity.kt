@@ -243,7 +243,7 @@ class TestQuizActivity : BaseActivity(), View.OnClickListener {
     override fun onResume() {
         super.onResume()
         firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW) {
-            param(FirebaseAnalytics.Param.SCREEN_NAME, "StartScreen<"+originaltopicName+">")
+            param(FirebaseAnalytics.Param.SCREEN_NAME, "StartScreen "+originaltopicName)
             param(FirebaseAnalytics.Param.SCREEN_CLASS, "TestQuizActivity")
         }
     }
@@ -366,6 +366,7 @@ class TestQuizActivity : BaseActivity(), View.OnClickListener {
 
 
     private fun startCountDownTimerForMinutes(longtime:Long){
+
         minutescountDownTimer = object: CountDownTimer(longtime, 1000) {
             override fun onTick(millisUntilFinished:Long) {
                 millisUntil = millisUntilFinished
@@ -376,7 +377,7 @@ class TestQuizActivity : BaseActivity(), View.OnClickListener {
 
                 timeuntilfinish = Math.ceil(f1).toInt();
 
-               // Log.e("test quiz","timeuntilfinish......."+timeuntilfinish);
+                //Log.e("test quiz","timeuntilfinish......."+timeuntilfinish);
 
                 timetaken = timeCountInMilliSeconds - timeuntilfinish;
                 var minutes = TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished);
@@ -3320,6 +3321,7 @@ class TestQuizActivity : BaseActivity(), View.OnClickListener {
         val testModel = TestsModel()
         var userid = sharedPrefs!!.getPrefVal(this, ConstantPath.UID)
         var email = sharedPrefs!!.getPrefVal(this, "email")
+        var phone = sharedPrefs!!.getPrefVal(this, "phonenumber")
         Log.e("test quiz activity","userid......."+userid)
         testQuiz = databaseHandler!!.getQuizTopicsForTimerLastPlayed(topicName!!.toLowerCase())
         var count:Int = 0
@@ -3349,6 +3351,7 @@ class TestQuizActivity : BaseActivity(), View.OnClickListener {
         testModel.userId = userid
         testModel.testname = testQuiz.testtype
         testModel.useremail = email
+        testModel.phonenumber = phone
         if(timetaken == 0){
             testModel.timeTakenToComplete = "< 1 min"
         }else{

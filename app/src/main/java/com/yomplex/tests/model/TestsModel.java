@@ -12,6 +12,15 @@ public class TestsModel implements Serializable {
     public String userId;
     public String useremail;
     public String testname;
+    public String phonenumber;
+
+    public String getPhonenumber() {
+        return phonenumber;
+    }
+
+    public void setPhonenumber(String phonenumber) {
+        this.phonenumber = phonenumber;
+    }
 
     public String getTestPlayedDate() {
         return testPlayedDate;

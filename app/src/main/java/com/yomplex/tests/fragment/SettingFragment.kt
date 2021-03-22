@@ -446,10 +446,10 @@ class SettingFragment : Fragment(), View.OnClickListener {
                // param(FirebaseAnalytics.Param.SCREEN_CLASS, "WriteToUsActivity")
             }
 
-            databaseHandler!!.deleteAllQuizTopicsLatPlayed("")
-            databaseHandler!!.deleteAllQuizPlayFinal()
-            databaseHandler1!!.deleteAllRevisions()
-            databaseHandler1!!.deleteAllBookStatus()
+          //  databaseHandler!!.deleteAllQuizTopicsLatPlayed("")
+           // databaseHandler!!.deleteAllQuizPlayFinal()
+           // databaseHandler1!!.deleteAllRevisions()
+           // databaseHandler1!!.deleteAllBookStatus()
             // Firebase sign out
             auth.signOut()
 

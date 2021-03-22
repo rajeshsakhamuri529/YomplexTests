@@ -70,5 +70,9 @@
 
     <string name="empty_review_msg"><u>Take a Test</u></string>
 
+    <string name="description">Clicable area</string>
+
+    <string name="enter_phone_txt">Please enter your mobile number</string>
+
 
 </resources>

@@ -2,6 +2,7 @@ package com.yomplex.tests.utils;
 
 import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
@@ -11,16 +12,19 @@ import android.media.SoundPool;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
+import android.os.CountDownTimer;
 import android.os.Environment;
 import android.provider.Settings;
 import android.text.SpannableString;
 import android.text.style.RelativeSizeSpan;
 import android.util.Log;
 import android.webkit.WebView;
+import android.widget.TextView;
 
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Tracker;
 import com.yomplex.tests.R;
+import com.yomplex.tests.activity.PhoneAuthActivity;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -57,16 +61,19 @@ import static android.content.Context.AUDIO_SERVICE;
 
 public class Utils {
 
-    public static final int DATABASE_VERSION = 1;
+    public static final int DATABASE_VERSION = 3;
 
     public static SoundPool soundPool;
     public static SoundPool soundPool1;
     public static SoundPool soundPool2;
     public static int soundID,soundID1,soundID2;
     public static boolean loaded = false;
+    public static boolean istimerrunning = false;
     public static float volume;
     public static Date date = new Date();
     public static Tracker sTracker;
+    public static CountDownTimer countDownTimer;
+    public static int timerTime = 0;
 
     public void getApp(Context context){
 
@@ -734,6 +741,60 @@ public class Utils {
         cis.close();
     }
 
+    public static void countdowntimer(long time,Activity activity, TextView view){
+
+        countDownTimer = new CountDownTimer(time, 1000) {
+
+            public void onTick(long millisUntilFinished) {
+               // mTextField.setText("seconds remaining: " + millisUntilFinished / 1000);
+                istimerrunning = true;
+                //Log.e("utils","countdowntimer...millisUntilFinished / 1000.."+millisUntilFinished / 1000);
+                timerTime = (int) (millisUntilFinished / 1000);
+                //PhoneAuthActivity phoneAuthActivity=new PhoneAuthActivity();
+                //phoneAuthActivity.updatetimer(timerTime);
+
+                activity.runOnUiThread(new Runnable(){
+                    @Override
+                    public void run() {
+                        if(timerTime <= 9){
+                            //timerTXT.text = "0"+time
+                            view.setText(timerTime+" s");
+                        }else{
+                           // timerTXT.text = ""+time
+                            view.setText(timerTime+" s");
+                        }
+                       // view.setText("disconnect");
+                    }
+                });
+            }
+
+            public void onFinish() {
+                //mTextField.setText("done!");
+                istimerrunning = false;
+            }
+        };
+        countDownTimer.start();
+
+
+    }
+
+    public static void startTimer(long time, Activity activity, TextView view){
+        countdowntimer(time,activity,view);
+
+    }
+
+    public static void stopTimer(){
+        if(istimerrunning){
+            //timerTime = 0;
+            countDownTimer.cancel();
+        }
+
+    }
+
+    public static int getTimerTime(){
+
+        return timerTime;
+    }
 
 
 }

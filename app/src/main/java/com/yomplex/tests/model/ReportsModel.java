@@ -5,11 +5,17 @@ public class ReportsModel {
     public String useremail;
     public String reportissuetype;
     public String additionalinfo;
-
+    public String phonenumber;
     public String coursename;
     public String questionpath;
 
+    public String getPhonenumber() {
+        return phonenumber;
+    }
 
+    public void setPhonenumber(String phonenumber) {
+        this.phonenumber = phonenumber;
+    }
 
     public String getUseremail() {
         return useremail;

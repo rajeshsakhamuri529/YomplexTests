@@ -13,6 +13,7 @@ import com.yomplex.tests.model.QuizScore;
 import com.yomplex.tests.model.TestDownload;
 import com.yomplex.tests.model.TestQuiz;
 import com.yomplex.tests.model.TestQuizFinal;
+import com.yomplex.tests.model.User;
 import com.yomplex.tests.utils.Utils;
 
 import java.util.ArrayList;
@@ -85,6 +86,25 @@ public class QuizGameDataBase extends SQLiteOpenHelper {
     private static final String TABLE_QUIZ_PLAY_SCORE = "quizplayscore";
     private static final String KEY_WEEK_YEAR = "weekofyear";
     private static final String KEY_HIGHEST_SCORE = "highestscore";
+
+
+    private static final String TABLE_USER_SYNC = "usersync";
+    private static final String KEY_USER_EMAIL = "useremail";
+    private static final String KEY_USER_DEVICE_ID = "userdeviceid";
+    private static final String KEY_USER_PHONE = "userphone";
+    private static final String KEY_USER_CREATEDON = "createdon";
+    private static final String KEY_USER_UPDATEDON = "updatedon";
+    private static final String KEY_USER_FIREBASE_TOKEN = "firebasetoken";
+    private static final String KEY_SYNC_STATUS = "syncstatus";
+
+    String CREATE_TABLE_USER_SYNC = "CREATE TABLE " + TABLE_USER_SYNC + "("
+            + KEY_USER_EMAIL + " TEXT, "
+            + KEY_USER_DEVICE_ID + " TEXT, "
+            + KEY_USER_PHONE + " TEXT, "
+            + KEY_USER_CREATEDON + " TEXT,"
+            + KEY_USER_UPDATEDON + " TEXT,"
+            + KEY_USER_FIREBASE_TOKEN + " TEXT,"
+            + KEY_SYNC_STATUS + " TEXT)";
 
     String CREATE_TABLE_QUIZ_PLAY_SCORE = "CREATE TABLE " + TABLE_QUIZ_PLAY_SCORE + "("
             + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
@@ -167,7 +187,7 @@ public class QuizGameDataBase extends SQLiteOpenHelper {
         db.execSQL(CREATE_TABLE_TEST_CONTENT_DOWNLOAD);
         db.execSQL(CREATE_TABLE_TEST_TIMER);
         db.execSQL(CREATE_TABLE_QUIZ_PLAY_SCORE);
-
+        db.execSQL(CREATE_TABLE_USER_SYNC);
 
         db.execSQL(CREATE_TABLE_CHALLENGE_STATUS);
         db.execSQL(CREATE_TABLE_CHALLENGE);
@@ -189,7 +209,7 @@ public class QuizGameDataBase extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_TEST_CONTENT_DOWNLOAD);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_TEST_TIMER);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_QUIZ_PLAY_SCORE);
-
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_USER_SYNC);
 
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_CHALLENGE_STATUS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_CHALLENGE);
@@ -201,6 +221,99 @@ public class QuizGameDataBase extends SQLiteOpenHelper {
         onCreate(db);
     }
 
+
+
+    public void insertUserSync(User user,int syncstatus) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+
+        values.put(KEY_USER_EMAIL, user.getUsername());
+        values.put(KEY_USER_DEVICE_ID, user.getDeviceuniqueid());
+        values.put(KEY_USER_PHONE, user.getPhonenumber());
+        values.put(KEY_USER_CREATEDON, user.getCreatedon());
+        values.put(KEY_USER_UPDATEDON, user.getUpdatedon());
+        values.put(KEY_USER_FIREBASE_TOKEN, user.getFirebaseToken());
+        values.put(KEY_SYNC_STATUS, syncstatus);
+
+
+
+        // Inserting Row
+        db.insert(TABLE_USER_SYNC, null, values);
+        //2nd argument is String containing nullColumnHack
+        db.close(); // Closing database connection
+    }
+
+    public int updateUserSyncStatus(String email,int status) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        //values.put(KEY_NAME, contact.getName());
+        values.put(KEY_SYNC_STATUS, status);
+
+        // updating row
+        return db.update(TABLE_USER_SYNC, values, KEY_USER_EMAIL + " = ?",
+                new String[] { String.valueOf(email) });
+    }
+
+    public String getUserSyncStatus() {
+        //DailyChallenge dailyChallenge=new DailyChallenge();
+        // Log.e("quiz database","getWeekTotalScore....weekofyear..."+weekofyear);
+        String status = null;
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cur = db.rawQuery("SELECT * FROM " + TABLE_USER_SYNC , new String[]{});
+
+        //Cursor cur = db.rawQuery("SELECT * FROM " + TABLE_QUIZ_WITH_TIMER_FINAL + " WHERE " + KEY_TITLE + "='" + title+"' AND "+KEY_PRESENT_DATE + " ='"+pdate+"' AND "+KEY_TYPE_OF_PLAY +"= '"+typeofplay+"'", new String[]{});
+        //count = cur.getCount();
+        if (cur.moveToFirst()) {
+            do {
+
+                status = (cur.getString(cur.getColumnIndex(KEY_SYNC_STATUS)));
+
+
+
+            } while (cur.moveToNext());
+        }
+        cur.close();
+        db.close();
+
+        Log.e("quiz game database","status.........."+status);
+        // return contact
+        return status;
+    }
+
+    public User getUserDetails() {
+        //DailyChallenge dailyChallenge=new DailyChallenge();
+        int version = 0;
+        User user = new User();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cur = db.rawQuery("SELECT * FROM " + TABLE_USER_SYNC, new String[]{});
+        /*Cursor cursor = db.query(TABLE_DAILY_CHALLENGE, new String[] { KEY_ID,
+                        KEY_VERSION }, KEY_ID + "=?",
+                new String[] { String.valueOf(id) }, null, null, null, null);*/
+        if (cur.moveToFirst()) {
+            do {
+
+
+                user.setUsername((cur.getString(cur.getColumnIndex(KEY_USER_EMAIL))));
+                user.setPhonenumber((cur.getString(cur.getColumnIndex(KEY_USER_PHONE))));
+                user.setFirebaseToken((cur.getString(cur.getColumnIndex(KEY_USER_FIREBASE_TOKEN))));
+                user.setUpdatedon((cur.getString(cur.getColumnIndex(KEY_USER_UPDATEDON))));
+                user.setCreatedon((cur.getString(cur.getColumnIndex(KEY_USER_CREATEDON))));
+                user.setDeviceuniqueid((cur.getString(cur.getColumnIndex(KEY_USER_DEVICE_ID))));
+
+
+
+            } while (cur.moveToNext());
+        }
+        cur.close();
+        db.close();
+
+        //Log.e("quiz game database","user........."+user);
+        // return contact
+        return user;
+    }
 
 
     public void insertContentUpdateDate(String date) {

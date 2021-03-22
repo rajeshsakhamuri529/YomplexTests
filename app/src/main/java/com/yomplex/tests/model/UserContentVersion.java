@@ -3,6 +3,7 @@ package com.yomplex.tests.model;
 public class UserContentVersion {
 
     public String useremail;
+    public String phonenumber;
     public String userid;
     public String algebraversion;
     public String geometryversion;
@@ -10,6 +11,13 @@ public class UserContentVersion {
     public String calculus2version;
     public String otherversion;
 
+    public String getPhonenumber() {
+        return phonenumber;
+    }
+
+    public void setPhonenumber(String phonenumber) {
+        this.phonenumber = phonenumber;
+    }
 
     public String getUseremail() {
         return useremail;

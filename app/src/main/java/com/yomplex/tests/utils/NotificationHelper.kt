@@ -35,17 +35,18 @@ class NotificationHelper : FirebaseMessagingService() {
         Log.e("notification helper","on message received......");
         sharedPrefs = SharedPrefs()
         Log.e(TAG, "From: " + remoteMessage!!.from)
-        if(remoteMessage.data != null){
+        Log.e(TAG, "From: " + remoteMessage!!.data)
+        /*if(remoteMessage.data != null){
             sharedPrefs!!.setPrefVal(applicationContext,"screen",
                 remoteMessage.data.get("screen")!!
             )
-        }
+        }*/
 
        // Log.e(TAG, "Notification Message Body: " + remoteMessage.data.get("my_custom_key2"))
         notification = sharedPrefs?.getBooleanPrefVal(applicationContext, ConstantPath.NOTIFICATION) ?: true
         //if(notification){
             sendNotification(remoteMessage)
-        //}
+       // }
 
         /*val intent = Intent(this@NotificationHelper, GradeActivity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)

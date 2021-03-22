@@ -8,6 +8,7 @@
     tools:context="com.yomplex.tests.activity.SignInActivity">
 
 
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -413,7 +414,7 @@
                         android:id="@+id/signWithGoogleRLID"
                         android:layout_width="match_parent"
                         android:layout_height="@dimen/_40sdp"
-                        android:layout_centerInParent="true"
+                        android:layout_marginTop="@dimen/_5sdp"
                         android:layout_marginLeft="@dimen/_22sdp"
                         android:layout_marginRight="@dimen/_22sdp"
                         android:layout_marginBottom="@dimen/_1sdp"
@@ -440,7 +441,7 @@
                             <TextView
                                 android:id="@+id/signin_txt"
                                 style="@style/Widget.AppCompat.Button.Borderless"
-                                android:textSize="@dimen/_11ssp"
+                                android:textSize="@dimen/_12ssp"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_centerHorizontal="true"
@@ -460,6 +461,66 @@
                             android:id="@+id/googleSignInFL"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
+                            android:contentDescription="@string/description"
+                            android:background="?android:attr/selectableItemBackground"
+                            android:clickable="true"></RelativeLayout>
+
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:id="@+id/signWithPhoneRLID"
+                        android:layout_below="@+id/signWithGoogleRLID"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/_40sdp"
+
+                        android:layout_marginTop="@dimen/_15sdp"
+                        android:layout_marginLeft="@dimen/_22sdp"
+                        android:layout_marginRight="@dimen/_22sdp"
+                        android:layout_marginBottom="@dimen/_1sdp"
+                        android:focusableInTouchMode="true"
+
+                        android:background="@drawable/sign_in_round"
+                        >
+
+
+                        <TextView
+                            android:id="@+id/phone_image"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:layout_centerVertical="true"
+                            android:layout_marginEnd="@dimen/_15sdp"
+                            android:layout_marginStart="@dimen/_15sdp"
+                            android:background="@drawable/ic_phone1c" />
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@drawable/sign_in_btn_rounded"
+                            android:layout_toRightOf="@+id/phone_image">
+
+                            <TextView
+                                android:id="@+id/phone_txt"
+                                style="@style/Widget.AppCompat.Button.Borderless"
+                                android:textSize="@dimen/_12ssp"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_centerHorizontal="true"
+                                android:layout_centerVertical="true"
+                                android:letterSpacing="0.1"
+
+
+                                android:gravity="center_vertical|center_horizontal"
+                                android:text="Continue with Mobile"
+                                android:textAllCaps="false"
+                                android:textStyle="bold"
+                                android:textColor="#ffffff"
+                                android:fontFamily="@font/lato_regular" />
+                        </RelativeLayout>
+
+                        <RelativeLayout
+                            android:id="@+id/phoneSignInFL"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:contentDescription="@string/description"
                             android:background="?android:attr/selectableItemBackground"
                             android:clickable="true"></RelativeLayout>
 
@@ -469,8 +530,8 @@
                         android:id="@+id/bottomlayout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_below="@+id/signWithGoogleRLID"
-                        android:layout_marginTop="@dimen/_5sdp">
+                        android:layout_below="@+id/signWithPhoneRLID"
+                        android:layout_marginTop="@dimen/_15sdp">
 
                         <RelativeLayout
                             android:layout_width="wrap_content"
@@ -548,7 +609,12 @@
     </LinearLayout>
 
 
-
+    <FrameLayout
+        android:id="@+id/fragment_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 
 

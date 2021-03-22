@@ -32,7 +32,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerHorizontal="true"
-                    android:layout_alignParentBottom="true">
+                    android:layout_centerInParent="true">
 
 
 
@@ -56,7 +56,7 @@
 
 
                         <TextView
-                            android:id="@+id/tv_quiz_title"
+                            android:id="@+id/tv_quiz_title1"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="TINY TEST RESULTS"
@@ -78,6 +78,20 @@
 
 
                 </RelativeLayout>
+
+                <TextView
+                    android:id="@+id/tv_quiz_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:layout_alignParentBottom="true"
+                    android:gravity="center"
+                    android:layout_centerHorizontal="true"
+                    android:textSize="@dimen/_18ssp"
+
+                    android:layout_marginLeft="@dimen/_11sdp"
+                    android:textColor="@color/topic_text"
+                    android:fontFamily="@font/lato_bold"/>
 
             </RelativeLayout>
 

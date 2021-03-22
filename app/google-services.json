@@ -14,6 +14,38 @@
       },
       "oauth_client": [
         {
+          "client_id": "773220899713-2fc26cfrglmed9hn6r5mgg30vcpeo2sl.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.yomplex.tests",
+            "certificate_hash": "82ed4fa9155e4fc19cdaf44725b869ca5d3eb614"
+          }
+        },
+        {
+          "client_id": "773220899713-mrvrh2apd67ss290346qrn1hutub9sut.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.yomplex.tests",
+            "certificate_hash": "a07255270a658032f93d97aa9763ac461e011ab8"
+          }
+        },
+        {
+          "client_id": "773220899713-pr72h49ne4mmqlhocs18m27o5n2h143b.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.yomplex.tests",
+            "certificate_hash": "03c4fbaf65ac3199416a019988cd1b55be746bc6"
+          }
+        },
+        {
+          "client_id": "773220899713-u758gvf1on37ssr12p9jt184qhs68df0.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.yomplex.tests",
+            "certificate_hash": "223be5d274739b9196d8662f7dc1f542b579141c"
+          }
+        },
+        {
           "client_id": "773220899713-eldkksh3io3drq075cb3p3aecgls1tnh.apps.googleusercontent.com",
           "client_type": 3
         }

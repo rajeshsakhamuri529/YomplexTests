@@ -50,6 +50,8 @@ import com.yomplex.tests.Service.ContentDownloadService
 import com.yomplex.tests.ViewPager.adapter.MyPagerAdapter
 import com.yomplex.tests.ViewPager.fragments.IntroFirstFragment
 import com.yomplex.tests.ViewPager.listener.ViewPagerListener
+import com.yomplex.tests.database.QuizGameDataBase
+import com.yomplex.tests.fragment.PhoneAuthFragment
 
 import com.yomplex.tests.model.User
 import com.yomplex.tests.model.UserContentVersion
@@ -80,6 +82,7 @@ class SignInActivity : BaseActivity(){
     private var backPressToastMessage: Toast? = null
     var firestore: FirebaseFirestore? = null
     var enddate = ""
+    var databaseHandler: QuizGameDataBase?= null
     companion object {
         private const val MIN_SCALE = 0.65f
         private const val MIN_ALPHA = 0.3f
@@ -130,7 +133,7 @@ class SignInActivity : BaseActivity(){
             .setCacheSizeBytes(FirebaseFirestoreSettings.CACHE_SIZE_UNLIMITED)
             .build()
         firestore!!.firestoreSettings = settings
-
+        databaseHandler = QuizGameDataBase(this);
         enddate = sharedPrefs!!.getPrefVal(this,"enddate")!!
         Log.e("sign in","end date.........."+enddate);
         if(enddate.isEmpty()){
@@ -139,7 +142,7 @@ class SignInActivity : BaseActivity(){
         }else{
             text1.setText("valid until "+enddate)
         }
-
+        //Log.e("sign in","timer time...."+Utils.getTimerTime())
         //firebaseAnalytics.setCurrentScreen(this, "Signup", null /* class override */)
 
 
@@ -234,7 +237,17 @@ class SignInActivity : BaseActivity(){
         }*/
         buttonEffect(googleSignInFL,true)
         googleSignInFL.setOnClickListener {
-
+            sound = sharedPrefs?.getBooleanPrefVal(this@SignInActivity, ConstantPath.SOUNDS) ?: true
+            Log.e("sign in activity","sound............."+sound);
+            if(!sound){
+                // mediaPlayer = MediaPlayer.create(this,R.raw.amount_low)
+                //  mediaPlayer.start()
+                if (Utils.loaded) {
+                    Utils.soundPool.play(Utils.soundID, Utils.volume, Utils.volume, 1, 0, 1f);
+                    Log.e("Test", "Played sound...volume..."+ Utils.volume);
+                    //Toast.makeText(context,"end",Toast.LENGTH_SHORT).show()
+                }
+            }
             if(Utils.isOnline(this)){
 
 
@@ -244,6 +257,37 @@ class SignInActivity : BaseActivity(){
             }
 
         }
+
+        buttonEffect(phoneSignInFL,true)
+        phoneSignInFL.setOnClickListener {
+            sound = sharedPrefs?.getBooleanPrefVal(this@SignInActivity, ConstantPath.SOUNDS) ?: true
+            Log.e("sign in activity","sound............."+sound);
+            if(!sound){
+                // mediaPlayer = MediaPlayer.create(this,R.raw.amount_low)
+                //  mediaPlayer.start()
+                if (Utils.loaded) {
+                    Utils.soundPool.play(Utils.soundID, Utils.volume, Utils.volume, 1, 0, 1f);
+                    Log.e("sign in activity", "Played sound...volume..."+ Utils.volume);
+                    //Toast.makeText(context,"end",Toast.LENGTH_SHORT).show()
+                }
+            }
+            firebaseAnalytics.logEvent("Continue_with_Phone_number") {
+
+            }
+
+            val intent = Intent(this@SignInActivity, PhoneAuthActivity::class.java)
+            startActivity(intent)
+            finish()
+            /*getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fragment_container, PhoneAuthFragment())
+                .commit()*/
+
+
+
+        }
+
+
         // Initialize Firebase Auth
         auth = FirebaseAuth.getInstance()
 
@@ -286,9 +330,8 @@ class SignInActivity : BaseActivity(){
     }
     private fun signIn() {
         Log.e("signin activity","sign in")
-        firebaseAnalytics.logEvent("Clicked_on_Login_Button") {
-            //param("OnLoginButtonClick", "Clicked on Login Button")
-            //param(FirebaseAnalytics.Param.SCREEN_CLASS, "SignInActivity")
+        firebaseAnalytics.logEvent("Continue_with_google") {
+
         }
         val signInIntent = mGoogleSignInClient?.signInIntent
         startActivityForResult(signInIntent, RC_SIGN_IN)
@@ -418,15 +461,19 @@ class SignInActivity : BaseActivity(){
                 Log.e("sign in activity","...update ui.....");
                 sharedPrefs?.setBooleanPrefVal(this!!, ISNOTLOGIN, true)
                 sharedPrefs?.setBooleanPrefVal(this, ConstantPath.IS_FIRST_TIME, false)
-                hideProgressDialog()
+
 
                 var android_id = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
                 Log.e("sign in activity","android_id....."+android_id)
                 Log.e("sign in activity","user.email....."+user.email)
                 sharedPrefs?.setPrefVal(this@SignInActivity, ConstantPath.UID, user!!.uid)
                 sharedPrefs?.setPrefVal(this@SignInActivity, "email", user.email!!)
+                sharedPrefs?.setPrefVal(this@SignInActivity, "phonenumber", "")
                 val sdf = SimpleDateFormat("dd-MM-yyyy HH:mm:ss")
                 val currentDate = sdf.format(Date())
+
+                val sdf1 = SimpleDateFormat("dd-MM-yyyy")
+                val updatedDate = sdf1.format(Date())
                 //sharedPrefs.setPrefVal(this@GradeActivity, "created_date", currentDate)
                // firebaseAnalytics.setUserId(user!!.uid)
 
@@ -436,9 +483,9 @@ class SignInActivity : BaseActivity(){
                 firebaseAnalytics?.logEvent("On_sucessful_Signup", bundle)*/
 
 
-                firebaseAnalytics.setUserProperty("email", user.email)
+                //firebaseAnalytics.setUserProperty("email", user.email)
 
-                firebaseAnalytics.logEvent("On_sucessful_Login") {
+                firebaseAnalytics.logEvent("On_sucessful_google_Login") {
                     param("LoginSuccess", "LoggedIn")
                     //param(FirebaseAnalytics.Param.SCREEN_CLASS, "SignInActivity")
                 }
@@ -458,12 +505,13 @@ class SignInActivity : BaseActivity(){
                                        Log.e("dashboard","document id......"+document.id)
 
                                            //var token:String = sharedPrefs!!.getPrefVal(this@DashBoardActivity,"firebasetoken")!!
-                                           val data = hashMapOf("createdon" to currentDate)
+                                           val data = hashMapOf("updatedon" to updatedDate,"firebaseToken" to token)
 
                                        firestore!!.collection("users").document(document.id)
                                                .set(data, SetOptions.merge())
                                        runOnUiThread {
-                                           Toast.makeText(this@SignInActivity,"Sign-In success!",Toast.LENGTH_SHORT).show()
+                                           hideProgressDialog()
+                                           //Toast.makeText(this@SignInActivity,"Sign-In success!",Toast.LENGTH_SHORT).show()
                                            val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
                                            val activeNetwork: NetworkInfo? = connectivityManager.activeNetworkInfo
                                            val isConnected: Boolean = activeNetwork?.isConnected == true
@@ -478,58 +526,55 @@ class SignInActivity : BaseActivity(){
 
                                    }
                                }else{
+
                                    var userObj = User()
                                    userObj.username = user.email
+                                   userObj.phonenumber = ""
                                    userObj.deviceuniqueid = android_id
                                    userObj.createdon = currentDate
+                                   userObj.updatedon = updatedDate
                                    userObj.firebaseToken = token
-                                   firestore!!.collection("users")
+
+                                   databaseHandler!!.insertUserSync(userObj,0)
+                                   //Toast.makeText(this@SignInActivity,"Sign-In success!",Toast.LENGTH_SHORT).show()
+                                   val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+                                   val activeNetwork: NetworkInfo? = connectivityManager.activeNetworkInfo
+                                   val isConnected: Boolean = activeNetwork?.isConnected == true
+                                   Log.d("isConnected",isConnected.toString()+"!")
+                                   if(isNetworkConnected()) {
+                                       downloadServiceFromBackground(this@SignInActivity,firestore!!)
+                                   }
+                                   hideProgressDialog()
+                                   val intent = Intent(this@SignInActivity, DashBoardActivity::class.java)
+                                   startActivity(intent)
+                                   finish()
+                                   /*firestore!!.collection("users")
                                        .add(userObj)
                                        .addOnCompleteListener(object : OnCompleteListener<DocumentReference> {
                                            override fun onComplete(task: Task<DocumentReference>) {
                                                if (task.isSuccessful) {
                                                    Log.e("user", "user added successfully")
+                                                   Toast.makeText(this@SignInActivity,"Sign-In success!",Toast.LENGTH_SHORT).show()
+                                                   val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+                                                   val activeNetwork: NetworkInfo? = connectivityManager.activeNetworkInfo
+                                                   val isConnected: Boolean = activeNetwork?.isConnected == true
+                                                   Log.d("isConnected",isConnected.toString()+"!")
+                                                   if(isNetworkConnected()) {
+                                                       downloadServiceFromBackground(this@SignInActivity,firestore!!)
+                                                   }
+                                                   hideProgressDialog()
+                                                   val intent = Intent(this@SignInActivity, DashBoardActivity::class.java)
+                                                   startActivity(intent)
+                                                   finish()
                                                } else {
+                                                   hideProgressDialog()
                                                    Log.e("user", task.exception.toString())
                                                }
                                            }
-                                       })
-
-                                   var userObj1 = UserContentVersion()
-                                   userObj1.useremail = user.email
-                                   userObj1.userid = user!!.uid
-                                   userObj1.algebraversion = "-1"
-                                   userObj1.geometryversion = "-1"
-                                   userObj1.calculus1version = "-1"
-                                   userObj1.calculus2version = "-1"
-                                   userObj1.otherversion = "-1"
-                                   firestore!!.collection("usercontentversion")
-                                       .add(userObj1)
-                                       .addOnCompleteListener(object : OnCompleteListener<DocumentReference> {
-                                           override fun onComplete(task: Task<DocumentReference>) {
-                                               if (task.isSuccessful) {
-
-                                                   runOnUiThread {
-                                                       Toast.makeText(this@SignInActivity,"Sign-In success!",Toast.LENGTH_SHORT).show()
-                                                       val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-                                                       val activeNetwork: NetworkInfo? = connectivityManager.activeNetworkInfo
-                                                       val isConnected: Boolean = activeNetwork?.isConnected == true
-                                                       Log.d("isConnected",isConnected.toString()+"!")
-                                                       if(isNetworkConnected()) {
-                                                           downloadServiceFromBackground(this@SignInActivity,firestore!!)
-                                                       }
-                                                       val intent = Intent(this@SignInActivity, DashBoardActivity::class.java)
-                                                       startActivity(intent)
-                                                       finish()
-                                                   }
+                                       })*/
 
 
-                                                   Log.e("usercontentversion", "usercontentversion added successfully")
-                                               } else {
-                                                   Log.e("usercontentversion", task.exception.toString())
-                                               }
-                                           }
-                                       })
+
 
                                }
 
@@ -537,6 +582,8 @@ class SignInActivity : BaseActivity(){
                             }
                         }
                     })
+
+
 
 
 

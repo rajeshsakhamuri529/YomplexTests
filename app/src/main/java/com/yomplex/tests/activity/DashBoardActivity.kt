@@ -40,10 +40,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.FirebaseFirestoreSettings
-import com.google.firebase.firestore.QuerySnapshot
-import com.google.firebase.firestore.SetOptions
+import com.google.firebase.firestore.*
 import com.google.firebase.ktx.Firebase
 
 
@@ -114,6 +111,32 @@ class DashBoardActivity : BaseActivity(),
         }
 
         databaseHandler = QuizGameDataBase(this);
+
+        try{
+            var status = databaseHandler!!.getUserSyncStatus()
+            if(status.equals("0")){
+                var userObj = databaseHandler!!.getUserDetails()
+
+                db!!.collection("users")
+                    .add(userObj)
+                    .addOnCompleteListener(object : OnCompleteListener<DocumentReference> {
+                        override fun onComplete(task: Task<DocumentReference>) {
+                            if (task.isSuccessful) {
+                                Log.e("user", "user added successfully")
+                                databaseHandler!!.updateUserSyncStatus(userObj.username,1)
+                            } else {
+                                Log.e("user", task.exception.toString())
+                            }
+                        }
+                    })
+            }
+        }catch (e:Exception){
+
+        }
+
+
+
+
 
         //getPlayerForCorrect(this)
         //getPlayerForwrong(this)

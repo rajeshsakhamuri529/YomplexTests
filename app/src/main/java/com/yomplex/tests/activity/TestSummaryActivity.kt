@@ -88,7 +88,7 @@ class TestSummaryActivity : BaseActivity(), View.OnClickListener {
     override fun onResume() {
         super.onResume()
         firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW) {
-            param(FirebaseAnalytics.Param.SCREEN_NAME, "SummaryScreen<"+originaltopicName+">")
+            param(FirebaseAnalytics.Param.SCREEN_NAME, "SummaryScreen "+originaltopicName)
             param(FirebaseAnalytics.Param.SCREEN_CLASS, "TestSummaryActivity")
         }
     }
@@ -136,7 +136,7 @@ class TestSummaryActivity : BaseActivity(), View.OnClickListener {
 
 
 
-        //tv_quiz_title.text = topicName
+        tv_quiz_title.text = originaltopicName
 
         var questionanswers:String = databaseHandler!!.getQuizQuestionAnswersFinal(testQuiz.title,currentDate,testQuiz.lastplayed,testQuiz.testtype);
         var queans:List<String> = questionanswers.split(",")

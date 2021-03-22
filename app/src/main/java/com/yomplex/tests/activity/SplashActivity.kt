@@ -22,6 +22,7 @@ import com.google.firebase.analytics.ktx.logEvent
 import com.google.firebase.ktx.Firebase
 import com.yomplex.tests.R
 import com.yomplex.tests.utils.ForceUpdateChecker
+import com.yomplex.tests.utils.Utils
 
 
 class SplashActivity : BaseActivity(), ForceUpdateChecker.OnUpdateNeededListener {
@@ -43,7 +44,7 @@ class SplashActivity : BaseActivity(), ForceUpdateChecker.OnUpdateNeededListener
     override var layoutID: Int = R.layout.activity_splash
 
     override fun initView() {
-
+        Utils.getPlayer(this)
         Log.d("onCreate","Splash")
         firebaseAnalytics = Firebase.analytics
         /*val action: String? = intent?.action

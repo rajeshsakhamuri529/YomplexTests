@@ -140,7 +140,7 @@ class TestReviewActivity : BaseActivity(), View.OnClickListener {
     override fun onResume() {
         super.onResume()
         firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW) {
-            param(FirebaseAnalytics.Param.SCREEN_NAME, "ReviewScreen<"+topicName+">")
+            param(FirebaseAnalytics.Param.SCREEN_NAME, "ReviewScreen "+topicName)
             param(FirebaseAnalytics.Param.SCREEN_CLASS, "TestReviewActivity")
         }
     }
@@ -1619,9 +1619,10 @@ class TestReviewActivity : BaseActivity(), View.OnClickListener {
                 val reportsModel = ReportsModel()
                 var userid = sharedPrefs!!.getPrefVal(this, ConstantPath.UID)
                 var email = sharedPrefs!!.getPrefVal(this, "email")
+                var phone = sharedPrefs!!.getPrefVal(this, "phonenumber")
                 Log.e("test quiz activity","userid......."+userid)
                 testQuiz = databaseHandler!!.getQuizTopicsForTimerLastPlayed(topicName!!.toLowerCase())
-
+                reportsModel.phonenumber = phone
                 reportsModel.useremail = email
                 reportsModel.reportissuetype = ""+radioButton.text
                 reportsModel.additionalinfo = infoedt.text.toString()

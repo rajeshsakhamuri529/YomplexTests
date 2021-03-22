@@ -16,6 +16,7 @@ import com.downloader.OnStartOrResumeListener;
 import com.downloader.PRDownloader;
 import com.downloader.Progress;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
@@ -26,6 +27,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
 import com.yomplex.tests.database.QuizGameDataBase;
 import com.yomplex.tests.model.TestDownload;
+import com.yomplex.tests.model.UserContentVersion;
 import com.yomplex.tests.utils.ConstantPath;
 import com.yomplex.tests.utils.SharedPrefs;
 import com.yomplex.tests.utils.Utils;
@@ -62,7 +64,7 @@ public class ContentDownloadService extends JobIntentService {
     /**
      * Convenience method for enqueuing work in to this service.
      */
-    public static void enqueueWork(Context context, FirebaseFirestore db) {
+    public static void enqueueWork(final Context context, FirebaseFirestore db) {
         dataBase = new QuizGameDataBase(context);
         ContentDownloadService.context1 = context;
         firestore = db;
@@ -237,65 +239,95 @@ public class ContentDownloadService extends JobIntentService {
             DocumentReference docRef = db.collection("testcontentdownload").document("nJUIWEtshPEmAXjqn7y4");
             docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                 @Override
-                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                public void onSuccess(final DocumentSnapshot documentSnapshot) {
 
                     if (documentSnapshot != null) {
-                        Log.e("grade activity", "DocumentSnapshot data: ${document.data}..."+documentSnapshot.getData());
-                        Log.e("grade activity", "DocumentSnapshot data: ${document.data!!.size}...."+documentSnapshot.getData().size());
-                        for(int i = 0;i < (documentSnapshot.getData().size() - 5);i++){
-                            if(i == 0){
-                                String version = documentSnapshot.getData().get("Calculus2Version").toString();
-                                String url = documentSnapshot.getData().get("Calculus2Url").toString();
-                                dataBase.insertTESTCONTENTDOWNLOAD(version,url,"calculus2",0);
-                                Intent intent = new Intent(context1, ContentDownloadService.class);
-                                intent.putExtra(URL, url);
-                                intent.putExtra("version", version);
-                                intent.putExtra("testtype", "calculus2");
-                                intent.setAction(ACTION_DOWNLOAD);
-                                enqueueWork(context1, ContentDownloadService.class, DOWNLOAD_JOB_ID, intent);
-                            }else if(i == 1){
-                                String version = documentSnapshot.getData().get("AlgebraVersion").toString();
-                                String url = documentSnapshot.getData().get("AlgebraUrl").toString();
-                                dataBase.insertTESTCONTENTDOWNLOAD(version,url,"algebra",0);
-                                Intent intent = new Intent(context1, ContentDownloadService.class);
-                                intent.putExtra(URL, url);
-                                intent.putExtra("version", version);
-                                intent.putExtra("testtype", "algebra");
-                                intent.setAction(ACTION_DOWNLOAD);
-                                enqueueWork(context1, ContentDownloadService.class, DOWNLOAD_JOB_ID, intent);
-                            }else if(i == 2){
-                                String version = documentSnapshot.getData().get("Calculus1Version").toString();
-                                String url = documentSnapshot.getData().get("Calculus1Url").toString();
-                                dataBase.insertTESTCONTENTDOWNLOAD(version,url,"calculus1",0);
-                                Intent intent = new Intent(context1, ContentDownloadService.class);
-                                intent.putExtra(URL, url);
-                                intent.putExtra("version", version);
-                                intent.putExtra("testtype", "calculus1");
-                                intent.setAction(ACTION_DOWNLOAD);
-                                enqueueWork(context1, ContentDownloadService.class, DOWNLOAD_JOB_ID, intent);
-                            }else if(i == 3){
-                                String version = documentSnapshot.getData().get("GeometryVersion").toString();
-                                String url = documentSnapshot.getData().get("GeometryUrl").toString();
-                                dataBase.insertTESTCONTENTDOWNLOAD(version,url,"geometry",0);
-                                Intent intent = new Intent(context1, ContentDownloadService.class);
-                                intent.putExtra(URL, url);
-                                intent.putExtra("version", version);
-                                intent.putExtra("testtype", "geometry");
-                                intent.setAction(ACTION_DOWNLOAD);
-                                enqueueWork(context1, ContentDownloadService.class, DOWNLOAD_JOB_ID, intent);
-                            }else if(i == 4){
-                                String version = documentSnapshot.getData().get("BasicVersion").toString();
-                                String url = documentSnapshot.getData().get("BasicUrl").toString();
-                                dataBase.insertTESTCONTENTDOWNLOAD(version,url,"other",0);
-                                Intent intent = new Intent(context1, ContentDownloadService.class);
-                                intent.putExtra(URL, url);
-                                intent.putExtra("version", version);
-                                intent.putExtra("testtype", "other");
-                                intent.setAction(ACTION_DOWNLOAD);
-                                enqueueWork(context1, ContentDownloadService.class, DOWNLOAD_JOB_ID, intent);
-                            }
 
-                        }
+                        UserContentVersion userContentVersion=new UserContentVersion();
+                        String uid = sharedPrefs.getPrefVal(context,ConstantPath.UID);
+                        String email = sharedPrefs.getPrefVal(context,"email");
+                        String phone = sharedPrefs.getPrefVal(context,"phonenumber");
+                        userContentVersion.setUseremail(email);
+                        userContentVersion.setUserid(uid);
+                        userContentVersion.setPhonenumber(phone);
+                        userContentVersion.setAlgebraversion("-1");
+                        userContentVersion.setOtherversion("-1");
+                        userContentVersion.setGeometryversion("-1");
+                        userContentVersion.setCalculus1version("-1");
+                        userContentVersion.setCalculus2version("-1");
+
+                        firestore.collection("usercontentversion")
+                                .add(userContentVersion)
+                                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                                    @Override
+                                    public void onSuccess(DocumentReference documentReference) {
+                                        Log.e("grade activity", "DocumentSnapshot data: ${document.data}..."+documentSnapshot.getData());
+                                        Log.e("grade activity", "DocumentSnapshot data: ${document.data!!.size}...."+documentSnapshot.getData().size());
+                                        for(int i = 0;i < (documentSnapshot.getData().size() - 5);i++){
+                                            if(i == 0){
+                                                String version = documentSnapshot.getData().get("Calculus2Version").toString();
+                                                String url = documentSnapshot.getData().get("Calculus2Url").toString();
+                                                dataBase.insertTESTCONTENTDOWNLOAD(version,url,"calculus2",0);
+                                                Intent intent = new Intent(context1, ContentDownloadService.class);
+                                                intent.putExtra(URL, url);
+                                                intent.putExtra("version", version);
+                                                intent.putExtra("testtype", "calculus2");
+                                                intent.setAction(ACTION_DOWNLOAD);
+                                                enqueueWork(context1, ContentDownloadService.class, DOWNLOAD_JOB_ID, intent);
+                                            }else if(i == 1){
+                                                String version = documentSnapshot.getData().get("AlgebraVersion").toString();
+                                                String url = documentSnapshot.getData().get("AlgebraUrl").toString();
+                                                dataBase.insertTESTCONTENTDOWNLOAD(version,url,"algebra",0);
+                                                Intent intent = new Intent(context1, ContentDownloadService.class);
+                                                intent.putExtra(URL, url);
+                                                intent.putExtra("version", version);
+                                                intent.putExtra("testtype", "algebra");
+                                                intent.setAction(ACTION_DOWNLOAD);
+                                                enqueueWork(context1, ContentDownloadService.class, DOWNLOAD_JOB_ID, intent);
+                                            }else if(i == 2){
+                                                String version = documentSnapshot.getData().get("Calculus1Version").toString();
+                                                String url = documentSnapshot.getData().get("Calculus1Url").toString();
+                                                dataBase.insertTESTCONTENTDOWNLOAD(version,url,"calculus1",0);
+                                                Intent intent = new Intent(context1, ContentDownloadService.class);
+                                                intent.putExtra(URL, url);
+                                                intent.putExtra("version", version);
+                                                intent.putExtra("testtype", "calculus1");
+                                                intent.setAction(ACTION_DOWNLOAD);
+                                                enqueueWork(context1, ContentDownloadService.class, DOWNLOAD_JOB_ID, intent);
+                                            }else if(i == 3){
+                                                String version = documentSnapshot.getData().get("GeometryVersion").toString();
+                                                String url = documentSnapshot.getData().get("GeometryUrl").toString();
+                                                dataBase.insertTESTCONTENTDOWNLOAD(version,url,"geometry",0);
+                                                Intent intent = new Intent(context1, ContentDownloadService.class);
+                                                intent.putExtra(URL, url);
+                                                intent.putExtra("version", version);
+                                                intent.putExtra("testtype", "geometry");
+                                                intent.setAction(ACTION_DOWNLOAD);
+                                                enqueueWork(context1, ContentDownloadService.class, DOWNLOAD_JOB_ID, intent);
+                                            }else if(i == 4){
+                                                String version = documentSnapshot.getData().get("BasicVersion").toString();
+                                                String url = documentSnapshot.getData().get("BasicUrl").toString();
+                                                dataBase.insertTESTCONTENTDOWNLOAD(version,url,"other",0);
+                                                Intent intent = new Intent(context1, ContentDownloadService.class);
+                                                intent.putExtra(URL, url);
+                                                intent.putExtra("version", version);
+                                                intent.putExtra("testtype", "other");
+                                                intent.setAction(ACTION_DOWNLOAD);
+                                                enqueueWork(context1, ContentDownloadService.class, DOWNLOAD_JOB_ID, intent);
+                                            }
+
+                                        }
+                                    }
+                                })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        //Log.w("HARI", "BGImplementReceiver = Error adding Meetings document", e);
+                                    }
+                                });
+
+
+
                     }else {
                         Log.e("grade activity", "No such document");
                     }
