@@ -37,6 +37,7 @@ import com.google.android.gms.analytics.Tracker
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.Task
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.common.reflect.TypeToken
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.auth.FirebaseAuth
@@ -48,6 +49,7 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
 import com.google.firebase.remoteconfig.ktx.remoteConfig
 import com.google.firebase.remoteconfig.ktx.remoteConfigSettings
+import com.google.gson.Gson
 import com.yomplex.tests.BuildConfig
 import com.yomplex.tests.R
 import com.yomplex.tests.Service.JobService
@@ -56,7 +58,9 @@ import com.yomplex.tests.fragment.ReviewFragment
 import com.yomplex.tests.fragment.SettingFragment
 import com.yomplex.tests.fragment.TestsFragment
 import com.yomplex.tests.fragment.VideoFragment
+import com.yomplex.tests.model.PlayCount
 import com.yomplex.tests.model.TestDownload
+import com.yomplex.tests.model.UserContentVersion
 import com.yomplex.tests.utils.ConstantPath
 import com.yomplex.tests.utils.ConstantPath.TITLE_TOPIC
 import com.yomplex.tests.utils.SharedPrefs
@@ -92,6 +96,7 @@ class DashBoardActivity : BaseActivity(),
     var mTracker: Tracker? = null
     private var sAnalytics: GoogleAnalytics? = null
     private var auth: FirebaseAuth?= null
+
     override var layoutID: Int = R.layout.activity_dashboard
     override fun onSaveInstanceState(outState: Bundle, outPersistentState: PersistableBundle) {
         super.onSaveInstanceState(outState, outPersistentState)
@@ -109,7 +114,7 @@ class DashBoardActivity : BaseActivity(),
         }catch (e:Exception){
 
         }
-
+        sharedPrefs = SharedPrefs()
         databaseHandler = QuizGameDataBase(this);
 
         try{
@@ -135,7 +140,418 @@ class DashBoardActivity : BaseActivity(),
         }
 
 
+        try{
+            var syncstatuslist = databaseHandler!!.gettesttopicsyncstatus()
 
+            var uid = sharedPrefs?.getPrefVal(this@DashBoardActivity,ConstantPath.UID)
+            var mail = sharedPrefs?.getPrefVal(this@DashBoardActivity,"email")
+            var phone = sharedPrefs?.getPrefVal(this@DashBoardActivity,"phonenumber")
+            Log.e("dashboard","uid........."+uid)
+            Log.e("dashboard","mail........."+mail)
+            Log.e("dashboard","phone........."+phone)
+
+            if(syncstatuslist.size > 0){
+                if(syncstatuslist.contains(0)){
+
+                    if(mail.equals("")){
+                        val docRef = db!!.collection("usercontentversion")
+                        docRef.whereEqualTo("phonenumber",phone).whereEqualTo("userid",uid)
+                            .get().addOnCompleteListener(object : OnCompleteListener<QuerySnapshot> {
+                                override fun onComplete(task: Task<QuerySnapshot>) {
+                                    if (task.isSuccessful){
+                                        if(task.getResult().size() > 0){
+
+                                            if(task.getResult().size() == 1){
+                                                task.getResult().forEachIndexed { index, document ->
+                                                    Log.e("dashboard", "document id......" + document.id)
+                                                    var testcontentlist: List<TestDownload>? = databaseHandler!!.gettestContent()
+                                                    var algversion = ""
+                                                    var cal1version = ""
+                                                    var cal2version = ""
+                                                    var othversion = ""
+                                                    var gemversion = ""
+                                                    for(i in 0 until testcontentlist!!.size) {
+                                                        if (testcontentlist.get(i).testtype.equals("algebra")) {
+                                                            algversion = (testcontentlist.get(i).testversion);
+                                                        }
+                                                        if (testcontentlist.get(i).testtype.equals("calculus1")) {
+                                                            cal1version = (testcontentlist.get(i).testversion);
+                                                        }
+                                                        if (testcontentlist.get(i).testtype.equals("calculus2")) {
+                                                            cal2version = (testcontentlist.get(i).testversion);
+                                                        }
+                                                        if (testcontentlist.get(i).testtype.equals("geometry")) {
+                                                            gemversion = (testcontentlist.get(i).testversion);
+                                                        }
+                                                        if (testcontentlist.get(i).testtype.equals("other")) {
+                                                            othversion = (testcontentlist.get(i).testversion);
+                                                        }
+
+
+                                                    }
+
+
+
+                                                    val data = hashMapOf("calculus1version" to cal1version,"algebraversion" to algversion,"calculus2version" to cal2version,"geometryversion" to gemversion,"otherversion" to othversion, "updatedtime" to FieldValue.serverTimestamp())
+
+                                                    db!!.collection("usercontentversion").document(document.id)
+                                                        .set(data, SetOptions.merge())
+
+                                                    databaseHandler!!.updatetestcontentsyncstatus(1,"algebra")
+                                                    databaseHandler!!.updatetestcontentsyncstatus(1,"calculus1")
+                                                    databaseHandler!!.updatetestcontentsyncstatus(1,"geometry")
+                                                    databaseHandler!!.updatetestcontentsyncstatus(1,"other")
+                                                    databaseHandler!!.updatetestcontentsyncstatus(1,"calculus2")
+
+                                                }
+
+                                            }else{
+                                                for(i in 0 until task.getResult().size()) {
+                                                    Log.e("dashboard","doc id......................"+task.getResult().documents.get(i).id)
+                                                    db.collection("usercontentversion").document(task.getResult().documents.get(i).id)
+                                                        .delete()
+                                                }
+
+                                                var userContentVersion = UserContentVersion()
+                                                userContentVersion.setUseremail(mail);
+                                                userContentVersion.setUserid(uid);
+                                                userContentVersion.setPhonenumber(phone);
+                                                var testcontentlist: List<TestDownload>? = databaseHandler!!.gettestContent()
+                                                for(i in 0 until testcontentlist!!.size) {
+                                                    if (testcontentlist.get(i).testtype.equals("algebra")) {
+                                                        userContentVersion.setAlgebraversion(testcontentlist.get(i).testversion);
+                                                    }
+                                                    if (testcontentlist.get(i).testtype.equals("calculus1")) {
+                                                        userContentVersion.setCalculus1version(testcontentlist.get(i).testversion);
+                                                    }
+                                                    if (testcontentlist.get(i).testtype.equals("calculus2")) {
+                                                        userContentVersion.setCalculus2version(testcontentlist.get(i).testversion);
+                                                    }
+                                                    if (testcontentlist.get(i).testtype.equals("geometry")) {
+                                                        userContentVersion.setGeometryversion(testcontentlist.get(i).testversion);
+                                                    }
+                                                    if (testcontentlist.get(i).testtype.equals("other")) {
+                                                        userContentVersion.setOtherversion(testcontentlist.get(i).testversion);
+                                                    }
+
+
+                                                }
+
+                                                db!!.collection("usercontentversion")
+                                                    .add(userContentVersion)
+                                                    .addOnCompleteListener(object : OnCompleteListener<DocumentReference> {
+                                                        override fun onComplete(task: Task<DocumentReference>) {
+                                                            if (task.isSuccessful) {
+                                                                Log.e("user", "user added successfully")
+                                                                databaseHandler!!.updatetestcontentsyncstatus(1,"algebra")
+                                                                databaseHandler!!.updatetestcontentsyncstatus(1,"calculus1")
+                                                                databaseHandler!!.updatetestcontentsyncstatus(1,"geometry")
+                                                                databaseHandler!!.updatetestcontentsyncstatus(1,"other")
+                                                                databaseHandler!!.updatetestcontentsyncstatus(1,"calculus2")
+
+
+                                                            } else {
+                                                                Log.e("user", task.exception.toString())
+                                                            }
+                                                        }
+                                                    })
+
+
+                                            }
+
+
+
+                                        }else{
+                                            var userContentVersion = UserContentVersion()
+                                            userContentVersion.setUseremail(mail);
+                                            userContentVersion.setUserid(uid);
+                                            userContentVersion.setPhonenumber(phone);
+                                            var testcontentlist: List<TestDownload>? = databaseHandler!!.gettestContent()
+                                            for(i in 0 until testcontentlist!!.size) {
+                                                if (testcontentlist.get(i).testtype.equals("algebra")) {
+                                                    userContentVersion.setAlgebraversion(testcontentlist.get(i).testversion);
+                                                }
+                                                if (testcontentlist.get(i).testtype.equals("calculus1")) {
+                                                    userContentVersion.setCalculus1version(testcontentlist.get(i).testversion);
+                                                }
+                                                if (testcontentlist.get(i).testtype.equals("calculus2")) {
+                                                    userContentVersion.setCalculus2version(testcontentlist.get(i).testversion);
+                                                }
+                                                if (testcontentlist.get(i).testtype.equals("geometry")) {
+                                                    userContentVersion.setGeometryversion(testcontentlist.get(i).testversion);
+                                                }
+                                                if (testcontentlist.get(i).testtype.equals("other")) {
+                                                    userContentVersion.setOtherversion(testcontentlist.get(i).testversion);
+                                                }
+
+
+                                            }
+
+                                            db!!.collection("usercontentversion")
+                                                .add(userContentVersion)
+                                                .addOnCompleteListener(object : OnCompleteListener<DocumentReference> {
+                                                    override fun onComplete(task: Task<DocumentReference>) {
+                                                        if (task.isSuccessful) {
+                                                            Log.e("user", "user added successfully")
+                                                            databaseHandler!!.updatetestcontentsyncstatus(1,"algebra")
+                                                            databaseHandler!!.updatetestcontentsyncstatus(1,"calculus1")
+                                                            databaseHandler!!.updatetestcontentsyncstatus(1,"geometry")
+                                                            databaseHandler!!.updatetestcontentsyncstatus(1,"other")
+                                                            databaseHandler!!.updatetestcontentsyncstatus(1,"calculus2")
+
+
+                                                        } else {
+                                                            Log.e("user", task.exception.toString())
+                                                        }
+                                                    }
+                                                })
+
+
+                                        }
+                                    }
+                                }
+                            })
+                    }else{
+                        val docRef = db!!.collection("usercontentversion")
+                        docRef.whereEqualTo("useremail",mail).whereEqualTo("userid",uid)
+                            .get().addOnCompleteListener(object : OnCompleteListener<QuerySnapshot> {
+                                override fun onComplete(task: Task<QuerySnapshot>) {
+                                    if (task.isSuccessful){
+                                        if(task.getResult().size() > 0){
+
+                                            if(task.getResult().size() == 1){
+                                                task.getResult().forEachIndexed { index, document ->
+                                                    Log.e("dashboard", "document id......" + document.id)
+                                                    var testcontentlist: List<TestDownload>? = databaseHandler!!.gettestContent()
+                                                    var algversion = ""
+                                                    var cal1version = ""
+                                                    var cal2version = ""
+                                                    var othversion = ""
+                                                    var gemversion = ""
+                                                    for(i in 0 until testcontentlist!!.size) {
+                                                        if (testcontentlist.get(i).testtype.equals("algebra")) {
+                                                            algversion = (testcontentlist.get(i).testversion);
+                                                        }
+                                                        if (testcontentlist.get(i).testtype.equals("calculus1")) {
+                                                            cal1version = (testcontentlist.get(i).testversion);
+                                                        }
+                                                        if (testcontentlist.get(i).testtype.equals("calculus2")) {
+                                                            cal2version = (testcontentlist.get(i).testversion);
+                                                        }
+                                                        if (testcontentlist.get(i).testtype.equals("geometry")) {
+                                                            gemversion = (testcontentlist.get(i).testversion);
+                                                        }
+                                                        if (testcontentlist.get(i).testtype.equals("other")) {
+                                                            othversion = (testcontentlist.get(i).testversion);
+                                                        }
+
+
+                                                    }
+
+
+
+                                                    val data = hashMapOf("calculus1version" to cal1version,"algebraversion" to algversion,"calculus2version" to cal2version,"geometryversion" to gemversion,"otherversion" to othversion, "updatedtime" to FieldValue.serverTimestamp())
+
+                                                    db!!.collection("usercontentversion").document(document.id)
+                                                        .set(data, SetOptions.merge())
+
+                                                    databaseHandler!!.updatetestcontentsyncstatus(1,"algebra")
+                                                    databaseHandler!!.updatetestcontentsyncstatus(1,"calculus1")
+                                                    databaseHandler!!.updatetestcontentsyncstatus(1,"geometry")
+                                                    databaseHandler!!.updatetestcontentsyncstatus(1,"other")
+                                                    databaseHandler!!.updatetestcontentsyncstatus(1,"calculus2")
+
+                                                }
+
+                                            }else{
+                                                for(i in 0 until task.getResult().size()) {
+                                                    db.collection("usercontentversion").document(task.getResult().documents.get(i).id)
+                                                        .delete()
+                                                }
+
+                                                var userContentVersion = UserContentVersion()
+                                                userContentVersion.setUseremail(mail);
+                                                userContentVersion.setUserid(uid);
+                                                userContentVersion.setPhonenumber(phone);
+                                                var testcontentlist: List<TestDownload>? = databaseHandler!!.gettestContent()
+                                                for(i in 0 until testcontentlist!!.size) {
+                                                    if (testcontentlist.get(i).testtype.equals("algebra")) {
+                                                        userContentVersion.setAlgebraversion(testcontentlist.get(i).testversion);
+                                                    }
+                                                    if (testcontentlist.get(i).testtype.equals("calculus1")) {
+                                                        userContentVersion.setCalculus1version(testcontentlist.get(i).testversion);
+                                                    }
+                                                    if (testcontentlist.get(i).testtype.equals("calculus2")) {
+                                                        userContentVersion.setCalculus2version(testcontentlist.get(i).testversion);
+                                                    }
+                                                    if (testcontentlist.get(i).testtype.equals("geometry")) {
+                                                        userContentVersion.setGeometryversion(testcontentlist.get(i).testversion);
+                                                    }
+                                                    if (testcontentlist.get(i).testtype.equals("other")) {
+                                                        userContentVersion.setOtherversion(testcontentlist.get(i).testversion);
+                                                    }
+
+
+                                                }
+
+                                                db!!.collection("usercontentversion")
+                                                    .add(userContentVersion)
+                                                    .addOnCompleteListener(object : OnCompleteListener<DocumentReference> {
+                                                        override fun onComplete(task: Task<DocumentReference>) {
+                                                            if (task.isSuccessful) {
+                                                                Log.e("user", "user added successfully")
+                                                                databaseHandler!!.updatetestcontentsyncstatus(1,"algebra")
+                                                                databaseHandler!!.updatetestcontentsyncstatus(1,"calculus1")
+                                                                databaseHandler!!.updatetestcontentsyncstatus(1,"geometry")
+                                                                databaseHandler!!.updatetestcontentsyncstatus(1,"other")
+                                                                databaseHandler!!.updatetestcontentsyncstatus(1,"calculus2")
+
+
+                                                            } else {
+                                                                Log.e("user", task.exception.toString())
+                                                            }
+                                                        }
+                                                    })
+
+
+                                            }
+
+
+
+                                        }else{
+                                            var userContentVersion = UserContentVersion()
+                                            userContentVersion.setUseremail(mail);
+                                            userContentVersion.setUserid(uid);
+                                            userContentVersion.setPhonenumber(phone);
+                                            var testcontentlist: List<TestDownload>? = databaseHandler!!.gettestContent()
+                                            for(i in 0 until testcontentlist!!.size) {
+                                                if (testcontentlist.get(i).testtype.equals("algebra")) {
+                                                    userContentVersion.setAlgebraversion(testcontentlist.get(i).testversion);
+                                                }
+                                                if (testcontentlist.get(i).testtype.equals("calculus1")) {
+                                                    userContentVersion.setCalculus1version(testcontentlist.get(i).testversion);
+                                                }
+                                                if (testcontentlist.get(i).testtype.equals("calculus2")) {
+                                                    userContentVersion.setCalculus2version(testcontentlist.get(i).testversion);
+                                                }
+                                                if (testcontentlist.get(i).testtype.equals("geometry")) {
+                                                    userContentVersion.setGeometryversion(testcontentlist.get(i).testversion);
+                                                }
+                                                if (testcontentlist.get(i).testtype.equals("other")) {
+                                                    userContentVersion.setOtherversion(testcontentlist.get(i).testversion);
+                                                }
+
+
+                                            }
+
+                                            db!!.collection("usercontentversion")
+                                                .add(userContentVersion)
+                                                .addOnCompleteListener(object : OnCompleteListener<DocumentReference> {
+                                                    override fun onComplete(task: Task<DocumentReference>) {
+                                                        if (task.isSuccessful) {
+                                                            Log.e("user", "user added successfully")
+                                                            databaseHandler!!.updatetestcontentsyncstatus(1,"algebra")
+                                                            databaseHandler!!.updatetestcontentsyncstatus(1,"calculus1")
+                                                            databaseHandler!!.updatetestcontentsyncstatus(1,"geometry")
+                                                            databaseHandler!!.updatetestcontentsyncstatus(1,"other")
+                                                            databaseHandler!!.updatetestcontentsyncstatus(1,"calculus2")
+
+
+                                                        } else {
+                                                            Log.e("user", task.exception.toString())
+                                                        }
+                                                    }
+                                                })
+
+
+                                        }
+                                    }
+                                }
+                            })
+                    }
+
+
+
+                }
+            }
+
+
+
+
+        } catch (e:Exception){
+
+        }
+
+        try{
+
+            val courseJsonString = loadJSONFromAsset( "algebra/ii-algebra/" + "coursetestinfo.json")
+            val gsonFile = Gson()
+            val courseType = object : TypeToken<List<PlayCount>>() {}.type
+            val playCountmodel: ArrayList<PlayCount> = gsonFile
+                .fromJson(courseJsonString, courseType)
+            for(i in 0 until playCountmodel.size){
+                val playCount = playCountmodel[i]
+                val count = databaseHandler!!.getPlayCount(playCount.getCourse(), playCount.getTopic(),playCount.getLevel())
+                if (count == 0) {
+                    Log.e("dash board","count......."+count)
+                    databaseHandler!!.insertPlayCount(playCount)
+                }
+            }
+
+            val courseJsonString1 = loadJSONFromAsset( "calculus1/jee-calculus-1/" + "coursetestinfo.json")
+            //val gsonFile1 = Gson()
+            //val courseType1 = object : TypeToken<List<PlayCount>>() {}.type
+            val playCountmodel1: ArrayList<PlayCount> = gsonFile
+                .fromJson(courseJsonString1, courseType)
+            for(i in 0 until playCountmodel1.size){
+                val playCount = playCountmodel1[i]
+                val count = databaseHandler!!.getPlayCount(playCount.getCourse(), playCount.getTopic(),playCount.getLevel())
+                if (count == 0) {
+                    databaseHandler!!.insertPlayCount(playCount)
+                }
+            }
+
+            val courseJsonString2 = loadJSONFromAsset( "calculus2/jee-calculus-2/" + "coursetestinfo.json")
+           // val gsonFile = Gson()
+           // val courseType = object : TypeToken<List<PlayCount>>() {}.type
+            val playCountmodel2: ArrayList<PlayCount> = gsonFile
+                .fromJson(courseJsonString2, courseType)
+            for(i in 0 until playCountmodel2.size){
+                val playCount = playCountmodel2[i]
+                val count = databaseHandler!!.getPlayCount(playCount.getCourse(), playCount.getTopic(),playCount.getLevel())
+                if (count == 0) {
+                    databaseHandler!!.insertPlayCount(playCount)
+                }
+            }
+
+            val courseJsonString3 = loadJSONFromAsset( "geometry/iii-geometry/" + "coursetestinfo.json")
+            //val gsonFile = Gson()
+           // val courseType = object : TypeToken<List<PlayCount>>() {}.type
+            val playCountmodel3: ArrayList<PlayCount> = gsonFile
+                .fromJson(courseJsonString3, courseType)
+            for(i in 0 until playCountmodel3.size){
+                val playCount = playCountmodel3[i]
+                val count = databaseHandler!!.getPlayCount(playCount.getCourse(), playCount.getTopic(),playCount.getLevel())
+                if (count == 0) {
+                    databaseHandler!!.insertPlayCount(playCount)
+                }
+            }
+
+            val courseJsonString4 = loadJSONFromAsset( "other/other/" + "coursetestinfo.json")
+           // val gsonFile = Gson()
+           // val courseType = object : TypeToken<List<PlayCount>>() {}.type
+            val playCountmodel4: ArrayList<PlayCount> = gsonFile
+                .fromJson(courseJsonString4, courseType)
+            for(i in 0 until playCountmodel4.size){
+                val playCount = playCountmodel4[i]
+                val count = databaseHandler!!.getPlayCount(playCount.getCourse(), playCount.getTopic(),playCount.getLevel())
+                if (count == 0) {
+                    databaseHandler!!.insertPlayCount(playCount)
+                }
+            }
+        }catch (e:Exception){
+
+        }
 
 
         //getPlayerForCorrect(this)
@@ -264,7 +680,7 @@ class DashBoardActivity : BaseActivity(),
 
 
 
-        sharedPrefs = SharedPrefs()
+
 
         firebaseAnalytics = Firebase.analytics
         firebaseAnalytics.setUserProperty("email", sharedPrefs!!.getPrefVal(this,"email"))

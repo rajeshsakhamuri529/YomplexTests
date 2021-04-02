@@ -266,13 +266,13 @@ class TestQuizActivity : BaseActivity(), View.OnClickListener {
         topicLevel = intent.getStringExtra(TOPIC_LEVEL)
         topicName = intent.getStringExtra(TOPIC_NAME)
         complete = intent.getStringExtra(LEVEL_COMPLETED)
-        dbPosition = intent.getIntExtra(TOPIC_POSITION, -1)
+      //  dbPosition = intent.getIntExtra(TOPIC_POSITION, -1)
         oPath = intent.getStringExtra(FOLDER_PATH)
         folderName = intent.getStringExtra(FOLDER_NAME)
         gradeTitle = intent.getStringExtra(TITLE_TOPIC)
         readyCardNumber = intent.getIntExtra(CARD_NO, -1)
         lastplayed = intent.getStringExtra("LAST_PLAYED")!!
-        displayno = intent.getIntExtra("DISPLAY_NO", -1)!!
+      //  displayno = intent.getIntExtra("DISPLAY_NO", -1)!!
         comingfrom = intent.getStringExtra("comingfrom")!!
         readdata = intent.getStringExtra("readdata")
 
@@ -1526,7 +1526,29 @@ class TestQuizActivity : BaseActivity(), View.OnClickListener {
                     paths = dirFile.absolutePath +"/" + dbQPaths
                     Log.e("test quiz","localBlobcityPath1....."+dirFile.absolutePath)
                 }else{
-                    paths = topicName!!.toLowerCase() +"/test/" + dbQPaths
+                    var filename = ""
+                    if (originaltopicName.equals("CALCULUS 1")) {
+                        filename = "jee-calculus-1"
+
+
+                    } else if (originaltopicName.equals("CALCULUS 2")) {
+                        filename = "jee-calculus-2"
+
+
+                    } else if (originaltopicName.equals("ALGEBRA")) {
+                        filename = "ii-algebra"
+
+
+                    } else if (originaltopicName.equals("OTHER")) {
+                        filename = "other"
+
+
+                    } else if (originaltopicName.equals("GEOMETRY")) {
+                        filename = "iii-geometry"
+
+
+                    }
+                    paths = topicName!!.toLowerCase() +"/"+filename+"/" + dbQPaths
                 }
 
 
@@ -3378,7 +3400,7 @@ class TestQuizActivity : BaseActivity(), View.OnClickListener {
         intent.putExtra(TOPIC_LEVEL, topicLevel)
         intent.putExtra(QUIZ_COUNT, totalQuestion!!)
         intent.putExtra(TOPIC_ID, topicId)
-        intent.putExtra(TOPIC_POSITION, dbPosition)
+        //intent.putExtra(TOPIC_POSITION, dbPosition)
         intent.putExtra(IS_LEVEL_COMPLETE, isLevelCompleted)
         intent.putExtra(DYNAMIC_PATH, dynamicPath)
         intent.putExtra(COURSE_ID, courseId)
@@ -3388,7 +3410,7 @@ class TestQuizActivity : BaseActivity(), View.OnClickListener {
         intent.putExtra(FOLDER_NAME, folderName)
         intent.putExtra(TITLE_TOPIC, gradeTitle!!)
         intent.putExtra(CARD_NO, readyCardNumber)
-        intent.putExtra("DISPLAY_NO", displayno)
+       // intent.putExtra("DISPLAY_NO", displayno)
         intent.putExtra("LAST_PLAYED", lastplayed)
         intent.putExtra("comingfrom", comingfrom)
         intent.putExtra("readdata", readdata)

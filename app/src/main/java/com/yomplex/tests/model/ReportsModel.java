@@ -1,5 +1,9 @@
 package com.yomplex.tests.model;
 
+import com.google.firebase.firestore.ServerTimestamp;
+
+import java.util.Date;
+
 public class ReportsModel {
 
     public String useremail;
@@ -8,6 +12,8 @@ public class ReportsModel {
     public String phonenumber;
     public String coursename;
     public String questionpath;
+    @ServerTimestamp
+    public Date createddate;
 
     public String getPhonenumber() {
         return phonenumber;
@@ -55,5 +61,13 @@ public class ReportsModel {
 
     public void setQuestionpath(String questionpath) {
         this.questionpath = questionpath;
+    }
+
+    public Date getCreateddate() {
+        return createddate;
+    }
+
+    public void setCreateddate(Date createddate) {
+        this.createddate = createddate;
     }
 }

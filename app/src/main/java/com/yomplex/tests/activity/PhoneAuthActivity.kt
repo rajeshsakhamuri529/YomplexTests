@@ -544,6 +544,10 @@ class PhoneAuthActivity : BaseActivity() {
                     param("LoginSuccess", "LoggedIn")
 
                 }
+                firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SIGN_UP) {
+                    //param("LoginSuccess", "LoggedIn")
+                    //param(FirebaseAnalytics.Param.SCREEN_CLASS, "SignInActivity")
+                }
                 var token:String = sharedPrefs!!.getPrefVal(this@PhoneAuthActivity,"firebasetoken")!!
 
                 val docRef = firestore!!.collection("users")

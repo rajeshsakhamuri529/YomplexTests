@@ -19,13 +19,16 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.common.reflect.TypeToken;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
+import com.google.gson.Gson;
 import com.yomplex.tests.database.QuizGameDataBase;
+import com.yomplex.tests.model.PlayCount;
 import com.yomplex.tests.model.TestDownload;
 import com.yomplex.tests.model.UserContentVersion;
 import com.yomplex.tests.utils.ConstantPath;
@@ -35,6 +38,7 @@ import com.yomplex.tests.utils.Utils;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
+import java.lang.reflect.Type;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -58,9 +62,11 @@ public class ContentDownloadService extends JobIntentService {
     private static QuizGameDataBase dataBase;
     private static Context context1;
     private static String dirpath;
-    private static String usermail,userid;
+    private static String usermail,userid,phone;
     private static FirebaseFirestore firestore;
     private static SharedPrefs sharedPrefs = null;
+    private static final Type REVIEW_TYPE = new TypeToken<List<PlayCount>>() {
+    }.getType();
     /**
      * Convenience method for enqueuing work in to this service.
      */
@@ -71,6 +77,7 @@ public class ContentDownloadService extends JobIntentService {
         sharedPrefs = new SharedPrefs();
         usermail = sharedPrefs.getPrefVal(context1,"email");
         userid = sharedPrefs.getPrefVal(context1, ConstantPath.UID);
+        phone = sharedPrefs.getPrefVal(context,"phonenumber");
         File f =  new File((context.getCacheDir()).getAbsolutePath());
         dirpath = f.getAbsolutePath();
         List<Integer> statuslist = dataBase.gettesttopicdownloadstatus();
@@ -243,12 +250,70 @@ public class ContentDownloadService extends JobIntentService {
 
                     if (documentSnapshot != null) {
 
-                        UserContentVersion userContentVersion=new UserContentVersion();
-                        String uid = sharedPrefs.getPrefVal(context,ConstantPath.UID);
-                        String email = sharedPrefs.getPrefVal(context,"email");
-                        String phone = sharedPrefs.getPrefVal(context,"phonenumber");
-                        userContentVersion.setUseremail(email);
-                        userContentVersion.setUserid(uid);
+
+                        Log.e("grade activity", "DocumentSnapshot data: ${document.data}..."+documentSnapshot.getData());
+                        Log.e("grade activity", "DocumentSnapshot data: ${document.data!!.size}...."+documentSnapshot.getData().size());
+                        for(int i = 0;i < (documentSnapshot.getData().size() - 5);i++){
+                            if(i == 0){
+                                String version = documentSnapshot.getData().get("Calculus2Version").toString();
+                                String url = documentSnapshot.getData().get("Calculus2Url").toString();
+                                dataBase.insertTESTCONTENTDOWNLOAD(version,url,"calculus2",0);
+                                Intent intent = new Intent(context1, ContentDownloadService.class);
+                                intent.putExtra(URL, url);
+                                intent.putExtra("version", version);
+                                intent.putExtra("testtype", "calculus2");
+                                intent.setAction(ACTION_DOWNLOAD);
+                                enqueueWork(context1, ContentDownloadService.class, DOWNLOAD_JOB_ID, intent);
+                            }else if(i == 1){
+                                String version = documentSnapshot.getData().get("AlgebraVersion").toString();
+                                String url = documentSnapshot.getData().get("AlgebraUrl").toString();
+                                dataBase.insertTESTCONTENTDOWNLOAD(version,url,"algebra",0);
+                                Intent intent = new Intent(context1, ContentDownloadService.class);
+                                intent.putExtra(URL, url);
+                                intent.putExtra("version", version);
+                                intent.putExtra("testtype", "algebra");
+                                intent.setAction(ACTION_DOWNLOAD);
+                                enqueueWork(context1, ContentDownloadService.class, DOWNLOAD_JOB_ID, intent);
+                            }else if(i == 2){
+                                String version = documentSnapshot.getData().get("Calculus1Version").toString();
+                                String url = documentSnapshot.getData().get("Calculus1Url").toString();
+                                dataBase.insertTESTCONTENTDOWNLOAD(version,url,"calculus1",0);
+                                Intent intent = new Intent(context1, ContentDownloadService.class);
+                                intent.putExtra(URL, url);
+                                intent.putExtra("version", version);
+                                intent.putExtra("testtype", "calculus1");
+                                intent.setAction(ACTION_DOWNLOAD);
+                                enqueueWork(context1, ContentDownloadService.class, DOWNLOAD_JOB_ID, intent);
+                            }else if(i == 3){
+                                String version = documentSnapshot.getData().get("GeometryVersion").toString();
+                                String url = documentSnapshot.getData().get("GeometryUrl").toString();
+                                dataBase.insertTESTCONTENTDOWNLOAD(version,url,"geometry",0);
+                                Intent intent = new Intent(context1, ContentDownloadService.class);
+                                intent.putExtra(URL, url);
+                                intent.putExtra("version", version);
+                                intent.putExtra("testtype", "geometry");
+                                intent.setAction(ACTION_DOWNLOAD);
+                                enqueueWork(context1, ContentDownloadService.class, DOWNLOAD_JOB_ID, intent);
+                            }else if(i == 4){
+                                String version = documentSnapshot.getData().get("BasicVersion").toString();
+                                String url = documentSnapshot.getData().get("BasicUrl").toString();
+                                dataBase.insertTESTCONTENTDOWNLOAD(version,url,"other",0);
+                                Intent intent = new Intent(context1, ContentDownloadService.class);
+                                intent.putExtra(URL, url);
+                                intent.putExtra("version", version);
+                                intent.putExtra("testtype", "other");
+                                intent.setAction(ACTION_DOWNLOAD);
+                                enqueueWork(context1, ContentDownloadService.class, DOWNLOAD_JOB_ID, intent);
+                            }
+
+                        }
+
+                        /*UserContentVersion userContentVersion=new UserContentVersion();
+                        //String uid = sharedPrefs.getPrefVal(context,ConstantPath.UID);
+                        //String email = sharedPrefs.getPrefVal(context,"email");
+
+                        userContentVersion.setUseremail(usermail);
+                        userContentVersion.setUserid(userid);
                         userContentVersion.setPhonenumber(phone);
                         userContentVersion.setAlgebraversion("-1");
                         userContentVersion.setOtherversion("-1");
@@ -261,62 +326,7 @@ public class ContentDownloadService extends JobIntentService {
                                 .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                                     @Override
                                     public void onSuccess(DocumentReference documentReference) {
-                                        Log.e("grade activity", "DocumentSnapshot data: ${document.data}..."+documentSnapshot.getData());
-                                        Log.e("grade activity", "DocumentSnapshot data: ${document.data!!.size}...."+documentSnapshot.getData().size());
-                                        for(int i = 0;i < (documentSnapshot.getData().size() - 5);i++){
-                                            if(i == 0){
-                                                String version = documentSnapshot.getData().get("Calculus2Version").toString();
-                                                String url = documentSnapshot.getData().get("Calculus2Url").toString();
-                                                dataBase.insertTESTCONTENTDOWNLOAD(version,url,"calculus2",0);
-                                                Intent intent = new Intent(context1, ContentDownloadService.class);
-                                                intent.putExtra(URL, url);
-                                                intent.putExtra("version", version);
-                                                intent.putExtra("testtype", "calculus2");
-                                                intent.setAction(ACTION_DOWNLOAD);
-                                                enqueueWork(context1, ContentDownloadService.class, DOWNLOAD_JOB_ID, intent);
-                                            }else if(i == 1){
-                                                String version = documentSnapshot.getData().get("AlgebraVersion").toString();
-                                                String url = documentSnapshot.getData().get("AlgebraUrl").toString();
-                                                dataBase.insertTESTCONTENTDOWNLOAD(version,url,"algebra",0);
-                                                Intent intent = new Intent(context1, ContentDownloadService.class);
-                                                intent.putExtra(URL, url);
-                                                intent.putExtra("version", version);
-                                                intent.putExtra("testtype", "algebra");
-                                                intent.setAction(ACTION_DOWNLOAD);
-                                                enqueueWork(context1, ContentDownloadService.class, DOWNLOAD_JOB_ID, intent);
-                                            }else if(i == 2){
-                                                String version = documentSnapshot.getData().get("Calculus1Version").toString();
-                                                String url = documentSnapshot.getData().get("Calculus1Url").toString();
-                                                dataBase.insertTESTCONTENTDOWNLOAD(version,url,"calculus1",0);
-                                                Intent intent = new Intent(context1, ContentDownloadService.class);
-                                                intent.putExtra(URL, url);
-                                                intent.putExtra("version", version);
-                                                intent.putExtra("testtype", "calculus1");
-                                                intent.setAction(ACTION_DOWNLOAD);
-                                                enqueueWork(context1, ContentDownloadService.class, DOWNLOAD_JOB_ID, intent);
-                                            }else if(i == 3){
-                                                String version = documentSnapshot.getData().get("GeometryVersion").toString();
-                                                String url = documentSnapshot.getData().get("GeometryUrl").toString();
-                                                dataBase.insertTESTCONTENTDOWNLOAD(version,url,"geometry",0);
-                                                Intent intent = new Intent(context1, ContentDownloadService.class);
-                                                intent.putExtra(URL, url);
-                                                intent.putExtra("version", version);
-                                                intent.putExtra("testtype", "geometry");
-                                                intent.setAction(ACTION_DOWNLOAD);
-                                                enqueueWork(context1, ContentDownloadService.class, DOWNLOAD_JOB_ID, intent);
-                                            }else if(i == 4){
-                                                String version = documentSnapshot.getData().get("BasicVersion").toString();
-                                                String url = documentSnapshot.getData().get("BasicUrl").toString();
-                                                dataBase.insertTESTCONTENTDOWNLOAD(version,url,"other",0);
-                                                Intent intent = new Intent(context1, ContentDownloadService.class);
-                                                intent.putExtra(URL, url);
-                                                intent.putExtra("version", version);
-                                                intent.putExtra("testtype", "other");
-                                                intent.setAction(ACTION_DOWNLOAD);
-                                                enqueueWork(context1, ContentDownloadService.class, DOWNLOAD_JOB_ID, intent);
-                                            }
 
-                                        }
                                     }
                                 })
                                 .addOnFailureListener(new OnFailureListener() {
@@ -324,7 +334,7 @@ public class ContentDownloadService extends JobIntentService {
                                     public void onFailure(@NonNull Exception e) {
                                         //Log.w("HARI", "BGImplementReceiver = Error adding Meetings document", e);
                                     }
-                                });
+                                });*/
 
 
 
@@ -412,24 +422,53 @@ public class ContentDownloadService extends JobIntentService {
                                             dirFile.delete();
                                        //     File dirFile1 = new File(context1.getCacheDir(),testtype+"/test");
                                         //    boolean isdeleted = Utils.deleteFolder(dirFile1);
-                                            CollectionReference docRef = firestore.collection("usercontentversion");
-                                            docRef.whereEqualTo("useremail",usermail).whereEqualTo("userid",userid)
-                                                    .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                                                @Override
-                                                public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                                    if (task.isSuccessful()) {
-                                                       List<DocumentSnapshot> myListOfDocuments = task.getResult().getDocuments();
-                                                        if(task.getResult().size() > 0){
+                                            /*if(usermail.equals("")){
+                                                CollectionReference docRef = firestore.collection("usercontentversion");
+                                                docRef.whereEqualTo("phonenumber",phone).whereEqualTo("userid",userid)
+                                                        .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                                    @Override
+                                                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                                        if (task.isSuccessful()) {
+                                                            List<DocumentSnapshot> myListOfDocuments = task.getResult().getDocuments();
+                                                            if(task.getResult().size() > 0){
 
-                                                            Map<String, Object> data = new HashMap<>();
-                                                            data.put("calculus1version", version);
+                                                                Map<String, Object> data = new HashMap<>();
+                                                                data.put("calculus1version", version);
 
-                                                            firestore.collection("usercontentversion").document(task.getResult().getDocuments().get(0).getId())
-                                                                    .set(data, SetOptions.merge());
+                                                                firestore.collection("usercontentversion").document(task.getResult().getDocuments().get(0).getId())
+                                                                        .set(data, SetOptions.merge());
+                                                            }
                                                         }
                                                     }
-                                                }
-                                            });
+                                                });
+                                            }else{
+                                                CollectionReference docRef = firestore.collection("usercontentversion");
+                                                docRef.whereEqualTo("useremail",usermail).whereEqualTo("userid",userid)
+                                                        .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                                    @Override
+                                                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                                        if (task.isSuccessful()) {
+
+                                                            if(task.getResult().size() == 1){
+
+                                                                Map<String, Object> data = new HashMap<>();
+                                                                data.put("calculus1version", version);
+
+                                                                firestore.collection("usercontentversion").document(task.getResult().getDocuments().get(0).getId())
+                                                                        .set(data, SetOptions.merge());
+                                                            }else{
+                                                                //List<DocumentSnapshot> myListOfDocuments = task.getResult().getDocuments();
+                                                                for(int i =0;i < (task.getResult().size()-1);i++){
+                                                                    task.getResult().getDocuments().get(i).d
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                });
+                                            }*/
+
+
+
                                             SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd");
                                             String date = dataBase.getContentDate();
                                             if(date != null){
@@ -440,7 +479,25 @@ public class ContentDownloadService extends JobIntentService {
                                             }
                                             dataBase.updatetestcontentversion(version,testtype);
                                             dataBase.updatetestcontentdownloadstatus(1,testtype);
+                                            dataBase.updatetestcontentsyncstatus(0,testtype);
                                             dataBase.updatetestcontenturl(url,testtype);
+                                            try{
+                                                String jsonstr = Utils.readFromFile(dirpath+"/"+testtype+"/jee-calculus-1/coursetestinfo.json");
+                                                Gson gson = new Gson();
+                                                ArrayList<PlayCount> list = gson.fromJson(jsonstr, REVIEW_TYPE);
+
+                                                for(int i = 0;i < list.size();i++) {
+                                                    PlayCount playCount = list.get(i);
+                                                    int count = dataBase.getPlayCount(playCount.getCourse(),playCount.getTopic(),playCount.getLevel());
+                                                    if(count == 0){
+                                                        dataBase.insertPlayCount(playCount);
+                                                    }
+                                                }
+                                            }catch (Exception e){
+
+                                            }
+
+
                                         }
                                     }else if(testtype.equals("algebra")){
                                         boolean iszip = Utils.unpackZip(dirpath+"/"+testtype,"/ii-algebra.zip");
@@ -450,7 +507,7 @@ public class ContentDownloadService extends JobIntentService {
                                         //    File dirFile1 = new File(context1.getCacheDir(),testtype+"/test");
                                           //  boolean isdeleted = Utils.deleteFolder(dirFile1);
 
-                                            CollectionReference docRef = firestore.collection("usercontentversion");
+                                            /*CollectionReference docRef = firestore.collection("usercontentversion");
                                             docRef.whereEqualTo("useremail",usermail).whereEqualTo("userid",userid)
                                                     .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                                                 @Override
@@ -467,7 +524,7 @@ public class ContentDownloadService extends JobIntentService {
                                                         }
                                                     }
                                                 }
-                                            });
+                                            });*/
 
                                             SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd");
                                             String date = dataBase.getContentDate();
@@ -479,7 +536,24 @@ public class ContentDownloadService extends JobIntentService {
                                             }
                                             dataBase.updatetestcontentversion(version,testtype);
                                             dataBase.updatetestcontentdownloadstatus(1,testtype);
+                                            dataBase.updatetestcontentsyncstatus(0,testtype);
                                             dataBase.updatetestcontenturl(url,testtype);
+                                            try{
+                                                String jsonstr = Utils.readFromFile(dirpath+"/"+testtype+"/ii-algebra/coursetestinfo.json");
+                                                Gson gson = new Gson();
+                                                ArrayList<PlayCount> list = gson.fromJson(jsonstr, REVIEW_TYPE);
+
+                                                for(int i = 0;i < list.size();i++) {
+                                                    PlayCount playCount = list.get(i);
+                                                    int count = dataBase.getPlayCount(playCount.getCourse(),playCount.getTopic(),playCount.getLevel());
+                                                    if(count == 0){
+                                                        dataBase.insertPlayCount(playCount);
+                                                    }
+                                                }
+                                            }catch (Exception e){
+
+                                            }
+
                                         }
                                     }else if(testtype.equals("calculus2")){
                                         boolean iszip = Utils.unpackZip(dirpath+"/"+testtype,"/jee-calculus-2.zip");
@@ -489,7 +563,7 @@ public class ContentDownloadService extends JobIntentService {
                                           //  File dirFile1 = new File(context1.getCacheDir(),testtype+"/test");
                                            // boolean isdeleted = Utils.deleteFolder(dirFile1);
 
-                                            CollectionReference docRef = firestore.collection("usercontentversion");
+                                            /*CollectionReference docRef = firestore.collection("usercontentversion");
                                             docRef.whereEqualTo("useremail",usermail).whereEqualTo("userid",userid)
                                                     .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                                                 @Override
@@ -506,7 +580,7 @@ public class ContentDownloadService extends JobIntentService {
                                                         }
                                                     }
                                                 }
-                                            });
+                                            });*/
                                             SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd");
                                             String date = dataBase.getContentDate();
                                             if(date != null){
@@ -517,7 +591,24 @@ public class ContentDownloadService extends JobIntentService {
                                             }
                                             dataBase.updatetestcontentversion(version,testtype);
                                             dataBase.updatetestcontentdownloadstatus(1,testtype);
+                                            dataBase.updatetestcontentsyncstatus(0,testtype);
                                             dataBase.updatetestcontenturl(url,testtype);
+                                            try{
+                                                String jsonstr = Utils.readFromFile(dirpath+"/"+testtype+"/jee-calculus-2/coursetestinfo.json");
+                                                Gson gson = new Gson();
+                                                ArrayList<PlayCount> list = gson.fromJson(jsonstr, REVIEW_TYPE);
+
+                                                for(int i = 0;i < list.size();i++) {
+                                                    PlayCount playCount = list.get(i);
+                                                    int count = dataBase.getPlayCount(playCount.getCourse(),playCount.getTopic(),playCount.getLevel());
+                                                    if(count == 0){
+                                                        dataBase.insertPlayCount(playCount);
+                                                    }
+                                                }
+                                            }catch (Exception e){
+
+                                            }
+
                                         }
                                     }else if(testtype.equals("geometry")){
                                         boolean iszip = Utils.unpackZip(dirpath+"/"+testtype,"/iii-geometry.zip");
@@ -527,7 +618,7 @@ public class ContentDownloadService extends JobIntentService {
                                            // File dirFile1 = new File(context1.getCacheDir(),testtype+"/test");
                                            // boolean isdeleted = Utils.deleteFolder(dirFile1);
 
-                                            CollectionReference docRef = firestore.collection("usercontentversion");
+                                            /*CollectionReference docRef = firestore.collection("usercontentversion");
                                             docRef.whereEqualTo("useremail",usermail).whereEqualTo("userid",userid)
                                                     .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                                                 @Override
@@ -544,7 +635,7 @@ public class ContentDownloadService extends JobIntentService {
                                                         }
                                                     }
                                                 }
-                                            });
+                                            });*/
                                             SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd");
                                             String date = dataBase.getContentDate();
                                             if(date != null){
@@ -555,7 +646,24 @@ public class ContentDownloadService extends JobIntentService {
                                             }
                                             dataBase.updatetestcontentversion(version,testtype);
                                             dataBase.updatetestcontentdownloadstatus(1,testtype);
+                                            dataBase.updatetestcontentsyncstatus(0,testtype);
                                             dataBase.updatetestcontenturl(url,testtype);
+                                            try{
+                                                String jsonstr = Utils.readFromFile(dirpath+"/"+testtype+"/iii-geometry/coursetestinfo.json");
+                                                Gson gson = new Gson();
+                                                ArrayList<PlayCount> list = gson.fromJson(jsonstr, REVIEW_TYPE);
+
+                                                for(int i = 0;i < list.size();i++) {
+                                                    PlayCount playCount = list.get(i);
+                                                    int count = dataBase.getPlayCount(playCount.getCourse(),playCount.getTopic(),playCount.getLevel());
+                                                    if(count == 0){
+                                                        dataBase.insertPlayCount(playCount);
+                                                    }
+                                                }
+                                            }catch (Exception e){
+
+                                            }
+
                                         }
                                     }else if(testtype.equals("other")){
                                         boolean iszip = Utils.unpackZip(dirpath+"/"+testtype,"/other.zip");
@@ -565,7 +673,7 @@ public class ContentDownloadService extends JobIntentService {
                                            // File dirFile1 = new File(context1.getCacheDir(),testtype+"/test");
                                            // boolean isdeleted = Utils.deleteFolder(dirFile1);
 
-                                            CollectionReference docRef = firestore.collection("usercontentversion");
+                                            /*CollectionReference docRef = firestore.collection("usercontentversion");
                                             docRef.whereEqualTo("useremail",usermail).whereEqualTo("userid",userid)
                                                     .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                                                 @Override
@@ -582,7 +690,7 @@ public class ContentDownloadService extends JobIntentService {
                                                         }
                                                     }
                                                 }
-                                            });
+                                            });*/
                                             SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd");
                                             String date = dataBase.getContentDate();
                                             if(date != null){
@@ -593,7 +701,24 @@ public class ContentDownloadService extends JobIntentService {
                                             }
                                             dataBase.updatetestcontentversion(version,testtype);
                                             dataBase.updatetestcontentdownloadstatus(1,testtype);
+                                            dataBase.updatetestcontentsyncstatus(0,testtype);
                                             dataBase.updatetestcontenturl(url,testtype);
+                                            try{
+                                                String jsonstr = Utils.readFromFile(dirpath+"/"+testtype+"/other/coursetestinfo.json");
+                                                Gson gson = new Gson();
+                                                ArrayList<PlayCount> list = gson.fromJson(jsonstr, REVIEW_TYPE);
+
+                                                for(int i = 0;i < list.size();i++) {
+                                                    PlayCount playCount = list.get(i);
+                                                    int count = dataBase.getPlayCount(playCount.getCourse(),playCount.getTopic(),playCount.getLevel());
+                                                    if(count == 0){
+                                                        dataBase.insertPlayCount(playCount);
+                                                    }
+                                                }
+                                            }catch (Exception e){
+
+                                            }
+
                                         }
                                     }
 

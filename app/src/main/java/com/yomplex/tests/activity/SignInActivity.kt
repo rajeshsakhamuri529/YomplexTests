@@ -36,6 +36,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.Task
+import com.google.common.reflect.TypeToken
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.analytics.ktx.logEvent
@@ -45,6 +46,7 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.firestore.*
 import com.google.firebase.ktx.Firebase
+import com.google.gson.Gson
 import com.yomplex.tests.R
 import com.yomplex.tests.Service.ContentDownloadService
 import com.yomplex.tests.ViewPager.adapter.MyPagerAdapter
@@ -52,6 +54,7 @@ import com.yomplex.tests.ViewPager.fragments.IntroFirstFragment
 import com.yomplex.tests.ViewPager.listener.ViewPagerListener
 import com.yomplex.tests.database.QuizGameDataBase
 import com.yomplex.tests.fragment.PhoneAuthFragment
+import com.yomplex.tests.model.PlayCount
 
 import com.yomplex.tests.model.User
 import com.yomplex.tests.model.UserContentVersion
@@ -208,6 +211,78 @@ class SignInActivity : BaseActivity(){
         */
         getStartedButton.setOnClickListener {
             navigateToDashboard("GRADE 6")
+        }
+
+
+        try{
+
+            val courseJsonString = loadJSONFromAsset( "algebra/ii-algebra/" + "coursetestinfo.json")
+            val gsonFile = Gson()
+            val courseType = object : TypeToken<List<PlayCount>>() {}.type
+            val playCountmodel: ArrayList<PlayCount> = gsonFile
+                .fromJson(courseJsonString, courseType)
+            for(i in 0 until playCountmodel.size){
+                val playCount = playCountmodel[i]
+                val count = databaseHandler!!.getPlayCount(playCount.getCourse(), playCount.getTopic(),playCount.getLevel())
+                if (count == 0) {
+                    Log.e("dash board","count......."+count)
+                    databaseHandler!!.insertPlayCount(playCount)
+                }
+            }
+
+            val courseJsonString1 = loadJSONFromAsset( "calculus1/jee-calculus-1/" + "coursetestinfo.json")
+            //val gsonFile1 = Gson()
+            //val courseType1 = object : TypeToken<List<PlayCount>>() {}.type
+            val playCountmodel1: ArrayList<PlayCount> = gsonFile
+                .fromJson(courseJsonString1, courseType)
+            for(i in 0 until playCountmodel1.size){
+                val playCount = playCountmodel1[i]
+                val count = databaseHandler!!.getPlayCount(playCount.getCourse(), playCount.getTopic(),playCount.getLevel())
+                if (count == 0) {
+                    databaseHandler!!.insertPlayCount(playCount)
+                }
+            }
+
+            val courseJsonString2 = loadJSONFromAsset( "calculus2/jee-calculus-2/" + "coursetestinfo.json")
+            // val gsonFile = Gson()
+            // val courseType = object : TypeToken<List<PlayCount>>() {}.type
+            val playCountmodel2: ArrayList<PlayCount> = gsonFile
+                .fromJson(courseJsonString2, courseType)
+            for(i in 0 until playCountmodel2.size){
+                val playCount = playCountmodel2[i]
+                val count = databaseHandler!!.getPlayCount(playCount.getCourse(), playCount.getTopic(),playCount.getLevel())
+                if (count == 0) {
+                    databaseHandler!!.insertPlayCount(playCount)
+                }
+            }
+
+            val courseJsonString3 = loadJSONFromAsset( "geometry/iii-geometry/" + "coursetestinfo.json")
+            //val gsonFile = Gson()
+            // val courseType = object : TypeToken<List<PlayCount>>() {}.type
+            val playCountmodel3: ArrayList<PlayCount> = gsonFile
+                .fromJson(courseJsonString3, courseType)
+            for(i in 0 until playCountmodel3.size){
+                val playCount = playCountmodel3[i]
+                val count = databaseHandler!!.getPlayCount(playCount.getCourse(), playCount.getTopic(),playCount.getLevel())
+                if (count == 0) {
+                    databaseHandler!!.insertPlayCount(playCount)
+                }
+            }
+
+            val courseJsonString4 = loadJSONFromAsset( "other/other/" + "coursetestinfo.json")
+            // val gsonFile = Gson()
+            // val courseType = object : TypeToken<List<PlayCount>>() {}.type
+            val playCountmodel4: ArrayList<PlayCount> = gsonFile
+                .fromJson(courseJsonString4, courseType)
+            for(i in 0 until playCountmodel4.size){
+                val playCount = playCountmodel4[i]
+                val count = databaseHandler!!.getPlayCount(playCount.getCourse(), playCount.getTopic(),playCount.getLevel())
+                if (count == 0) {
+                    databaseHandler!!.insertPlayCount(playCount)
+                }
+            }
+        }catch (e:Exception){
+
         }
         /*buttonEffect(signin_txt,false)
         signin_txt.setOnClickListener {
@@ -489,6 +564,12 @@ class SignInActivity : BaseActivity(){
                     param("LoginSuccess", "LoggedIn")
                     //param(FirebaseAnalytics.Param.SCREEN_CLASS, "SignInActivity")
                 }
+
+                firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SIGN_UP) {
+                    //param("LoginSuccess", "LoggedIn")
+                    //param(FirebaseAnalytics.Param.SCREEN_CLASS, "SignInActivity")
+                }
+
                 var token:String = sharedPrefs!!.getPrefVal(this,"firebasetoken")!!
 
                 val docRef = firestore!!.collection("users")
@@ -505,20 +586,20 @@ class SignInActivity : BaseActivity(){
                                        Log.e("dashboard","document id......"+document.id)
 
                                            //var token:String = sharedPrefs!!.getPrefVal(this@DashBoardActivity,"firebasetoken")!!
-                                           val data = hashMapOf("updatedon" to updatedDate,"firebaseToken" to token)
+                                           val data = hashMapOf("updatedon" to updatedDate,"firebaseToken" to token, "createdtime" to FieldValue.serverTimestamp())
 
                                        firestore!!.collection("users").document(document.id)
                                                .set(data, SetOptions.merge())
                                        runOnUiThread {
                                            hideProgressDialog()
                                            //Toast.makeText(this@SignInActivity,"Sign-In success!",Toast.LENGTH_SHORT).show()
-                                           val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+                                           /*val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
                                            val activeNetwork: NetworkInfo? = connectivityManager.activeNetworkInfo
                                            val isConnected: Boolean = activeNetwork?.isConnected == true
-                                           Log.d("isConnected",isConnected.toString()+"!")
-                                           if(isNetworkConnected()) {
+                                           Log.d("isConnected",isConnected.toString()+"!")*/
+                                           /*if(isNetworkConnected()) {
                                                downloadServiceFromBackground(this@SignInActivity,firestore!!)
-                                           }
+                                           }*/
                                            val intent = Intent(this@SignInActivity, DashBoardActivity::class.java)
                                            startActivity(intent)
                                            finish()
@@ -537,13 +618,13 @@ class SignInActivity : BaseActivity(){
 
                                    databaseHandler!!.insertUserSync(userObj,0)
                                    //Toast.makeText(this@SignInActivity,"Sign-In success!",Toast.LENGTH_SHORT).show()
-                                   val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+                                   /*val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
                                    val activeNetwork: NetworkInfo? = connectivityManager.activeNetworkInfo
                                    val isConnected: Boolean = activeNetwork?.isConnected == true
-                                   Log.d("isConnected",isConnected.toString()+"!")
-                                   if(isNetworkConnected()) {
+                                   Log.d("isConnected",isConnected.toString()+"!")*/
+                                   /*if(isNetworkConnected()) {
                                        downloadServiceFromBackground(this@SignInActivity,firestore!!)
-                                   }
+                                   }*/
                                    hideProgressDialog()
                                    val intent = Intent(this@SignInActivity, DashBoardActivity::class.java)
                                    startActivity(intent)

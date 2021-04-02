@@ -1,6 +1,9 @@
 package com.yomplex.tests.model;
 
+import com.google.firebase.firestore.ServerTimestamp;
+
 import java.io.Serializable;
+import java.util.Date;
 
 public class User implements Serializable {
 
@@ -10,6 +13,8 @@ public class User implements Serializable {
     public String username;
     public String phonenumber;
     public String firebaseToken;
+    @ServerTimestamp
+    public Date createdtime;
 
     public String getUpdatedon() {
         return updatedon;
@@ -59,5 +64,13 @@ public class User implements Serializable {
 
     public void setFirebaseToken(String firebaseToken) {
         this.firebaseToken = firebaseToken;
+    }
+
+    public Date getCreatedtime() {
+        return createdtime;
+    }
+
+    public void setCreatedtime(Date createdtime) {
+        this.createdtime = createdtime;
     }
 }

@@ -61,7 +61,7 @@ import static android.content.Context.AUDIO_SERVICE;
 
 public class Utils {
 
-    public static final int DATABASE_VERSION = 3;
+    public static final int DATABASE_VERSION = 4;
 
     public static SoundPool soundPool;
     public static SoundPool soundPool1;
@@ -670,7 +670,7 @@ public class Utils {
         }
     }
 
-    /*public static String loadJSONFromAsset(Context context, String path) {
+    public static String loadJSONFromAsset(Context context, String path) {
         String json = null;
         try {
             InputStream is = context.getAssets().open(path);
@@ -684,7 +684,7 @@ public class Utils {
             return null;
         }
         return json;
-    }*/
+    }
 
 
 

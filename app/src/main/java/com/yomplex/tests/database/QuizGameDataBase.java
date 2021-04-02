@@ -9,6 +9,7 @@ import android.util.Log;
 
 
 import com.yomplex.tests.model.Challenge;
+import com.yomplex.tests.model.PlayCount;
 import com.yomplex.tests.model.QuizScore;
 import com.yomplex.tests.model.TestDownload;
 import com.yomplex.tests.model.TestQuiz;
@@ -97,6 +98,20 @@ public class QuizGameDataBase extends SQLiteOpenHelper {
     private static final String KEY_USER_FIREBASE_TOKEN = "firebasetoken";
     private static final String KEY_SYNC_STATUS = "syncstatus";
 
+    private static final String TABLE_PLAY_COUNT = "playcount";
+
+    private static final String KEY_COURSE = "course";
+    private static final String KEY_TOPIC = "topic";
+    private static final String KEY_LEVEL = "level";
+    private static final String KEY_PLAY_COUNT = "playcount";
+
+    String CREATE_TABLE_PLAY_COUNT = "CREATE TABLE " + TABLE_PLAY_COUNT + "("
+            + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+            + KEY_COURSE + " TEXT, "
+            + KEY_TOPIC + " TEXT, "
+            + KEY_LEVEL + " TEXT, "
+            + KEY_PLAY_COUNT + " INTEGER)";
+
     String CREATE_TABLE_USER_SYNC = "CREATE TABLE " + TABLE_USER_SYNC + "("
             + KEY_USER_EMAIL + " TEXT, "
             + KEY_USER_DEVICE_ID + " TEXT, "
@@ -156,7 +171,7 @@ public class QuizGameDataBase extends SQLiteOpenHelper {
             + KEY_TEST_TYPE + " TEXT)";
 
     String CREATE_TABLE_TEST_CONTENT_DOWNLOAD = "CREATE TABLE " + TABLE_TEST_CONTENT_DOWNLOAD + "("
-            + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + KEY_TEST_CONTENT_VERSION + " TEXT, " + KEY_TEST_CONTENT_URL + " TEXT, "+ KEY_TEST_TYPE + " TEXT, " + KEY_TEST_DOWNLOAD_STATUS + " INTEGER)";
+            + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + KEY_TEST_CONTENT_VERSION + " TEXT, " + KEY_TEST_CONTENT_URL + " TEXT, "+ KEY_TEST_TYPE + " TEXT, " + KEY_SYNC_STATUS + " INTEGER, "+ KEY_TEST_DOWNLOAD_STATUS + " INTEGER)";
 
     String CREATE_QUIZ_PLAY_TABLE_WITH_TIMER = "CREATE TABLE " + TABLE_QUIZ_PLAY_WITH_TIME + "("
             + KEY_SERIAL_NUMBER + " TEXT, " + KEY_TITLE + " TEXT, " + KEY_LAST_PLAYED + " TEXT,"+ KEY_TEST_TYPE + " TEXT )";
@@ -195,6 +210,7 @@ public class QuizGameDataBase extends SQLiteOpenHelper {
 
         db.execSQL(CREATE_TABLE_CONTENT_CHECK_DATE);
 
+        db.execSQL(CREATE_TABLE_PLAY_COUNT);
 
 
 
@@ -217,10 +233,99 @@ public class QuizGameDataBase extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_CHALLENGE_WEEKLY);
 
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_CONTENT_CHECK_DATE);
+
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_PLAY_COUNT);
         // Create tables again
         onCreate(db);
     }
 
+
+
+    public void insertPlayCount(PlayCount playCount) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+
+        values.put(KEY_COURSE, playCount.getCourse());
+        values.put(KEY_TOPIC, playCount.getTopic());
+        values.put(KEY_LEVEL, playCount.getLevel());
+        values.put(KEY_PLAY_COUNT, playCount.getPlaycount());
+
+
+
+
+        // Inserting Row
+        db.insert(TABLE_PLAY_COUNT, null, values);
+        //2nd argument is String containing nullColumnHack
+        db.close(); // Closing database connection
+    }
+
+    public int getPlayCount(String course, String topic,String level) {
+        //DailyChallenge dailyChallenge=new DailyChallenge();
+        //Log.e("quiz database","getChallengeForDate....fromdate..."+fromdate);
+        int count = 0;
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cur = db.rawQuery("SELECT * FROM " + TABLE_PLAY_COUNT + " WHERE " + KEY_COURSE + "='" + course+"' AND "+KEY_TOPIC+"='"+topic+"' AND "+KEY_LEVEL+"='"+level+"'", new String[]{});
+
+        //Cursor cur = db.rawQuery("SELECT * FROM " + TABLE_QUIZ_WITH_TIMER_FINAL + " WHERE " + KEY_TITLE + "='" + title+"' AND "+KEY_PRESENT_DATE + " ='"+pdate+"' AND "+KEY_TYPE_OF_PLAY +"= '"+typeofplay+"'", new String[]{});
+        count = cur.getCount();
+
+        cur.close();
+        db.close();
+
+        //  Log.e("quiz game database","answers.........."+answers);
+        // return contact
+        return count;
+    }
+
+    public PlayCount getPlayCountPlayRecord(String course) {
+        //DailyChallenge dailyChallenge=new DailyChallenge();
+        //Log.e("quiz database","getChallengeForDate....fromdate..."+fromdate);
+        int count = 0;
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cur = db.rawQuery("SELECT * FROM " + TABLE_PLAY_COUNT + " WHERE " + KEY_COURSE + "='" + course+"' ORDER BY "+KEY_PLAY_COUNT+" ASC LIMIT 0,1", new String[]{});
+        PlayCount playCount=new PlayCount();
+        //Cursor cur = db.rawQuery("SELECT * FROM " + TABLE_QUIZ_WITH_TIMER_FINAL + " WHERE " + KEY_TITLE + "='" + title+"' AND "+KEY_PRESENT_DATE + " ='"+pdate+"' AND "+KEY_TYPE_OF_PLAY +"= '"+typeofplay+"'", new String[]{});
+
+        if (cur.moveToFirst()) {
+            do {
+
+
+                playCount.setCourse((cur.getString(cur.getColumnIndex(KEY_COURSE))));
+                playCount.setLevel((cur.getString(cur.getColumnIndex(KEY_LEVEL))));
+                playCount.setPlaycount((cur.getInt(cur.getColumnIndex(KEY_PLAY_COUNT))));
+                playCount.setTopic((cur.getString(cur.getColumnIndex(KEY_TOPIC))));
+
+
+
+
+
+            } while (cur.moveToNext());
+        }
+
+
+
+        cur.close();
+        db.close();
+
+        //  Log.e("quiz game database","answers.........."+answers);
+        // return contact
+        return playCount;
+    }
+
+    public int updatePlayCount(int count,String course, String topic,String level) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        //values.put(KEY_NAME, contact.getName());
+        values.put(KEY_PLAY_COUNT, count);
+
+        // updating row
+        return db.update(TABLE_PLAY_COUNT, values, KEY_COURSE + " = ? AND "+KEY_TOPIC+" =? AND "+KEY_LEVEL+" =?",
+                new String[] { String.valueOf(course),topic,level });
+    }
 
 
     public void insertUserSync(User user,int syncstatus) {
@@ -854,6 +959,7 @@ public class QuizGameDataBase extends SQLiteOpenHelper {
         values.put(KEY_TEST_CONTENT_URL, URL); // Contact Phone
         values.put(KEY_TEST_TYPE, type); // Contact Phone
         values.put(KEY_TEST_DOWNLOAD_STATUS, status);
+        values.put(KEY_SYNC_STATUS, -1);
 
         // Inserting Row
         db.insert(TABLE_TEST_CONTENT_DOWNLOAD, null, values);
@@ -865,6 +971,51 @@ public class QuizGameDataBase extends SQLiteOpenHelper {
         SQLiteDatabase db = getWritableDatabase();
         db.execSQL("DELETE FROM " + TABLE_TEST_CONTENT_DOWNLOAD);
         db.close();
+    }
+
+    // code to update the single contact
+    public int updatetestcontentsyncstatus(int status,String type) {
+        Log.e("quiz game database","updatetestcontentdownloadstatus...statys.....type..."+status+"....."+type);
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        //values.put(KEY_NAME, contact.getName());
+        values.put(KEY_SYNC_STATUS, status);
+
+        // updating row
+        return db.update(TABLE_TEST_CONTENT_DOWNLOAD, values, KEY_TEST_TYPE + " = ?",
+                new String[] { String.valueOf(type) });
+    }
+
+    public List<Integer> gettesttopicsyncstatus() {
+        //DailyChallenge dailyChallenge=new DailyChallenge();
+        int version = 0;
+        List<Integer> statusList = new ArrayList<Integer>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cur = db.rawQuery("SELECT * FROM " + TABLE_TEST_CONTENT_DOWNLOAD, new String[]{});
+        /*Cursor cursor = db.query(TABLE_DAILY_CHALLENGE, new String[] { KEY_ID,
+                        KEY_VERSION }, KEY_ID + "=?",
+                new String[] { String.valueOf(id) }, null, null, null, null);*/
+        if (cur.moveToFirst()) {
+            do {
+                /*TestDownload testDownload=new TestDownload();
+                testDownload.setTestdownloadstatus((cur.getInt(cur.getColumnIndex(KEY_TEST_DOWNLOAD_STATUS))));
+                testDownload.setTesturl((cur.getString(cur.getColumnIndex(KEY_TEST_CONTENT_URL))));
+                testDownload.setTesttype((cur.getString(cur.getColumnIndex(KEY_TEST_TYPE))));
+                testDownload.setTestversion((cur.getString(cur.getColumnIndex(KEY_TEST_CONTENT_VERSION))));*/
+
+                statusList.add((cur.getInt(cur.getColumnIndex(KEY_SYNC_STATUS))));
+
+
+
+            } while (cur.moveToNext());
+        }
+        cur.close();
+        db.close();
+
+        Log.e("quiz game database","statusList.size.........."+statusList.size());
+        // return contact
+        return statusList;
     }
 
     // code to update the single contact

@@ -53,7 +53,7 @@ class TestSummaryActivity : BaseActivity(), View.OnClickListener {
     private var totalQuestion: Int? = null
     var topicStatusVM: TopicStatusVM? = null
     var complete: String? = null
-    var position: Int? = null
+    //var position: Int? = null
     var dPath: String? = null
     var paths: String? = null
     var courseId: String? = null
@@ -71,7 +71,7 @@ class TestSummaryActivity : BaseActivity(), View.OnClickListener {
     var sound: Boolean = false
     lateinit var circles: Array<ImageView?>
     var isallcorrect:Boolean = false
-    var displayno:Int = 0
+    //var displayno:Int = 0
     var lastplayed:String = ""
     var comingfrom:String = ""
     var count:Int = 0
@@ -106,7 +106,7 @@ class TestSummaryActivity : BaseActivity(), View.OnClickListener {
         topicId = intent.getStringExtra(ConstantPath.TOPIC_ID)
         totalQuestion = intent.getIntExtra(ConstantPath.QUIZ_COUNT, 0)
         complete = intent.getStringExtra(ConstantPath.LEVEL_COMPLETED)
-        position = intent.getIntExtra(ConstantPath.TOPIC_POSITION, -1)
+      //  position = intent.getIntExtra(ConstantPath.TOPIC_POSITION, -1)
         dPath = intent.getStringExtra(ConstantPath.DYNAMIC_PATH)
         paths = intent.getStringExtra(ConstantPath.FOLDER_PATH)
         courseId = intent.getStringExtra(ConstantPath.COURSE_ID)
@@ -115,7 +115,7 @@ class TestSummaryActivity : BaseActivity(), View.OnClickListener {
         gradeTitle = intent.getStringExtra(ConstantPath.TITLE_TOPIC)
         level_status = intent.getBooleanExtra(ConstantPath.IS_LEVEL_COMPLETE, false)
         readyCardNumber = intent.getIntExtra(ConstantPath.CARD_NO, -1)
-        displayno = intent.getIntExtra("DISPLAY_NO", -1)
+     //   displayno = intent.getIntExtra("DISPLAY_NO", -1)
         lastplayed = intent.getStringExtra("LAST_PLAYED") ?: "last"
         comingfrom = intent.getStringExtra("comingfrom")!!
         originaltopicName = intent.getStringExtra("topicnameoriginal")!!
@@ -128,7 +128,12 @@ class TestSummaryActivity : BaseActivity(), View.OnClickListener {
             .setPersistenceEnabled(true)
             .setCacheSizeBytes(FirebaseFirestoreSettings.CACHE_SIZE_UNLIMITED)
             .build()
-        db.firestoreSettings = settings
+
+        try{
+            db.firestoreSettings = settings
+        }catch (e:Exception){
+
+        }
         //firebaseAnalytics = FirebaseAnalytics.getInstance(this)
         firebaseAnalytics = Firebase.analytics
         val sdf = SimpleDateFormat("dd-MM-yyyy")
@@ -439,20 +444,20 @@ class TestSummaryActivity : BaseActivity(), View.OnClickListener {
                 }
                 var filename = ""
                 if (topicName!!.toLowerCase().equals("calculus1")) {
-                    filename = "/jee-calculus-1"
+                    filename = "jee-calculus-1"
                 } else if (topicName!!.toLowerCase().equals("calculus2")) {
-                    filename = "/jee-calculus-2"
+                    filename = "jee-calculus-2"
                 } else if (topicName!!.toLowerCase().equals("algebra")) {
-                    filename = "/ii-algebra"
+                    filename = "ii-algebra"
                 } else if (topicName!!.toLowerCase().equals("other")) {
-                    filename = "/other"
+                    filename = "other"
                 } else if (topicName!!.toLowerCase().equals("geometry")) {
-                    filename = "/iii-geometry"
+                    filename = "iii-geometry"
                 }
 
                 Log.e("test fragment","on click download status...."+downloadstatus)
                 if(downloadstatus == 1){
-                    val dirFile = File(getCacheDir(),topicName!!.toLowerCase()+filename)
+                    val dirFile = File(getCacheDir(),topicName!!.toLowerCase()+"/"+filename)
                     if(dirFile.isDirectory){
                         var files = dirFile.list();
                         if (files.size == 0) {
@@ -466,7 +471,7 @@ class TestSummaryActivity : BaseActivity(), View.OnClickListener {
                             if(isNetworkConnected()) {
                                 downloadServiceFromBackground(this@TestSummaryActivity,db)
                             }
-                            readFileFromAssets(topicName!!.toLowerCase())
+                            readFileFromAssets(topicName!!.toLowerCase(),filename)
                             //gotoStartScreenThroughAssets(topicname)
                         }else{
                             Log.e("test fragment","files.size.....not...empty.");
@@ -485,7 +490,7 @@ class TestSummaryActivity : BaseActivity(), View.OnClickListener {
                     if(isNetworkConnected()) {
                         downloadServiceFromBackground(this@TestSummaryActivity,db)
                     }
-                    readFileFromAssets(topicName!!.toLowerCase())
+                    readFileFromAssets(topicName!!.toLowerCase(),filename)
                     //gotoStartScreenThroughAssets(topicName!!)
                 }
 
@@ -544,7 +549,7 @@ class TestSummaryActivity : BaseActivity(), View.OnClickListener {
                 intent.putExtra(ConstantPath.TOPIC_LEVEL, topicLevel)
                 intent.putExtra(ConstantPath.TOPIC_NAME, topicName)
                 intent.putExtra(ConstantPath.LEVEL_COMPLETED, complete)
-                intent.putExtra(ConstantPath.TOPIC_POSITION, position!!)
+               // intent.putExtra(ConstantPath.TOPIC_POSITION, position!!)
                 intent.putExtra(ConstantPath.FOLDER_PATH, paths)
                 intent.putExtra(ConstantPath.FOLDER_NAME, folderName)
                 intent.putExtra(ConstantPath.TITLE_TOPIC, gradeTitle!!)
@@ -563,9 +568,12 @@ class TestSummaryActivity : BaseActivity(), View.OnClickListener {
         }
     }
 
-    private fun readFileFromAssets(topicname: String){
+
+
+
+    private fun readFileFromAssets(topicname: String,filename: String){
         //Toast.makeText(activity,"content read from assets", Toast.LENGTH_SHORT).show()
-        val courseJsonString = loadJSONFromAsset( topicname+"/test/" + "Courses.json")
+        val courseJsonString = loadJSONFromAsset( topicname+"/"+filename+"/" + "Courses.json")
         Log.d("courseJsonString",courseJsonString+"!");
         /*val jsonString = (activity!! as DashBoardActivity).loadJSONFromAsset( assetTestCoursePath + "topic.json")*/
         val gsonFile = Gson()
@@ -577,7 +585,7 @@ class TestSummaryActivity : BaseActivity(), View.OnClickListener {
         Log.e("test fragment","readFileFromAssets.....courseName...."+courseName);
         // tv_class.text = courseName
         // tv_class_board.text = courseResponseModel[0].syllabus.displayTitle
-        localPath = "$topicname/test/$courseName/"
+        localPath = "$topicname/$filename/$courseName/"
         Log.e("test fragment","readFileFromAssets.....localPath...."+localPath);
         // val jsonString = readFromFile(localPath +"topic.json")
         val jsonString = loadJSONFromAsset( localPath + "topic.json")
@@ -588,25 +596,54 @@ class TestSummaryActivity : BaseActivity(), View.OnClickListener {
         branchesItemList = topicResponseModel.branches
         sharedPrefs?.setIntPrefVal(this@TestSummaryActivity, ConstantPath.TOPIC_SIZE, branchesItemList!!.size)
 
-        gotoStartScreenThroughAssets(topicname)
+       // gotoStartScreenThroughAssets(topicname)
+
+        var playCount = databaseHandler!!.getPlayCountPlayRecord(filename)
+
+
+        var folderPath = localPath+playCount.getTopic()
+        Log.e("test fragment","testQuiz.folderPath......"+folderPath)
+        jsonStringBasic = loadJSONFromAsset("$folderPath/${playCount.getLevel()}.json")
+        Log.e("test fragment","jsonStringBasic......"+jsonStringBasic)
+        databaseHandler!!.updatePlayCount(playCount.getPlaycount()+1,playCount.getCourse(),playCount.getTopic(),playCount.getLevel())
+
+        val intent = Intent(this!!, StartTestActivity::class.java)
+      //  intent.putExtra(ConstantPath.TOPIC, topic)
+        intent.putExtra(ConstantPath.TOPIC_NAME, topicname)
+        intent.putExtra(ConstantPath.FOLDER_NAME, playCount.getTopic())
+        intent.putExtra(ConstantPath.DYNAMIC_PATH, jsonStringBasic)
+        intent.putExtra(ConstantPath.COURSE_ID, courseId)
+        intent.putExtra(ConstantPath.COURSE_NAME, courseName)
+        intent.putExtra(ConstantPath.TOPIC_ID, "")
+       // intent.putExtra(ConstantPath.TOPIC_POSITION, topic.displayNo)
+        intent.putExtra(ConstantPath.FOLDER_PATH, localPath)
+        intent.putExtra(ConstantPath.TITLE_TOPIC, gradeTitle!!)
+        intent.putExtra("LAST_PLAYED", lastplayed)
+        intent.putExtra("comingfrom", "Test")
+        intent.putExtra("readdata", "assets")
+        intent.putExtra(ConstantPath.TOPIC_LEVEL, "")
+        intent.putExtra(ConstantPath.LEVEL_COMPLETED, "")
+        intent.putExtra(ConstantPath.CARD_NO, "")
+        intent.putExtra("topicnameoriginal", originaltopicName)
+        startActivity(intent)
     }
 
     private fun readFileLocally(topicname:String) {
         Log.e("test fragment","readFileLocally...."+topicname)
         var filename = ""
         if (topicname.equals("calculus1")) {
-            filename = "/jee-calculus-1"
+            filename = "jee-calculus-1"
         } else if (topicname.equals("calculus2")) {
-            filename = "/jee-calculus-2"
+            filename = "jee-calculus-2"
         } else if (topicname.equals("algebra")) {
-            filename = "/ii-algebra"
+            filename = "ii-algebra"
         } else if (topicname.equals("other")) {
-            filename = "/other"
+            filename = "other"
         } else if (topicname.equals("geometry")) {
-            filename = "/iii-geometry"
+            filename = "iii-geometry"
         }
         Log.e("test fragment","on click filename...."+filename)
-        val dirFile = File(getCacheDir(),topicname+filename)
+        val dirFile = File(getCacheDir(),topicname+"/"+filename)
         val courseJsonString = Utils.readFromFile( dirFile.absolutePath + "/Courses.json")
         //val courseJsonString = loadJSONFromAsset( ConstantPath.localBlobcityPath1 + "Courses.json")
         //val courseJsonString = readFromFile("$localBlobcityPath/Courses.json")
@@ -630,7 +667,37 @@ class TestSummaryActivity : BaseActivity(), View.OnClickListener {
         branchesItemList = topicResponseModel.branches
         sharedPrefs?.setIntPrefVal(this!!, ConstantPath.TOPIC_SIZE, branchesItemList!!.size)
 
-        gotoStartScreen()
+       // gotoStartScreen()
+
+        var playCount = databaseHandler!!.getPlayCountPlayRecord(filename)
+
+
+        var folderPath = localPath+playCount.getTopic()
+        Log.e("test fragment","testQuiz.folderPath......"+folderPath)
+        jsonStringBasic = Utils.readFromFile("$folderPath/${playCount.getLevel()}.json")
+        Log.e("test fragment","jsonStringBasic......"+jsonStringBasic)
+        databaseHandler!!.updatePlayCount(playCount.getPlaycount()+1,playCount.getCourse(),playCount.getTopic(),playCount.getLevel())
+
+        val intent = Intent(this!!, StartTestActivity::class.java)
+        //intent.putExtra(ConstantPath.TOPIC, topic)
+        intent.putExtra(ConstantPath.TOPIC_NAME, topicName)
+        intent.putExtra(ConstantPath.FOLDER_NAME, playCount.getTopic())
+        intent.putExtra(ConstantPath.DYNAMIC_PATH, jsonStringBasic)
+        intent.putExtra(ConstantPath.COURSE_ID, courseId)
+        intent.putExtra(ConstantPath.COURSE_NAME, courseName)
+        intent.putExtra(ConstantPath.TOPIC_ID, "")
+        //intent.putExtra(ConstantPath.TOPIC_POSITION, topic.displayNo)
+        intent.putExtra(ConstantPath.FOLDER_PATH, localPath)
+        intent.putExtra(ConstantPath.TITLE_TOPIC, gradeTitle!!)
+        intent.putExtra("LAST_PLAYED", lastplayed)
+        intent.putExtra("comingfrom", "Test")
+        intent.putExtra(ConstantPath.TOPIC_LEVEL, "")
+        intent.putExtra(ConstantPath.LEVEL_COMPLETED, "")
+        intent.putExtra(ConstantPath.CARD_NO, "")
+        intent.putExtra("readdata", "files")
+        intent.putExtra("topicnameoriginal", originaltopicName)
+        startActivity(intent)
+
         /*val branchesItemList2 = ArrayList<BranchesItem>()
         val index1 = branchesItemList!![0].topic.index.toString()
         tv_topic_number1.text = index1

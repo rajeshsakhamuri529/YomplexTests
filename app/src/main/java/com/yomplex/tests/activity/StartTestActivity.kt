@@ -50,12 +50,12 @@ class StartTestActivity : BaseActivity(), View.OnClickListener {
     var originaltopicName: String? = ""
     var lastplayed:String = ""
     var comingfrom:String = ""
-    var dbPosition: Int? = null
+    //var dbPosition: Int? = null
     var oPath: String? = null
     private var totalQuestion: Int? = null
     var sharedPrefs: SharedPrefs? = null
     var sound: Boolean = false
-    lateinit var topic: Topic
+    //lateinit var topic: Topic
     lateinit var circles: Array<ImageView?>
     var mLastClickTime:Long = 0;
     //private lateinit var firebaseAnalytics: FirebaseAnalytics
@@ -68,7 +68,7 @@ class StartTestActivity : BaseActivity(), View.OnClickListener {
             getWindow().setNavigationBarColor(getResources().getColor(R.color.colorbottomnav));
         }
         sharedPrefs = SharedPrefs()
-        topic = intent.getSerializableExtra(ConstantPath.TOPIC) as Topic
+       // topic = intent.getSerializableExtra(ConstantPath.TOPIC) as Topic
         topicStatusVM = ViewModelProviders.of(this).get(TopicStatusVM::class.java)
         dynamicPath = intent.getStringExtra(ConstantPath.DYNAMIC_PATH)
         courseId = intent.getStringExtra(ConstantPath.COURSE_ID)
@@ -77,7 +77,7 @@ class StartTestActivity : BaseActivity(), View.OnClickListener {
         topicLevel = intent.getStringExtra(ConstantPath.TOPIC_LEVEL)
         topicName = intent.getStringExtra(ConstantPath.TOPIC_NAME)
         complete = intent.getStringExtra(ConstantPath.LEVEL_COMPLETED)
-        dbPosition = intent.getIntExtra(ConstantPath.TOPIC_POSITION, -1)
+       // dbPosition = intent.getIntExtra(ConstantPath.TOPIC_POSITION, -1)
         oPath = intent.getStringExtra(ConstantPath.FOLDER_PATH)
         folderName = intent.getStringExtra(ConstantPath.FOLDER_NAME)
         gradeTitle = intent.getStringExtra(ConstantPath.TITLE_TOPIC)
@@ -94,9 +94,9 @@ class StartTestActivity : BaseActivity(), View.OnClickListener {
         totalQuestion = questionResponseModel.questionCount
         //firebaseAnalytics = FirebaseAnalytics.getInstance(this)
 
-        Log.e("start test","last played....."+lastplayed)
+        /*Log.e("start test","last played....."+lastplayed)
         Log.e("start test","topic.title....."+topic.title)
-        Log.e("start test","topic.displayNo....."+topic.displayNo)
+        Log.e("start test","topic.displayNo....."+topic.displayNo)*/
         Log.e("start test","topicName....."+topicName)
 
 
@@ -181,7 +181,7 @@ class StartTestActivity : BaseActivity(), View.OnClickListener {
 
                 databaseHandler!!.deleteAllQuizTopicsLatPlayed(topicName!!.toLowerCase())
 
-                databaseHandler!!.insertquiztopiclastplayed(topic.title,topic.displayNo,lastplayed,topicName!!.toLowerCase());
+               databaseHandler!!.insertquiztopiclastplayed(folderName,0,lastplayed,topicName!!.toLowerCase());
 
                 /*val bundle = Bundle()
                 bundle.putString("Category", "Test")
@@ -196,14 +196,14 @@ class StartTestActivity : BaseActivity(), View.OnClickListener {
                 firebaseAnalytics?.logEvent("Launch", bundle)*/
 
                 val intent = Intent(this!!, TestQuizActivity::class.java)
-                intent.putExtra(ConstantPath.TOPIC, topic)
+                //intent.putExtra(ConstantPath.TOPIC, topic)
                 intent.putExtra(ConstantPath.TOPIC_NAME, topicName)
-                intent.putExtra(ConstantPath.FOLDER_NAME, topic.folderName)
+                intent.putExtra(ConstantPath.FOLDER_NAME, folderName)
                 intent.putExtra(ConstantPath.DYNAMIC_PATH, dynamicPath)
                 intent.putExtra(ConstantPath.COURSE_ID, courseId)
                 intent.putExtra(ConstantPath.COURSE_NAME, courseName)
                 intent.putExtra(ConstantPath.TOPIC_ID, topicId)
-                intent.putExtra(ConstantPath.TOPIC_POSITION, dbPosition)
+               // intent.putExtra(ConstantPath.TOPIC_POSITION, dbPosition)
                 intent.putExtra(ConstantPath.FOLDER_PATH, oPath)
                 intent.putExtra(ConstantPath.TITLE_TOPIC, gradeTitle!!)
                 intent.putExtra("LAST_PLAYED", lastplayed)
@@ -212,7 +212,7 @@ class StartTestActivity : BaseActivity(), View.OnClickListener {
                 intent.putExtra(ConstantPath.LEVEL_COMPLETED, "")
                 intent.putExtra(ConstantPath.CARD_NO, "")
                 intent.putExtra("readdata", readdata)
-                intent.putExtra("DISPLAY_NO", topic.displayNo)
+               // intent.putExtra("DISPLAY_NO", topic.displayNo)
                 intent.putExtra("topicnameoriginal", originaltopicName)
                 startActivity(intent)
 

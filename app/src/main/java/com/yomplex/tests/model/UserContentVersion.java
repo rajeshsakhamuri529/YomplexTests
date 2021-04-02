@@ -1,5 +1,9 @@
 package com.yomplex.tests.model;
 
+import com.google.firebase.firestore.ServerTimestamp;
+
+import java.util.Date;
+
 public class UserContentVersion {
 
     public String useremail;
@@ -10,6 +14,8 @@ public class UserContentVersion {
     public String calculus1version;
     public String calculus2version;
     public String otherversion;
+    @ServerTimestamp
+    public Date updatedtime;
 
     public String getPhonenumber() {
         return phonenumber;
@@ -73,5 +79,13 @@ public class UserContentVersion {
 
     public void setUserid(String userid) {
         this.userid = userid;
+    }
+
+    public Date getUpdatedtime() {
+        return updatedtime;
+    }
+
+    public void setUpdatedtime(Date updatedtime) {
+        this.updatedtime = updatedtime;
     }
 }
