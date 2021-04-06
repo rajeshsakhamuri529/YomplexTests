@@ -16,6 +16,7 @@ public class TestQuizFinal {
     private String testtype;
     private String readdata;
     private String originalname;
+    private int reviewexist;
 
 
 
@@ -153,5 +154,13 @@ public class TestQuizFinal {
 
     public void setOriginalname(String originalname) {
         this.originalname = originalname;
+    }
+
+    public int getReviewexist() {
+        return reviewexist;
+    }
+
+    public void setReviewexist(int reviewexist) {
+        this.reviewexist = reviewexist;
     }
 }

@@ -2358,6 +2358,8 @@ class TestQuizActivity : BaseActivity(), View.OnClickListener {
         }*/
 
         if(readdata.equals("files")){
+            Log.e("test quiz activity","readdata......."+readdata)
+            Log.e("test quiz activity","questionPath......."+questionPath)
             webView_question!!.loadUrl(WEBVIEW_FILE_PATH + questionPath)
             webView_share_question!!.loadUrl(WEBVIEW_FILE_PATH + questionPath)
         }else{

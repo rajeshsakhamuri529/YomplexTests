@@ -12,6 +12,7 @@ public class ReportsModel {
     public String phonenumber;
     public String coursename;
     public String questionpath;
+    public DeviceInfoModel deviceinfo;
     @ServerTimestamp
     public Date createddate;
 
@@ -69,5 +70,13 @@ public class ReportsModel {
 
     public void setCreateddate(Date createddate) {
         this.createddate = createddate;
+    }
+
+    public DeviceInfoModel getDeviceinfo() {
+        return deviceinfo;
+    }
+
+    public void setDeviceinfo(DeviceInfoModel deviceinfo) {
+        this.deviceinfo = deviceinfo;
     }
 }

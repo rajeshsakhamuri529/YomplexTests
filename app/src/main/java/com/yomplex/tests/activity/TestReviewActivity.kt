@@ -9,6 +9,7 @@ import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Bitmap
 import android.graphics.Color
+import android.graphics.Point
 import android.graphics.Rect
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
@@ -41,6 +42,7 @@ import com.google.firebase.ktx.Firebase
 import com.yomplex.tests.BuildConfig
 import com.yomplex.tests.R
 import com.yomplex.tests.database.QuizGameDataBase
+import com.yomplex.tests.model.DeviceInfoModel
 import com.yomplex.tests.model.ReportsModel
 import com.yomplex.tests.model.TestQuiz
 import com.yomplex.tests.utils.ConstantPath
@@ -1629,6 +1631,13 @@ class TestReviewActivity : BaseActivity(), View.OnClickListener {
                 reportsModel.coursename = testQuiz.testtype
                 reportsModel.questionpath = reportQuestionPath
 
+                val deviceInfoModel = DeviceInfoModel()
+                deviceInfoModel.devicemodel = Build.MODEL
+                deviceInfoModel.manufacture = Build.MANUFACTURER
+                deviceInfoModel.osversion = Build.VERSION.RELEASE
+                deviceInfoModel.screenresolution = getDeviceScreenResolution()
+
+                reportsModel.deviceinfo = deviceInfoModel
 
 
                 firestore!!.collection("reportissuecollection")
@@ -1684,6 +1693,17 @@ class TestReviewActivity : BaseActivity(), View.OnClickListener {
         dialog!!.show()
 
 
+    }
+
+    fun getDeviceScreenResolution():String {
+        var display = getWindowManager().getDefaultDisplay();
+        var size = Point();
+        display.getSize(size);
+
+        var width = size.x; //device width
+        var height = size.y; //device height
+
+        return "" + width + " x " + height; //example "480 * 800"
     }
 
 

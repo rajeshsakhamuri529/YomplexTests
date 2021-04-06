@@ -2,12 +2,16 @@ package com.yomplex.tests.fragment
 
 import android.app.Activity
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.os.SystemClock
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.ktx.analytics
@@ -24,7 +28,9 @@ import com.yomplex.tests.utils.ConstantPath
 import com.yomplex.tests.utils.SharedPrefs
 import com.yomplex.tests.utils.Utils
 import com.yomplex.tests.utils.VerticalSpaceItemDecoration
+import kotlinx.android.synthetic.main.review_ll.*
 import kotlinx.android.synthetic.main.review_ll.view.*
+import java.io.File
 
 
 class ReviewFragment: Fragment(), View.OnClickListener, TestQuizReviewClickListener {
@@ -70,6 +76,7 @@ class ReviewFragment: Fragment(), View.OnClickListener, TestQuizReviewClickListe
             //rcv_chapter.addItemDecoration(itemDecorator)
             //rcv_chapter.addItemDecoration(DividerItemDecoration(context,))
             view.rcv_review.adapter = adapter
+
         }
 
         view.tv_no_review.setOnClickListener(this)
@@ -135,7 +142,33 @@ class ReviewFragment: Fragment(), View.OnClickListener, TestQuizReviewClickListe
                 //Toast.makeText(context,"end",Toast.LENGTH_SHORT).show()
             }
         }
-        gotoReviewScreen(topic)
+
+        try{
+            val paths: String = topic.questionPathType
+            var ans:List<String> = paths.split(",")
+            var ans1:List<String> = ans.get(0).split("~")
+
+            var quepath = File(ans1[0])
+            if(quepath.exists()){
+                Log.e("review fragment","quepath...if....."+quepath)
+                gotoReviewScreen(topic)
+            }else{
+                Log.e("review fragment","quepath....else...."+quepath)
+
+                databaseHandler!!.updatequizplayReviewstatus(topic.title,1,topic.pdate,topic.typeofPlay,topic.testtype)
+                noReviewDialog()
+               // testquizlist = databaseHandler!!.getTestQuizList()
+               // adapter!!.notifyDataSetChanged()
+
+
+            }
+        }catch (e:Exception){
+
+        }
+
+
+
+
     }
 
     fun gotoReviewScreen(topic: TestQuizFinal){
@@ -148,6 +181,47 @@ class ReviewFragment: Fragment(), View.OnClickListener, TestQuizReviewClickListe
         intent.putExtra(ConstantPath.QUIZ_COUNT, topic.totalQuestions)
 
         startActivity(intent)
+    }
+
+    private fun noReviewDialog() {
+        val dialogBuilder = AlertDialog.Builder(activity!!, R.style.mytheme)
+        val inflater = this.layoutInflater
+        val dialogView = inflater.inflate(R.layout.no_review_layout, null)
+        dialogBuilder.setView(dialogView)
+
+        //val tv_quit = dialogView.findViewById(R.id.tv_quit1) as Button
+        val tv_return = dialogView.findViewById(R.id.tv_return1) as Button
+
+
+
+        val alertDialog = dialogBuilder.create()
+
+        /*val map = takeScreenShot(this);
+
+        val fast = fastblur(map, 10);
+        val draw = BitmapDrawable(getResources(), fast);*/
+        tv_return.setOnClickListener {
+            sound = sharedPrefs?.getBooleanPrefVal(activity!!, ConstantPath.SOUNDS) ?: true
+            if(!sound){
+                // mediaPlayer = MediaPlayer.create(this,R.raw.amount_low)
+                //  mediaPlayer.start()
+                if (Utils.loaded) {
+                    Utils.soundPool.play(Utils.soundID, Utils.volume, Utils.volume, 1, 0, 1f);
+                    Log.e("Test", "Played sound...volume..."+ Utils.volume);
+                    //Toast.makeText(context,"end",Toast.LENGTH_SHORT).show()
+                }
+            }
+            alertDialog.dismiss()
+            val i = Intent(activity, DashBoardActivity::class.java)
+            i.putExtra("fragment", "review")
+            startActivity(i)
+            (activity as Activity).overridePendingTransition(0, 0)
+
+
+        }
+        //alertDialog.getWindow().setBackgroundDrawable(draw);
+        alertDialog.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT));
+        alertDialog.show()
     }
 }
 

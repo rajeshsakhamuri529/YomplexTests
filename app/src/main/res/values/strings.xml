@@ -57,6 +57,9 @@
 
     <string name="emoji">&#129300;</string>
 
+    <string name="emoji_disappointment">&#128542;</string>
+
+
 
     <string name="tips_text1">Work regularly! Try to solve at least one Test per Topic every week.</string>
     <string name="tips_text2">Go through the Hints in the Test Reviews. Make sure you understand each concept well!</string>

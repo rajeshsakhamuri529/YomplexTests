@@ -118,6 +118,17 @@ class ReviewAdapter(val context: Context,
             holder.tv_challenge_time.text = branchesItemList[position].timetaken
             holder.tv_challenge_time_mins.text = "mins"
         }*/
+        Log.e("review adapter","reviewexist........"+branchesItemList[position].reviewexist)
+        if(branchesItemList[position].reviewexist == 1){
+            holder.rootLayout.background = context.resources.getDrawable(R.drawable.review_no_exist)
+            holder.tv_challenge_time.setTextColor(context.resources.getColor(R.color.button_border_color))
+            holder.tv_challenge_date.setTextColor(context.resources.getColor(R.color.button_border_color))
+        }else{
+
+            holder.rootLayout.background = context.resources.getDrawable(R.drawable.close_button)
+            holder.tv_challenge_time.setTextColor(context.resources.getColor(R.color.button_close_text))
+            holder.tv_challenge_date.setTextColor(context.resources.getColor(R.color.button_border_color))
+        }
 
 
         holder.tv_challenge_time.text = branchesItemList[position].originalname

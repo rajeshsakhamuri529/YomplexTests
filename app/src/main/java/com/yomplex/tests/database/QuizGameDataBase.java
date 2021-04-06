@@ -5,10 +5,13 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.os.Build;
 import android.util.Log;
 
 
+import com.yomplex.tests.BuildConfig;
 import com.yomplex.tests.model.Challenge;
+import com.yomplex.tests.model.Course;
 import com.yomplex.tests.model.PlayCount;
 import com.yomplex.tests.model.QuizScore;
 import com.yomplex.tests.model.TestDownload;
@@ -17,8 +20,11 @@ import com.yomplex.tests.model.TestQuizFinal;
 import com.yomplex.tests.model.User;
 import com.yomplex.tests.utils.Utils;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+
+import static android.os.Build.*;
 
 public class QuizGameDataBase extends SQLiteOpenHelper {
 
@@ -61,6 +67,7 @@ public class QuizGameDataBase extends SQLiteOpenHelper {
     private static final String KEY_ANSWER_STATUS = "answerstatus";
     private static final String KEY_PRESENT_DATE = "pdate";
     private static final String KEY_TIME_TAKEN = "timetaken";
+    private static final String KEY_REVIEW_EXIST = "reviewexist";
 
     private static final String KEY_ID = "id";
     private static final String TABLE_CONTENT_CHECK_DATE = "contentcheckdate";
@@ -104,6 +111,16 @@ public class QuizGameDataBase extends SQLiteOpenHelper {
     private static final String KEY_TOPIC = "topic";
     private static final String KEY_LEVEL = "level";
     private static final String KEY_PLAY_COUNT = "playcount";
+
+    private static final String TABLE_PLAY_COUNT_FILE = "playcountfile";
+
+    private static final String TABLE_COURSE = "course";
+    private static final String KEY_COURSE_EXIST= "courseexist";
+
+    String CREATE_TABLE_COURSE = "CREATE TABLE " + TABLE_COURSE + "("
+            + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+            + KEY_COURSE + " TEXT, "
+            + KEY_COURSE_EXIST + " INTEGER)";
 
     String CREATE_TABLE_PLAY_COUNT = "CREATE TABLE " + TABLE_PLAY_COUNT + "("
             + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
@@ -168,6 +185,7 @@ public class QuizGameDataBase extends SQLiteOpenHelper {
             + KEY_PRESENT_DATE + " TEXT,"
             + KEY_READ_DATA + " TEXT,"
             + KEY_ORIGINAL_TEST_NAME + " TEXT,"
+            + KEY_REVIEW_EXIST + " INTEGER,"
             + KEY_TEST_TYPE + " TEXT)";
 
     String CREATE_TABLE_TEST_CONTENT_DOWNLOAD = "CREATE TABLE " + TABLE_TEST_CONTENT_DOWNLOAD + "("
@@ -187,10 +205,11 @@ public class QuizGameDataBase extends SQLiteOpenHelper {
 
     String CREATE_QUIZ_TOPICS_TABLE = "CREATE TABLE " + TABLE_QUIZ_TOPICS + "("
             + KEY_SERIAL_NUMBER + " TEXT PRIMARY KEY, " + KEY_TOPIC_NAME + " TEXT, " + KEY_LAST_PLAYED + " TEXT)";
-
+    public Context context;
 
     public QuizGameDataBase(Context context) {
         super(context, DATABASE_NAME, null, Utils.DATABASE_VERSION);
+        this.context = context;
         //3rd argument to be passed is CursorFactory instance
     }
     @Override
@@ -211,14 +230,73 @@ public class QuizGameDataBase extends SQLiteOpenHelper {
         db.execSQL(CREATE_TABLE_CONTENT_CHECK_DATE);
 
         db.execSQL(CREATE_TABLE_PLAY_COUNT);
+        db.execSQL(CREATE_TABLE_COURSE);
+
+
 
 
 
     }
 
+
+
     @Override
-    public void onUpgrade(SQLiteDatabase db, int i, int i1) {
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_QUIZ_PLAY);
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+
+            Log.e("quiz game","onUpgrade......oldversion...."+oldVersion);
+            Log.e("quiz game","onUpgrade......newVersion...."+newVersion);
+
+            //if (BuildConfig.VERSION_CODE <= 25) {
+                /*try{
+                     File dirFile1 = new File(context.getCacheDir(),"algebra/ii-algebra");
+                     boolean isdeleted = Utils.deleteFolder(dirFile1);
+
+                    File dirFile2 = new File(context.getCacheDir(),"calculus1/jee-calculus-1");
+                    boolean isdeleted1 = Utils.deleteFolder(dirFile2);
+
+                    File dirFile3 = new File(context.getCacheDir(),"calculus2/jee-calculus-2");
+                    boolean isdeleted2 = Utils.deleteFolder(dirFile3);
+
+                    File dirFile4 = new File(context.getCacheDir(),"other/other");
+                    boolean isdeleted3 = Utils.deleteFolder(dirFile4);
+
+                    File dirFile5 = new File(context.getCacheDir(),"geometry/iii-geometry");
+                    boolean isdeleted4 = Utils.deleteFolder(dirFile5);
+
+                }catch(Exception e){
+                    e.printStackTrace();
+                }*/
+
+                try {
+                    db.execSQL("alter table " + TABLE_QUIZ_WITH_TIMER_FINAL + "  add column " + KEY_REVIEW_EXIST + " INTEGER default 0");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    //db.execSQL(CREATE_TABLE_COURSE);
+                }
+                try {
+                    db.execSQL(CREATE_TABLE_COURSE);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    //db.execSQL(CREATE_TABLE_COURSE);
+                }
+                try {
+                    db.execSQL("alter table " + TABLE_TEST_CONTENT_DOWNLOAD + "  add column " + KEY_SYNC_STATUS + " INTEGER default -1");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    //db.execSQL(CREATE_TABLE_COURSE);
+                }
+                try {
+                    db.execSQL(CREATE_TABLE_PLAY_COUNT);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    //db.execSQL(CREATE_TABLE_COURSE);
+                }
+
+           // }
+
+
+
+        /*db.execSQL("DROP TABLE IF EXISTS " + TABLE_QUIZ_PLAY);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_QUIZ_TOPICS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_QUIZ_PLAY_WITH_TIME);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_QUIZ_WITH_TIMER_FINAL);
@@ -235,8 +313,120 @@ public class QuizGameDataBase extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_CONTENT_CHECK_DATE);
 
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_PLAY_COUNT);
+
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_PLAY_COUNT_FILE);
         // Create tables again
-        onCreate(db);
+        onCreate(db);*/
+    }
+
+
+
+    public void insertCourse(Course playCount) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+
+        values.put(KEY_COURSE, playCount.getCoursename());
+        values.put(KEY_COURSE_EXIST, playCount.getCourseexist());
+
+        // Inserting Row
+        db.insert(TABLE_COURSE, null, values);
+        //2nd argument is String containing nullColumnHack
+        db.close(); // Closing database connection
+    }
+
+    public int getAllCoursesCount() {
+        //DailyChallenge dailyChallenge=new DailyChallenge();
+        //Log.e("quiz database","getChallengeForDate....fromdate..."+fromdate);
+        int count = 0;
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cur = db.rawQuery("SELECT * FROM " + TABLE_COURSE , new String[]{});
+
+        //Cursor cur = db.rawQuery("SELECT * FROM " + TABLE_QUIZ_WITH_TIMER_FINAL + " WHERE " + KEY_TITLE + "='" + title+"' AND "+KEY_PRESENT_DATE + " ='"+pdate+"' AND "+KEY_TYPE_OF_PLAY +"= '"+typeofplay+"'", new String[]{});
+        count = cur.getCount();
+
+        cur.close();
+        db.close();
+
+        //  Log.e("quiz game database","answers.........."+answers);
+        // return contact
+        return count;
+    }
+
+    public int getCoursesCount(String course) {
+        //DailyChallenge dailyChallenge=new DailyChallenge();
+        //Log.e("quiz database","getChallengeForDate....fromdate..."+fromdate);
+        int count = 0;
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cur = db.rawQuery("SELECT * FROM " + TABLE_COURSE +" where "+KEY_COURSE+"= "+course, new String[]{});
+
+        //Cursor cur = db.rawQuery("SELECT * FROM " + TABLE_QUIZ_WITH_TIMER_FINAL + " WHERE " + KEY_TITLE + "='" + title+"' AND "+KEY_PRESENT_DATE + " ='"+pdate+"' AND "+KEY_TYPE_OF_PLAY +"= '"+typeofplay+"'", new String[]{});
+        //count = cur.getCount();
+        if (cur.moveToFirst()) {
+            do {
+
+
+
+                count = ((cur.getInt(cur.getColumnIndex(KEY_COURSE_EXIST))));
+
+
+
+            } while (cur.moveToNext());
+        }
+
+        cur.close();
+        db.close();
+
+        //  Log.e("quiz game database","answers.........."+answers);
+        // return contact
+        return count;
+    }
+
+
+
+    public ArrayList<Course> getAllCourses() {
+        //DailyChallenge dailyChallenge=new DailyChallenge();
+        //Log.e("quiz database","getChallengeForDate....fromdate..."+fromdate);
+        int count = 0;
+        ArrayList<Course> courseArrayList = new ArrayList<Course>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cur = db.rawQuery("SELECT * FROM " + TABLE_COURSE, new String[]{});
+
+        //Cursor cur = db.rawQuery("SELECT * FROM " + TABLE_QUIZ_WITH_TIMER_FINAL + " WHERE " + KEY_TITLE + "='" + title+"' AND "+KEY_PRESENT_DATE + " ='"+pdate+"' AND "+KEY_TYPE_OF_PLAY +"= '"+typeofplay+"'", new String[]{});
+
+        if (cur.moveToFirst()) {
+            do {
+
+                Course playCount=new Course();
+                playCount.setCoursename((cur.getString(cur.getColumnIndex(KEY_COURSE))));
+                playCount.setCourseexist((cur.getInt(cur.getColumnIndex(KEY_COURSE_EXIST))));
+
+                courseArrayList.add(playCount);
+            } while (cur.moveToNext());
+        }
+
+
+
+        cur.close();
+        db.close();
+
+        //  Log.e("quiz game database","answers.........."+answers);
+        // return contact
+        return courseArrayList;
+    }
+
+    public int updateCourseExist(String course, int count) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        //values.put(KEY_NAME, contact.getName());
+        values.put(KEY_COURSE_EXIST, count);
+
+        // updating row
+        return db.update(TABLE_COURSE, values, KEY_COURSE + " = ?",
+                new String[] { String.valueOf(course) });
     }
 
 
@@ -258,6 +448,25 @@ public class QuizGameDataBase extends SQLiteOpenHelper {
         db.insert(TABLE_PLAY_COUNT, null, values);
         //2nd argument is String containing nullColumnHack
         db.close(); // Closing database connection
+    }
+
+    public int getAllPlayCount() {
+        //DailyChallenge dailyChallenge=new DailyChallenge();
+        //Log.e("quiz database","getChallengeForDate....fromdate..."+fromdate);
+        int count = 0;
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cur = db.rawQuery("SELECT * FROM " + TABLE_PLAY_COUNT, new String[]{});
+
+        //Cursor cur = db.rawQuery("SELECT * FROM " + TABLE_QUIZ_WITH_TIMER_FINAL + " WHERE " + KEY_TITLE + "='" + title+"' AND "+KEY_PRESENT_DATE + " ='"+pdate+"' AND "+KEY_TYPE_OF_PLAY +"= '"+typeofplay+"'", new String[]{});
+        count = cur.getCount();
+
+        cur.close();
+        db.close();
+
+        //  Log.e("quiz game database","answers.........."+answers);
+        // return contact
+        return count;
     }
 
     public int getPlayCount(String course, String topic,String level) {
@@ -324,6 +533,18 @@ public class QuizGameDataBase extends SQLiteOpenHelper {
 
         // updating row
         return db.update(TABLE_PLAY_COUNT, values, KEY_COURSE + " = ? AND "+KEY_TOPIC+" =? AND "+KEY_LEVEL+" =?",
+                new String[] { String.valueOf(course),topic,level });
+    }
+
+    public int deletePlayCount(String course, String topic,String level) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        //ContentValues values = new ContentValues();
+        //values.put(KEY_NAME, contact.getName());
+        //values.put(KEY_PLAY_COUNT, count);
+
+        // updating row
+        return db.delete(TABLE_PLAY_COUNT, KEY_COURSE + " = ? AND "+KEY_TOPIC+" =? AND "+KEY_LEVEL+" =?",
                 new String[] { String.valueOf(course),topic,level });
     }
 
@@ -1207,6 +1428,7 @@ public class QuizGameDataBase extends SQLiteOpenHelper {
         db.close(); // Closing database connection
     }
     public void deleteAllQuizTopicsLatPlayed(String type) {
+        Log.e("quiz game","deleteAllQuizTopicsLatPlayed...type..."+type);
         SQLiteDatabase db = getWritableDatabase();
         db.execSQL("DELETE FROM " + TABLE_QUIZ_PLAY_WITH_TIME+ " WHERE "+KEY_TEST_TYPE + " ='"+type+"'");
         db.close();
@@ -1257,6 +1479,7 @@ public class QuizGameDataBase extends SQLiteOpenHelper {
         values.put(KEY_TEST_TYPE, testQuizFinal.getTesttype());
         values.put(KEY_READ_DATA, testQuizFinal.getReaddata());
         values.put(KEY_ORIGINAL_TEST_NAME, testQuizFinal.getOriginalname());
+        values.put(KEY_REVIEW_EXIST, 0);
 
 
         // Inserting Row
@@ -1269,6 +1492,18 @@ public class QuizGameDataBase extends SQLiteOpenHelper {
         SQLiteDatabase db = getWritableDatabase();
         db.execSQL("DELETE FROM " + TABLE_QUIZ_WITH_TIMER_FINAL);
         db.close();
+    }
+
+    public int updatequizplayReviewstatus(String title, int status, String pdate, String typeofplay,String type) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        //values.put(KEY_NAME, contact.getName());
+        values.put(KEY_REVIEW_EXIST, status);
+
+        // updating row
+        return db.update(TABLE_QUIZ_WITH_TIMER_FINAL, values, KEY_TITLE + " = ? AND "+KEY_PRESENT_DATE + " = ? AND "+KEY_TYPE_OF_PLAY + " = ? AND "+KEY_TEST_TYPE+ " = ?",
+                new String[] { String.valueOf(title),pdate,typeofplay,type });
     }
 
     public List<TestQuizFinal> getTestQuizList() {
@@ -1298,6 +1533,8 @@ public class QuizGameDataBase extends SQLiteOpenHelper {
                 testQuizFinal.setTesttype(cur.getString(cur.getColumnIndex(KEY_TEST_TYPE)));
                 testQuizFinal.setReaddata(cur.getString(cur.getColumnIndex(KEY_READ_DATA)));
                 testQuizFinal.setOriginalname(cur.getString(cur.getColumnIndex(KEY_ORIGINAL_TEST_NAME)));
+
+                testQuizFinal.setReviewexist(cur.getInt(cur.getColumnIndex(KEY_REVIEW_EXIST)));
 
 
                 dailychallengeList.add(testQuizFinal);

@@ -475,80 +475,146 @@ class DashBoardActivity : BaseActivity(),
                 }
             }
 
-
-
-
         } catch (e:Exception){
 
         }
 
         try{
 
-            val courseJsonString = loadJSONFromAsset( "algebra/ii-algebra/" + "coursetestinfo.json")
-            val gsonFile = Gson()
-            val courseType = object : TypeToken<List<PlayCount>>() {}.type
-            val playCountmodel: ArrayList<PlayCount> = gsonFile
-                .fromJson(courseJsonString, courseType)
-            for(i in 0 until playCountmodel.size){
-                val playCount = playCountmodel[i]
-                val count = databaseHandler!!.getPlayCount(playCount.getCourse(), playCount.getTopic(),playCount.getLevel())
-                if (count == 0) {
-                    Log.e("dash board","count......."+count)
-                    databaseHandler!!.insertPlayCount(playCount)
+            val allcount = databaseHandler!!.getAllPlayCount()
+            Log.e("dashboard","allcount......"+allcount);
+            if(allcount == 0){
+                val courseJsonString = loadJSONFromAsset( "algebra/ii-algebra/" + "coursetestinfo.json")
+                val gsonFile = Gson()
+                val courseType = object : TypeToken<List<PlayCount>>() {}.type
+                val playCountmodel: ArrayList<PlayCount> = gsonFile
+                    .fromJson(courseJsonString, courseType)
+                for(i in 0 until playCountmodel.size){
+                    val playCount = playCountmodel[i]
+                    val count = databaseHandler!!.getPlayCount(playCount.getCourse(), playCount.getTopic(),playCount.getLevel())
+                    if (count == 0) {
+                        Log.e("dash board","count......."+count)
+                        databaseHandler!!.insertPlayCount(playCount)
+                    }
+                }
+                val courseJsonStr = loadJSONFromAsset( "algebra/ii-algebra/" + "coursetestdelete.json")
+                //val gsonFile = Gson()
+                // val courseType = object : TypeToken<List<PlayCount>>() {}.type
+                val playCountmodelDelete: ArrayList<PlayCount> = gsonFile
+                    .fromJson(courseJsonStr, courseType)
+
+                Log.e("sign in","playCountmodelDelete..........."+playCountmodelDelete);
+                Log.e("sign in","playCountmodelDelete.size.........."+playCountmodelDelete.size);
+                if(playCountmodelDelete.size > 0){
+                    for(i in 0 until playCountmodelDelete.size){
+                        val playCount = playCountmodelDelete[i]
+                        val count = databaseHandler!!.deletePlayCount(playCount.getCourse(), playCount.getTopic(),playCount.getLevel())
+
+                    }
+
+                }
+
+                val courseJsonString1 = loadJSONFromAsset( "calculus1/jee-calculus-1/" + "coursetestinfo.json")
+                //val gsonFile1 = Gson()
+                //val courseType1 = object : TypeToken<List<PlayCount>>() {}.type
+                val playCountmodel1: ArrayList<PlayCount> = gsonFile
+                    .fromJson(courseJsonString1, courseType)
+                for(i in 0 until playCountmodel1.size){
+                    val playCount = playCountmodel1[i]
+                    val count = databaseHandler!!.getPlayCount(playCount.getCourse(), playCount.getTopic(),playCount.getLevel())
+                    if (count == 0) {
+                        databaseHandler!!.insertPlayCount(playCount)
+                    }
+                }
+
+                val courseJsonStr1 = loadJSONFromAsset( "calculus1/jee-calculus-1/" + "coursetestdelete.json")
+                val playCountmodelDelete1: ArrayList<PlayCount> = gsonFile
+                    .fromJson(courseJsonStr1, courseType)
+                if(playCountmodelDelete1.size > 0){
+                    for(i in 0 until playCountmodelDelete1.size){
+                        val playCount = playCountmodelDelete1[i]
+                        val count = databaseHandler!!.deletePlayCount(playCount.getCourse(), playCount.getTopic(),playCount.getLevel())
+
+                    }
+
+                }
+
+                val courseJsonString2 = loadJSONFromAsset( "calculus2/jee-calculus-2/" + "coursetestinfo.json")
+                // val gsonFile = Gson()
+                // val courseType = object : TypeToken<List<PlayCount>>() {}.type
+                val playCountmodel2: ArrayList<PlayCount> = gsonFile
+                    .fromJson(courseJsonString2, courseType)
+                for(i in 0 until playCountmodel2.size){
+                    val playCount = playCountmodel2[i]
+                    val count = databaseHandler!!.getPlayCount(playCount.getCourse(), playCount.getTopic(),playCount.getLevel())
+                    if (count == 0) {
+                        databaseHandler!!.insertPlayCount(playCount)
+                    }
+                }
+
+                val courseJsonStr2 = loadJSONFromAsset( "calculus2/jee-calculus-2/" + "coursetestdelete.json")
+                val playCountmodelDelete2: ArrayList<PlayCount> = gsonFile
+                    .fromJson(courseJsonStr2, courseType)
+                if(playCountmodelDelete2.size > 0){
+                    for(i in 0 until playCountmodelDelete2.size){
+                        val playCount = playCountmodelDelete2[i]
+                        val count = databaseHandler!!.deletePlayCount(playCount.getCourse(), playCount.getTopic(),playCount.getLevel())
+
+                    }
+
+                }
+
+                val courseJsonString3 = loadJSONFromAsset( "geometry/iii-geometry/" + "coursetestinfo.json")
+                //val gsonFile = Gson()
+                // val courseType = object : TypeToken<List<PlayCount>>() {}.type
+                val playCountmodel3: ArrayList<PlayCount> = gsonFile
+                    .fromJson(courseJsonString3, courseType)
+                for(i in 0 until playCountmodel3.size){
+                    val playCount = playCountmodel3[i]
+                    val count = databaseHandler!!.getPlayCount(playCount.getCourse(), playCount.getTopic(),playCount.getLevel())
+                    if (count == 0) {
+                        databaseHandler!!.insertPlayCount(playCount)
+                    }
+                }
+
+                val courseJsonStr3 = loadJSONFromAsset( "geometry/iii-geometry/" + "coursetestdelete.json")
+                val playCountmodelDelete3: ArrayList<PlayCount> = gsonFile
+                    .fromJson(courseJsonStr3, courseType)
+                if(playCountmodelDelete3.size > 0){
+                    for(i in 0 until playCountmodelDelete3.size){
+                        val playCount = playCountmodelDelete3[i]
+                        val count = databaseHandler!!.deletePlayCount(playCount.getCourse(), playCount.getTopic(),playCount.getLevel())
+
+                    }
+
+                }
+
+                val courseJsonString4 = loadJSONFromAsset( "other/other/" + "coursetestinfo.json")
+                // val gsonFile = Gson()
+                // val courseType = object : TypeToken<List<PlayCount>>() {}.type
+                val playCountmodel4: ArrayList<PlayCount> = gsonFile
+                    .fromJson(courseJsonString4, courseType)
+                for(i in 0 until playCountmodel4.size){
+                    val playCount = playCountmodel4[i]
+                    val count = databaseHandler!!.getPlayCount(playCount.getCourse(), playCount.getTopic(),playCount.getLevel())
+                    if (count == 0) {
+                        databaseHandler!!.insertPlayCount(playCount)
+                    }
+                }
+                val courseJsonStr4 = loadJSONFromAsset( "other/other/" + "coursetestdelete.json")
+                val playCountmodelDelete4: ArrayList<PlayCount> = gsonFile
+                    .fromJson(courseJsonStr4, courseType)
+                if(playCountmodelDelete4.size > 0){
+                    for(i in 0 until playCountmodelDelete4.size){
+                        val playCount = playCountmodelDelete4[i]
+                        val count = databaseHandler!!.deletePlayCount(playCount.getCourse(), playCount.getTopic(),playCount.getLevel())
+
+                    }
+
                 }
             }
 
-            val courseJsonString1 = loadJSONFromAsset( "calculus1/jee-calculus-1/" + "coursetestinfo.json")
-            //val gsonFile1 = Gson()
-            //val courseType1 = object : TypeToken<List<PlayCount>>() {}.type
-            val playCountmodel1: ArrayList<PlayCount> = gsonFile
-                .fromJson(courseJsonString1, courseType)
-            for(i in 0 until playCountmodel1.size){
-                val playCount = playCountmodel1[i]
-                val count = databaseHandler!!.getPlayCount(playCount.getCourse(), playCount.getTopic(),playCount.getLevel())
-                if (count == 0) {
-                    databaseHandler!!.insertPlayCount(playCount)
-                }
-            }
 
-            val courseJsonString2 = loadJSONFromAsset( "calculus2/jee-calculus-2/" + "coursetestinfo.json")
-           // val gsonFile = Gson()
-           // val courseType = object : TypeToken<List<PlayCount>>() {}.type
-            val playCountmodel2: ArrayList<PlayCount> = gsonFile
-                .fromJson(courseJsonString2, courseType)
-            for(i in 0 until playCountmodel2.size){
-                val playCount = playCountmodel2[i]
-                val count = databaseHandler!!.getPlayCount(playCount.getCourse(), playCount.getTopic(),playCount.getLevel())
-                if (count == 0) {
-                    databaseHandler!!.insertPlayCount(playCount)
-                }
-            }
-
-            val courseJsonString3 = loadJSONFromAsset( "geometry/iii-geometry/" + "coursetestinfo.json")
-            //val gsonFile = Gson()
-           // val courseType = object : TypeToken<List<PlayCount>>() {}.type
-            val playCountmodel3: ArrayList<PlayCount> = gsonFile
-                .fromJson(courseJsonString3, courseType)
-            for(i in 0 until playCountmodel3.size){
-                val playCount = playCountmodel3[i]
-                val count = databaseHandler!!.getPlayCount(playCount.getCourse(), playCount.getTopic(),playCount.getLevel())
-                if (count == 0) {
-                    databaseHandler!!.insertPlayCount(playCount)
-                }
-            }
-
-            val courseJsonString4 = loadJSONFromAsset( "other/other/" + "coursetestinfo.json")
-           // val gsonFile = Gson()
-           // val courseType = object : TypeToken<List<PlayCount>>() {}.type
-            val playCountmodel4: ArrayList<PlayCount> = gsonFile
-                .fromJson(courseJsonString4, courseType)
-            for(i in 0 until playCountmodel4.size){
-                val playCount = playCountmodel4[i]
-                val count = databaseHandler!!.getPlayCount(playCount.getCourse(), playCount.getTopic(),playCount.getLevel())
-                if (count == 0) {
-                    databaseHandler!!.insertPlayCount(playCount)
-                }
-            }
         }catch (e:Exception){
 
         }
@@ -724,6 +790,11 @@ class DashBoardActivity : BaseActivity(),
             else if(fragment == "Settings"){
                 loadFragment(SettingFragment())
                 val revisionItem = navigation.getMenu().getItem(2)
+                // Select home item
+                navigation.setSelectedItemId(revisionItem.getItemId());
+            }else if(fragment == "review"){
+                loadFragment(ReviewFragment())
+                val revisionItem = navigation.getMenu().getItem(1)
                 // Select home item
                 navigation.setSelectedItemId(revisionItem.getItemId());
             }else{

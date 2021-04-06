@@ -28,15 +28,14 @@ import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.analytics.ktx.logEvent
 import com.google.firebase.auth.*
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.FirebaseFirestoreSettings
-import com.google.firebase.firestore.QuerySnapshot
-import com.google.firebase.firestore.SetOptions
+import com.google.firebase.firestore.*
 import com.google.firebase.ktx.Firebase
 import com.yomplex.tests.R
 import com.yomplex.tests.Service.ContentDownloadService
 import com.yomplex.tests.database.QuizGameDataBase
+import com.yomplex.tests.model.TestDownload
 import com.yomplex.tests.model.User
+import com.yomplex.tests.model.UserContentVersion
 import com.yomplex.tests.utils.ConstantPath
 import com.yomplex.tests.utils.SharedPrefs
 import com.yomplex.tests.utils.Utils
@@ -141,7 +140,13 @@ class PhoneAuthActivity : BaseActivity() {
 
 
                 error_otp_txt.visibility = View.INVISIBLE
-
+                if(s.length == 0){
+                    back_btn.isEnabled = true
+                    back_btn.background = resources.getDrawable(R.drawable.close_button)
+                }else{
+                    back_btn.isEnabled = false
+                    back_btn.background = resources.getDrawable(R.drawable.review_no_exist)
+                }
 
             }
 
@@ -450,6 +455,8 @@ class PhoneAuthActivity : BaseActivity() {
         }else{
             error_otp_txt.visibility = View.VISIBLE
             error_otp_txt.text = "Please enter valid OTP"
+            back_btn.isEnabled = true
+            back_btn.background = resources.getDrawable(R.drawable.close_button)
         }
 
     }
@@ -568,21 +575,102 @@ class PhoneAuthActivity : BaseActivity() {
 
                                         firestore!!.collection("users").document(document.id)
                                             .set(data, SetOptions.merge())
-                                        runOnUiThread {
-                                            hideProgressDialog()
-                                            //Toast.makeText(this@PhoneAuthActivity,"Sign-In success!",Toast.LENGTH_SHORT).show()
-                                            val connectivityManager = getSystemService(
-                                                Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-                                            val activeNetwork: NetworkInfo? = connectivityManager.activeNetworkInfo
-                                            val isConnected: Boolean = activeNetwork?.isConnected == true
-                                            Log.d("isConnected",isConnected.toString()+"!")
-                                            if(isNetworkConnected()) {
-                                                downloadServiceFromBackground(this@PhoneAuthActivity,firestore!!)
-                                            }
-                                            val intent = Intent(this@PhoneAuthActivity, DashBoardActivity::class.java)
-                                            startActivity(intent)
-                                            finish()
-                                        }
+
+                                        val docRef = firestore!!.collection("usercontentversion")
+                                        docRef.whereEqualTo("phonenumber",user.phoneNumber).whereEqualTo("userid",user.uid)
+                                            .get().addOnCompleteListener(object : OnCompleteListener<QuerySnapshot> {
+                                                override fun onComplete(task: Task<QuerySnapshot>) {
+                                                    if (task.isSuccessful) {
+                                                        if (task.getResult().size() > 0) {
+                                                            if(task.getResult().size() == 1){
+                                                                runOnUiThread {
+                                                                    hideProgressDialog()
+                                                                    //Toast.makeText(this@PhoneAuthActivity,"Sign-In success!",Toast.LENGTH_SHORT).show()
+                                                                    val connectivityManager = getSystemService(
+                                                                        Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+                                                                    val activeNetwork: NetworkInfo? = connectivityManager.activeNetworkInfo
+                                                                    val isConnected: Boolean = activeNetwork?.isConnected == true
+                                                                    Log.d("isConnected",isConnected.toString()+"!")
+                                                                    if(isNetworkConnected()) {
+                                                                        downloadServiceFromBackground(this@PhoneAuthActivity,firestore!!)
+                                                                    }
+                                                                    val intent = Intent(this@PhoneAuthActivity, DashBoardActivity::class.java)
+                                                                    startActivity(intent)
+                                                                    finish()
+                                                                }
+                                                            }else{
+                                                                for(i in 0 until task.getResult().size()) {
+                                                                    firestore!!.collection("usercontentversion").document(task.getResult().documents.get(i).id)
+                                                                        .delete()
+                                                                }
+                                                                var userContentVersion = UserContentVersion()
+                                                                userContentVersion.setUseremail("");
+                                                                userContentVersion.setUserid(user.uid);
+                                                                userContentVersion.setPhonenumber(user.phoneNumber);
+                                                                var testcontentlist: List<TestDownload>? = databaseHandler!!.gettestContent()
+                                                                for(i in 0 until testcontentlist!!.size) {
+                                                                    if (testcontentlist.get(i).testtype.equals("algebra")) {
+                                                                        userContentVersion.setAlgebraversion(testcontentlist.get(i).testversion);
+                                                                    }
+                                                                    if (testcontentlist.get(i).testtype.equals("calculus1")) {
+                                                                        userContentVersion.setCalculus1version(testcontentlist.get(i).testversion);
+                                                                    }
+                                                                    if (testcontentlist.get(i).testtype.equals("calculus2")) {
+                                                                        userContentVersion.setCalculus2version(testcontentlist.get(i).testversion);
+                                                                    }
+                                                                    if (testcontentlist.get(i).testtype.equals("geometry")) {
+                                                                        userContentVersion.setGeometryversion(testcontentlist.get(i).testversion);
+                                                                    }
+                                                                    if (testcontentlist.get(i).testtype.equals("other")) {
+                                                                        userContentVersion.setOtherversion(testcontentlist.get(i).testversion);
+                                                                    }
+
+
+                                                                }
+
+                                                                firestore!!.collection("usercontentversion")
+                                                                    .add(userContentVersion)
+                                                                    .addOnCompleteListener(object : OnCompleteListener<DocumentReference> {
+                                                                        override fun onComplete(task: Task<DocumentReference>) {
+                                                                            if (task.isSuccessful) {
+                                                                                Log.e("user", "user added successfully")
+                                                                                databaseHandler!!.updatetestcontentsyncstatus(1,"algebra")
+                                                                                databaseHandler!!.updatetestcontentsyncstatus(1,"calculus1")
+                                                                                databaseHandler!!.updatetestcontentsyncstatus(1,"geometry")
+                                                                                databaseHandler!!.updatetestcontentsyncstatus(1,"other")
+                                                                                databaseHandler!!.updatetestcontentsyncstatus(1,"calculus2")
+
+                                                                                runOnUiThread {
+                                                                                    hideProgressDialog()
+                                                                                    //Toast.makeText(this@PhoneAuthActivity,"Sign-In success!",Toast.LENGTH_SHORT).show()
+                                                                                    val connectivityManager = getSystemService(
+                                                                                        Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+                                                                                    val activeNetwork: NetworkInfo? = connectivityManager.activeNetworkInfo
+                                                                                    val isConnected: Boolean = activeNetwork?.isConnected == true
+                                                                                    Log.d("isConnected",isConnected.toString()+"!")
+                                                                                    if(isNetworkConnected()) {
+                                                                                        downloadServiceFromBackground(this@PhoneAuthActivity,firestore!!)
+                                                                                    }
+                                                                                    val intent = Intent(this@PhoneAuthActivity, DashBoardActivity::class.java)
+                                                                                    startActivity(intent)
+                                                                                    finish()
+                                                                                }
+                                                                            } else {
+                                                                                Log.e("user", task.exception.toString())
+                                                                            }
+                                                                        }
+                                                                    })
+
+
+
+
+                                                            }
+                                                        }
+                                                    }
+
+                                                }
+                                            })
+
 
                                     }
                                 }else{
@@ -595,6 +683,33 @@ class PhoneAuthActivity : BaseActivity() {
                                     userObj.firebaseToken = token
 
                                     databaseHandler!!.insertUserSync(userObj,0)
+
+                                    var userContentVersion = UserContentVersion()
+                                    userContentVersion.setUseremail("");
+                                    userContentVersion.setUserid(user!!.uid);
+                                    userContentVersion.setPhonenumber(user.phoneNumber);
+                                    userContentVersion.setAlgebraversion("-1");
+                                    userContentVersion.setCalculus1version("-1");
+                                    userContentVersion.setCalculus2version("-1");
+                                    userContentVersion.setGeometryversion("-1");
+                                    userContentVersion.setOtherversion("-1");
+
+                                    firestore!!.collection("usercontentversion")
+                                        .add(userContentVersion)
+                                        .addOnCompleteListener(object : OnCompleteListener<DocumentReference> {
+                                            override fun onComplete(task: Task<DocumentReference>) {
+                                                if (task.isSuccessful) {
+                                                    Log.e("user", "user added successfully")
+
+
+                                                } else {
+                                                    Log.e("user", task.exception.toString())
+                                                }
+                                            }
+                                        })
+
+
+
                                    // Toast.makeText(this@PhoneAuthActivity,"Sign-In success!",Toast.LENGTH_SHORT).show()
                                     val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
                                     val activeNetwork: NetworkInfo? = connectivityManager.activeNetworkInfo

@@ -55,6 +55,7 @@ import com.yomplex.tests.Service.JobService
 import com.yomplex.tests.adapter.GradeAdapter
 import com.yomplex.tests.database.QuizGameDataBase
 import com.yomplex.tests.interfaces.GradeClickListener
+import com.yomplex.tests.model.Course
 import com.yomplex.tests.model.GradeResponseModel
 import com.yomplex.tests.model.RevisionModel
 import com.yomplex.tests.model.TestDownload
@@ -908,6 +909,28 @@ class GradeActivity : BaseActivity(), GradeClickListener, PermissionListener  {
         startActivity(intent)
     }
     fun navigateToIntro(){
+        try{
+            var testtypeslist: ArrayList<String>? = null
+            testtypeslist = ArrayList<String>()
+
+
+            testtypeslist!!.add("ALGEBRA")
+            testtypeslist!!.add("GEOMETRY")
+            testtypeslist!!.add("CALCULUS 1")
+            testtypeslist!!.add("CALCULUS 2")
+            testtypeslist!!.add("OTHER")
+            var count = databaseHandler!!.getAllCoursesCount()
+            if(count == 0){
+                for(i in 0 until testtypeslist.size){
+                    databaseHandler!!.insertCourse(Course(testtypeslist.get(i),0))
+                }
+            }
+        }catch (e:Exception){
+
+        }
+
+
+
         val intent = Intent(
             this@GradeActivity,
             SignInActivity::class.java
@@ -919,13 +942,34 @@ class GradeActivity : BaseActivity(), GradeClickListener, PermissionListener  {
         finish()
     }
     fun navigateToDashboard(title: String){
-        val intent = Intent(
-            this@GradeActivity,
-            DashBoardActivity::class.java
-        )
-        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        intent.putExtra(TITLE_TOPIC, title)
-        startActivity(intent)
-        finish()
+        Log.e("grade activity","navigateToDashboard...title.."+title)
+        try {
+            val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+            val activeNetwork: NetworkInfo? = connectivityManager.activeNetworkInfo
+            val isConnected: Boolean = activeNetwork?.isConnected == true
+            Log.d("isConnected",isConnected.toString()+"!")
+            if(isNetworkConnected()) {
+                downloadServiceFromBackground(this@GradeActivity,db)
+            }
+            val intent = Intent(
+                this@GradeActivity,
+                DashBoardActivity::class.java
+            )
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            intent.putExtra(TITLE_TOPIC, title)
+            startActivity(intent)
+            finish()
+        }catch (e:Exception){
+            val intent = Intent(
+                this@GradeActivity,
+                DashBoardActivity::class.java
+            )
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            intent.putExtra(TITLE_TOPIC, title)
+            startActivity(intent)
+            finish()
+        }
+
+
     }
 }

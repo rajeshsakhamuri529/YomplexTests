@@ -13,6 +13,7 @@ import com.bumptech.glide.Glide
 import com.yomplex.tests.R
 import com.yomplex.tests.interfaces.TestClickListener
 import com.yomplex.tests.interfaces.TestQuizReviewClickListener
+import com.yomplex.tests.model.Course
 import com.yomplex.tests.model.QuizScore
 import com.yomplex.tests.model.TestQuizFinal
 import kotlinx.android.synthetic.main.tests_list_item.view.*
@@ -25,7 +26,7 @@ import java.util.*
 
 
 class TestsAdapter(val context: Context,
-                   val testtypeslist: List<String>,val testscorelist: ArrayList<QuizScore>,
+                   val testtypeslist: List<Course>, val testscorelist: ArrayList<QuizScore>,
                    val quiztopicreviewListener: TestClickListener
 ) :
     RecyclerView.Adapter<TestsAdapter.TestsViewHolder>()  {
@@ -45,10 +46,10 @@ class TestsAdapter(val context: Context,
 
     override fun onBindViewHolder(holder: TestsAdapter.TestsViewHolder, position: Int) {
 
-        holder.tv_topic_name.text = testtypeslist[position]
+        holder.tv_topic_name.text = testtypeslist[position].coursename
 
         for(i in 0 until testscorelist.size) {
-            if(testscorelist.get(i).testtype.equals(testtypeslist[position].replace("\\s".toRegex(), "").toLowerCase())){
+            if(testscorelist.get(i).testtype.equals(testtypeslist[position].coursename.replace("\\s".toRegex(), "").toLowerCase())){
                 holder.tv_score.text = testscorelist.get(i).highestscore
                 if(testscorelist.get(i).highestscore.equals("0")){
                     holder.totalRL.background = context.resources.getDrawable(R.drawable.test_summary_0)
@@ -175,8 +176,20 @@ class TestsAdapter(val context: Context,
         holder.rootLayout.setOnClickListener(View.OnClickListener {
             quiztopicreviewListener.onClick(branchesItemList[position])
         })*/
+        if(testtypeslist[position].courseexist == 1){
+            holder.rl_single_topics.background = context.resources.getDrawable(R.drawable.review_no_exist)
+            holder.tv_topic_name.setTextColor(context.resources.getColor(R.color.button_border_color))
+            //holder.tv_challenge_date.setTextColor(context.resources.getColor(R.color.button_border_color))
+        }else{
+
+            holder.rl_single_topics.background = context.resources.getDrawable(R.drawable.close_button)
+            holder.tv_topic_name.setTextColor(context.resources.getColor(R.color.course_text))
+            //holder.tv_challenge_date.setTextColor(context.resources.getColor(R.color.button_border_color))
+        }
+
+
         holder.rl_single_topics.setOnClickListener(View.OnClickListener {
-            quiztopicreviewListener.onClick(testtypeslist[position])
+            quiztopicreviewListener.onClick(testtypeslist[position].coursename,testtypeslist[position].courseexist)
         })
 
     }

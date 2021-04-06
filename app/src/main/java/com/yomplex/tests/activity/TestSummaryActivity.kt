@@ -3,6 +3,8 @@ package com.yomplex.tests.activity
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.net.ConnectivityManager
 import android.net.NetworkInfo
 import android.os.Build
@@ -12,9 +14,8 @@ import android.os.SystemClock
 import android.util.Log
 import android.view.View
 import android.view.WindowManager
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.Toast
+import android.widget.*
+import androidx.appcompat.app.AlertDialog
 
 
 import com.blobcity.viewmodel.TopicStatusVM
@@ -486,7 +487,7 @@ class TestSummaryActivity : BaseActivity(), View.OnClickListener {
                     //readFileLocally(topicName!!.toLowerCase())
                     //playNextBtnAction(position!!)
                 }else{
-                    databaseHandler!!.updatetestcontentdownloadstatus(0,topicName!!.toLowerCase())
+                   // databaseHandler!!.updatetestcontentdownloadstatus(0,topicName!!.toLowerCase())
                     if(isNetworkConnected()) {
                         downloadServiceFromBackground(this@TestSummaryActivity,db)
                     }
@@ -605,7 +606,7 @@ class TestSummaryActivity : BaseActivity(), View.OnClickListener {
         Log.e("test fragment","testQuiz.folderPath......"+folderPath)
         jsonStringBasic = loadJSONFromAsset("$folderPath/${playCount.getLevel()}.json")
         Log.e("test fragment","jsonStringBasic......"+jsonStringBasic)
-        databaseHandler!!.updatePlayCount(playCount.getPlaycount()+1,playCount.getCourse(),playCount.getTopic(),playCount.getLevel())
+       // databaseHandler!!.updatePlayCount(playCount.getPlaycount()+1,playCount.getCourse(),playCount.getTopic(),playCount.getLevel())
 
         val intent = Intent(this!!, StartTestActivity::class.java)
       //  intent.putExtra(ConstantPath.TOPIC, topic)
@@ -618,7 +619,7 @@ class TestSummaryActivity : BaseActivity(), View.OnClickListener {
        // intent.putExtra(ConstantPath.TOPIC_POSITION, topic.displayNo)
         intent.putExtra(ConstantPath.FOLDER_PATH, localPath)
         intent.putExtra(ConstantPath.TITLE_TOPIC, gradeTitle!!)
-        intent.putExtra("LAST_PLAYED", lastplayed)
+        intent.putExtra("LAST_PLAYED", playCount.getLevel())
         intent.putExtra("comingfrom", "Test")
         intent.putExtra("readdata", "assets")
         intent.putExtra(ConstantPath.TOPIC_LEVEL, "")
@@ -670,33 +671,58 @@ class TestSummaryActivity : BaseActivity(), View.OnClickListener {
        // gotoStartScreen()
 
         var playCount = databaseHandler!!.getPlayCountPlayRecord(filename)
-
+        Log.e("test summary","playCount.getCourse()......"+playCount.getCourse())
+        Log.e("test summary","playCount.getTopic()......"+playCount.getTopic())
+        Log.e("test summary","playCount.getLevel()......"+playCount.getLevel())
 
         var folderPath = localPath+playCount.getTopic()
         Log.e("test fragment","testQuiz.folderPath......"+folderPath)
-        jsonStringBasic = Utils.readFromFile("$folderPath/${playCount.getLevel()}.json")
-        Log.e("test fragment","jsonStringBasic......"+jsonStringBasic)
-        databaseHandler!!.updatePlayCount(playCount.getPlaycount()+1,playCount.getCourse(),playCount.getTopic(),playCount.getLevel())
+        var pathexist = File(folderPath)
+        if(pathexist.exists()){
+            jsonStringBasic = Utils.readFromFile("$folderPath/${playCount.getLevel()}.json")
+            Log.e("test fragment","jsonStringBasic......"+jsonStringBasic)
+            // databaseHandler!!.updatePlayCount(playCount.getPlaycount()+1,playCount.getCourse(),playCount.getTopic(),playCount.getLevel())
 
-        val intent = Intent(this!!, StartTestActivity::class.java)
-        //intent.putExtra(ConstantPath.TOPIC, topic)
-        intent.putExtra(ConstantPath.TOPIC_NAME, topicName)
-        intent.putExtra(ConstantPath.FOLDER_NAME, playCount.getTopic())
-        intent.putExtra(ConstantPath.DYNAMIC_PATH, jsonStringBasic)
-        intent.putExtra(ConstantPath.COURSE_ID, courseId)
-        intent.putExtra(ConstantPath.COURSE_NAME, courseName)
-        intent.putExtra(ConstantPath.TOPIC_ID, "")
-        //intent.putExtra(ConstantPath.TOPIC_POSITION, topic.displayNo)
-        intent.putExtra(ConstantPath.FOLDER_PATH, localPath)
-        intent.putExtra(ConstantPath.TITLE_TOPIC, gradeTitle!!)
-        intent.putExtra("LAST_PLAYED", lastplayed)
-        intent.putExtra("comingfrom", "Test")
-        intent.putExtra(ConstantPath.TOPIC_LEVEL, "")
-        intent.putExtra(ConstantPath.LEVEL_COMPLETED, "")
-        intent.putExtra(ConstantPath.CARD_NO, "")
-        intent.putExtra("readdata", "files")
-        intent.putExtra("topicnameoriginal", originaltopicName)
-        startActivity(intent)
+            val intent = Intent(this!!, StartTestActivity::class.java)
+            //intent.putExtra(ConstantPath.TOPIC, topic)
+            intent.putExtra(ConstantPath.TOPIC_NAME, topicName)
+            intent.putExtra(ConstantPath.FOLDER_NAME, playCount.getTopic())
+            intent.putExtra(ConstantPath.DYNAMIC_PATH, jsonStringBasic)
+            intent.putExtra(ConstantPath.COURSE_ID, courseId)
+            intent.putExtra(ConstantPath.COURSE_NAME, courseName)
+            intent.putExtra(ConstantPath.TOPIC_ID, "")
+            //intent.putExtra(ConstantPath.TOPIC_POSITION, topic.displayNo)
+            intent.putExtra(ConstantPath.FOLDER_PATH, localPath)
+            intent.putExtra(ConstantPath.TITLE_TOPIC, gradeTitle!!)
+            intent.putExtra("LAST_PLAYED", playCount.getLevel())
+            intent.putExtra("comingfrom", "Test")
+            intent.putExtra(ConstantPath.TOPIC_LEVEL, "")
+            intent.putExtra(ConstantPath.LEVEL_COMPLETED, "")
+            intent.putExtra(ConstantPath.CARD_NO, "")
+            intent.putExtra("readdata", "files")
+            intent.putExtra("topicnameoriginal", originaltopicName)
+            startActivity(intent)
+        }else{
+            var allcount = databaseHandler!!.getCoursesCount(originaltopicName)
+            if(allcount == 0){
+                databaseHandler!!.updateCourseExist(originaltopicName,1)
+                databaseHandler!!.updatetestcontentdownloadstatus(0,topicname)
+                if(isNetworkConnected()) {
+                    downloadServiceFromBackground(this,db)
+                }
+
+                nocontentDialog("Oops! Something went wrong. Please wait while we update this Topic.")
+            }else{
+                if(isNetworkConnected()) {
+                    databaseHandler!!.updateCourseExist(originaltopicName,1)
+                    nocontentDialog("Give us another minute.. your content is being updated!")
+                }else{
+                    nocontentDialog("No internet connection "+ getString(R.string.emoji_disappointment) + " Please connect to the internet and try again.")
+
+                }
+            }
+        }
+
 
         /*val branchesItemList2 = ArrayList<BranchesItem>()
         val index1 = branchesItemList!![0].topic.index.toString()
@@ -715,6 +741,47 @@ class TestSummaryActivity : BaseActivity(), View.OnClickListener {
 
         /*rl_chapter_one.setOnClickListener(this)
         rl_chapter_two.setOnClickListener(this)*/
+    }
+
+    private fun nocontentDialog(msg:String) {
+        val dialogBuilder = AlertDialog.Builder(this, R.style.mytheme)
+        val inflater = this.layoutInflater
+        val dialogView = inflater.inflate(R.layout.content_not_available, null)
+        dialogBuilder.setView(dialogView)
+
+        val tv_message = dialogView.findViewById(R.id.tv_message) as TextView
+        val tv_return = dialogView.findViewById(R.id.tv_return1) as Button
+
+        tv_message.text = msg
+
+        val alertDialog = dialogBuilder.create()
+
+        /*val map = takeScreenShot(this);
+
+        val fast = fastblur(map, 10);
+        val draw = BitmapDrawable(getResources(), fast);*/
+        tv_return.setOnClickListener {
+            sound = sharedPrefs?.getBooleanPrefVal(this, ConstantPath.SOUNDS) ?: true
+            if(!sound){
+                // mediaPlayer = MediaPlayer.create(this,R.raw.amount_low)
+                //  mediaPlayer.start()
+                if (Utils.loaded) {
+                    Utils.soundPool.play(Utils.soundID, Utils.volume, Utils.volume, 1, 0, 1f);
+                    Log.e("Test", "Played sound...volume..."+ Utils.volume);
+                    //Toast.makeText(context,"end",Toast.LENGTH_SHORT).show()
+                }
+            }
+            alertDialog.dismiss()
+            /*val i = Intent(this, DashBoardActivity::class.java)
+            i.putExtra("fragment", "tests")
+            startActivity(i)
+            (this as Activity).overridePendingTransition(0, 0)*/
+
+
+        }
+        //alertDialog.getWindow().setBackgroundDrawable(draw);
+        alertDialog.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT));
+        alertDialog.show()
     }
 
     /*private fun playNextBtnAction(position:Int){

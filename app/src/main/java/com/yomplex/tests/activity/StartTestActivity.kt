@@ -179,9 +179,38 @@ class StartTestActivity : BaseActivity(), View.OnClickListener {
                     }
                 }
 
+                Log.e("start test","on click...topicname...."+topicName);
                 databaseHandler!!.deleteAllQuizTopicsLatPlayed(topicName!!.toLowerCase())
 
                databaseHandler!!.insertquiztopiclastplayed(folderName,0,lastplayed,topicName!!.toLowerCase());
+                var filename = ""
+                if (originaltopicName.equals("CALCULUS 1")) {
+                    filename = "jee-calculus-1"
+                    //firestoreversionkey = "Calculus1Version"
+                } else if (originaltopicName.equals("CALCULUS 2")) {
+                    filename = "jee-calculus-2"
+                    //firestoreversionkey = "Calculus2Version"
+                } else if (originaltopicName.equals("ALGEBRA")) {
+                    filename = "ii-algebra"
+                    //firestoreversionkey = "AlgebraVersion"
+                } else if (originaltopicName.equals("OTHER")) {
+                    filename = "other"
+                    //firestoreversionkey = "BasicVersion"
+                } else if (originaltopicName.equals("GEOMETRY")) {
+                    filename = "iii-geometry"
+                    //firestoreversionkey = "GeometryVersion"
+                }
+                Log.e("start test","readdata......"+readdata)
+                if(readdata.equals("files")){
+                    var playCount = databaseHandler!!.getPlayCountPlayRecord(filename)
+                    Log.e("start test","playCount.getCourse()......"+playCount.getCourse())
+                    Log.e("start test","playCount.getTopic()......"+playCount.getTopic())
+                    Log.e("start test","playCount.getLevel()......"+playCount.getLevel())
+                    databaseHandler!!.updatePlayCount(playCount.getPlaycount()+1,playCount.getCourse(),playCount.getTopic(),playCount.getLevel())
+                }else{
+                    var playCount = databaseHandler!!.getPlayCountPlayRecord(filename)
+                    databaseHandler!!.updatePlayCount(playCount.getPlaycount()+1,playCount.getCourse(),playCount.getTopic(),playCount.getLevel())
+                }
 
                 /*val bundle = Bundle()
                 bundle.putString("Category", "Test")

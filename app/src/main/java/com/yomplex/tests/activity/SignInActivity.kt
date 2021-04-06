@@ -55,6 +55,7 @@ import com.yomplex.tests.ViewPager.listener.ViewPagerListener
 import com.yomplex.tests.database.QuizGameDataBase
 import com.yomplex.tests.fragment.PhoneAuthFragment
 import com.yomplex.tests.model.PlayCount
+import com.yomplex.tests.model.TestDownload
 
 import com.yomplex.tests.model.User
 import com.yomplex.tests.model.UserContentVersion
@@ -230,6 +231,24 @@ class SignInActivity : BaseActivity(){
                 }
             }
 
+            val courseJsonStr = loadJSONFromAsset( "algebra/ii-algebra/" + "coursetestdelete.json")
+            //val gsonFile = Gson()
+           // val courseType = object : TypeToken<List<PlayCount>>() {}.type
+            val playCountmodelDelete: ArrayList<PlayCount> = gsonFile
+                .fromJson(courseJsonStr, courseType)
+
+            Log.e("sign in","playCountmodelDelete..........."+playCountmodelDelete);
+            Log.e("sign in","playCountmodelDelete.size.........."+playCountmodelDelete.size);
+            if(playCountmodelDelete.size > 0){
+                for(i in 0 until playCountmodelDelete.size){
+                    val playCount = playCountmodelDelete[i]
+                    val count = databaseHandler!!.deletePlayCount(playCount.getCourse(), playCount.getTopic(),playCount.getLevel())
+
+                }
+
+            }
+
+
             val courseJsonString1 = loadJSONFromAsset( "calculus1/jee-calculus-1/" + "coursetestinfo.json")
             //val gsonFile1 = Gson()
             //val courseType1 = object : TypeToken<List<PlayCount>>() {}.type
@@ -241,6 +260,18 @@ class SignInActivity : BaseActivity(){
                 if (count == 0) {
                     databaseHandler!!.insertPlayCount(playCount)
                 }
+            }
+
+            val courseJsonStr1 = loadJSONFromAsset( "calculus1/jee-calculus-1/" + "coursetestdelete.json")
+            val playCountmodelDelete1: ArrayList<PlayCount> = gsonFile
+                .fromJson(courseJsonStr1, courseType)
+            if(playCountmodelDelete1.size > 0){
+                for(i in 0 until playCountmodelDelete1.size){
+                    val playCount = playCountmodelDelete1[i]
+                    val count = databaseHandler!!.deletePlayCount(playCount.getCourse(), playCount.getTopic(),playCount.getLevel())
+
+                }
+
             }
 
             val courseJsonString2 = loadJSONFromAsset( "calculus2/jee-calculus-2/" + "coursetestinfo.json")
@@ -256,6 +287,18 @@ class SignInActivity : BaseActivity(){
                 }
             }
 
+            val courseJsonStr2 = loadJSONFromAsset( "calculus2/jee-calculus-2/" + "coursetestdelete.json")
+            val playCountmodelDelete2: ArrayList<PlayCount> = gsonFile
+                .fromJson(courseJsonStr2, courseType)
+            if(playCountmodelDelete2.size > 0){
+                for(i in 0 until playCountmodelDelete2.size){
+                    val playCount = playCountmodelDelete2[i]
+                    val count = databaseHandler!!.deletePlayCount(playCount.getCourse(), playCount.getTopic(),playCount.getLevel())
+
+                }
+
+            }
+
             val courseJsonString3 = loadJSONFromAsset( "geometry/iii-geometry/" + "coursetestinfo.json")
             //val gsonFile = Gson()
             // val courseType = object : TypeToken<List<PlayCount>>() {}.type
@@ -268,6 +311,18 @@ class SignInActivity : BaseActivity(){
                     databaseHandler!!.insertPlayCount(playCount)
                 }
             }
+            val courseJsonStr3 = loadJSONFromAsset( "geometry/iii-geometry/" + "coursetestdelete.json")
+            val playCountmodelDelete3: ArrayList<PlayCount> = gsonFile
+                .fromJson(courseJsonStr3, courseType)
+            if(playCountmodelDelete3.size > 0){
+                for(i in 0 until playCountmodelDelete3.size){
+                    val playCount = playCountmodelDelete3[i]
+                    val count = databaseHandler!!.deletePlayCount(playCount.getCourse(), playCount.getTopic(),playCount.getLevel())
+
+                }
+
+            }
+
 
             val courseJsonString4 = loadJSONFromAsset( "other/other/" + "coursetestinfo.json")
             // val gsonFile = Gson()
@@ -280,6 +335,17 @@ class SignInActivity : BaseActivity(){
                 if (count == 0) {
                     databaseHandler!!.insertPlayCount(playCount)
                 }
+            }
+            val courseJsonStr4 = loadJSONFromAsset( "other/other/" + "coursetestdelete.json")
+            val playCountmodelDelete4: ArrayList<PlayCount> = gsonFile
+                .fromJson(courseJsonStr4, courseType)
+            if(playCountmodelDelete4.size > 0){
+                for(i in 0 until playCountmodelDelete4.size){
+                    val playCount = playCountmodelDelete4[i]
+                    val count = databaseHandler!!.deletePlayCount(playCount.getCourse(), playCount.getTopic(),playCount.getLevel())
+
+                }
+
             }
         }catch (e:Exception){
 
@@ -590,20 +656,98 @@ class SignInActivity : BaseActivity(){
 
                                        firestore!!.collection("users").document(document.id)
                                                .set(data, SetOptions.merge())
-                                       runOnUiThread {
-                                           hideProgressDialog()
-                                           //Toast.makeText(this@SignInActivity,"Sign-In success!",Toast.LENGTH_SHORT).show()
-                                           /*val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-                                           val activeNetwork: NetworkInfo? = connectivityManager.activeNetworkInfo
-                                           val isConnected: Boolean = activeNetwork?.isConnected == true
-                                           Log.d("isConnected",isConnected.toString()+"!")*/
-                                           /*if(isNetworkConnected()) {
-                                               downloadServiceFromBackground(this@SignInActivity,firestore!!)
-                                           }*/
-                                           val intent = Intent(this@SignInActivity, DashBoardActivity::class.java)
-                                           startActivity(intent)
-                                           finish()
-                                       }
+
+                                       val docRef = firestore!!.collection("usercontentversion")
+                                       docRef.whereEqualTo("useremail",user.email).whereEqualTo("userid",user.uid)
+                                           .get().addOnCompleteListener(object : OnCompleteListener<QuerySnapshot> {
+                                               override fun onComplete(task: Task<QuerySnapshot>) {
+                                                   if (task.isSuccessful) {
+                                                       if (task.getResult().size() > 0) {
+                                                           if(task.getResult().size() == 1){
+                                                               runOnUiThread {
+                                                                   hideProgressDialog()
+                                                                   //Toast.makeText(this@SignInActivity,"Sign-In success!",Toast.LENGTH_SHORT).show()
+                                                                   /*val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+                                                                   val activeNetwork: NetworkInfo? = connectivityManager.activeNetworkInfo
+                                                                   val isConnected: Boolean = activeNetwork?.isConnected == true
+                                                                   Log.d("isConnected",isConnected.toString()+"!")*/
+                                                                   /*if(isNetworkConnected()) {
+                                                                       downloadServiceFromBackground(this@SignInActivity,firestore!!)
+                                                                   }*/
+                                                                   val intent = Intent(this@SignInActivity, DashBoardActivity::class.java)
+                                                                   startActivity(intent)
+                                                                   finish()
+                                                               }
+                                                           }else{
+                                                               for(i in 0 until task.getResult().size()) {
+                                                                   firestore!!.collection("usercontentversion").document(task.getResult().documents.get(i).id)
+                                                                       .delete()
+                                                               }
+                                                               var userContentVersion = UserContentVersion()
+                                                               userContentVersion.setUseremail(user.email);
+                                                               userContentVersion.setUserid(user.uid);
+                                                               userContentVersion.setPhonenumber("");
+                                                               var testcontentlist: List<TestDownload>? = databaseHandler!!.gettestContent()
+                                                               for(i in 0 until testcontentlist!!.size) {
+                                                                   if (testcontentlist.get(i).testtype.equals("algebra")) {
+                                                                       userContentVersion.setAlgebraversion(testcontentlist.get(i).testversion);
+                                                                   }
+                                                                   if (testcontentlist.get(i).testtype.equals("calculus1")) {
+                                                                       userContentVersion.setCalculus1version(testcontentlist.get(i).testversion);
+                                                                   }
+                                                                   if (testcontentlist.get(i).testtype.equals("calculus2")) {
+                                                                       userContentVersion.setCalculus2version(testcontentlist.get(i).testversion);
+                                                                   }
+                                                                   if (testcontentlist.get(i).testtype.equals("geometry")) {
+                                                                       userContentVersion.setGeometryversion(testcontentlist.get(i).testversion);
+                                                                   }
+                                                                   if (testcontentlist.get(i).testtype.equals("other")) {
+                                                                       userContentVersion.setOtherversion(testcontentlist.get(i).testversion);
+                                                                   }
+
+
+                                                               }
+
+                                                               firestore!!.collection("usercontentversion")
+                                                                   .add(userContentVersion)
+                                                                   .addOnCompleteListener(object : OnCompleteListener<DocumentReference> {
+                                                                       override fun onComplete(task: Task<DocumentReference>) {
+                                                                           if (task.isSuccessful) {
+                                                                               Log.e("user", "user added successfully")
+                                                                               databaseHandler!!.updatetestcontentsyncstatus(1,"algebra")
+                                                                               databaseHandler!!.updatetestcontentsyncstatus(1,"calculus1")
+                                                                               databaseHandler!!.updatetestcontentsyncstatus(1,"geometry")
+                                                                               databaseHandler!!.updatetestcontentsyncstatus(1,"other")
+                                                                               databaseHandler!!.updatetestcontentsyncstatus(1,"calculus2")
+
+                                                                               runOnUiThread {
+                                                                                   hideProgressDialog()
+                                                                                   //Toast.makeText(this@SignInActivity,"Sign-In success!",Toast.LENGTH_SHORT).show()
+                                                                                   /*val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+                                                                                   val activeNetwork: NetworkInfo? = connectivityManager.activeNetworkInfo
+                                                                                   val isConnected: Boolean = activeNetwork?.isConnected == true
+                                                                                   Log.d("isConnected",isConnected.toString()+"!")*/
+                                                                                   /*if(isNetworkConnected()) {
+                                                                                       downloadServiceFromBackground(this@SignInActivity,firestore!!)
+                                                                                   }*/
+                                                                                   val intent = Intent(this@SignInActivity, DashBoardActivity::class.java)
+                                                                                   startActivity(intent)
+                                                                                   finish()
+                                                                               }
+                                                                           } else {
+                                                                               Log.e("user", task.exception.toString())
+                                                                           }
+                                                                       }
+                                                                   })
+                                                           }
+                                                       }
+                                                   }
+                                               }
+                                           })
+
+
+
+
 
                                    }
                                }else{
@@ -617,6 +761,30 @@ class SignInActivity : BaseActivity(){
                                    userObj.firebaseToken = token
 
                                    databaseHandler!!.insertUserSync(userObj,0)
+                                   var userContentVersion = UserContentVersion()
+                                   userContentVersion.setUseremail(user.email);
+                                   userContentVersion.setUserid(user!!.uid);
+                                   userContentVersion.setPhonenumber("");
+                                   userContentVersion.setAlgebraversion("-1");
+                                   userContentVersion.setCalculus1version("-1");
+                                   userContentVersion.setCalculus2version("-1");
+                                   userContentVersion.setGeometryversion("-1");
+                                   userContentVersion.setOtherversion("-1");
+
+                                   firestore!!.collection("usercontentversion")
+                                       .add(userContentVersion)
+                                       .addOnCompleteListener(object : OnCompleteListener<DocumentReference> {
+                                           override fun onComplete(task: Task<DocumentReference>) {
+                                               if (task.isSuccessful) {
+                                                   Log.e("user", "user added successfully")
+
+
+                                               } else {
+                                                   Log.e("user", task.exception.toString())
+                                               }
+                                           }
+                                       })
+
                                    //Toast.makeText(this@SignInActivity,"Sign-In success!",Toast.LENGTH_SHORT).show()
                                    /*val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
                                    val activeNetwork: NetworkInfo? = connectivityManager.activeNetworkInfo
