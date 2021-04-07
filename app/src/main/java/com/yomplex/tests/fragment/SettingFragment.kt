@@ -29,6 +29,7 @@ import com.google.firebase.ktx.Firebase
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
 import com.yomplex.tests.R
+import com.yomplex.tests.activity.ContentVersionUpdateService
 import com.yomplex.tests.activity.SignInActivity
 import com.yomplex.tests.activity.WriteToUsActivity
 import com.yomplex.tests.database.DatabaseHandler
@@ -86,6 +87,16 @@ class SettingFragment : Fragment(), View.OnClickListener {
 
         }else{
             view.txt_sub_date.setText(enddate)
+        }
+
+        try {
+            val mSensorService = ContentVersionUpdateService()
+            val mServiceIntent = Intent(activity, mSensorService::class.java)
+            if (!Utils.isMyServiceRunning(activity, mSensorService::class.java)) {
+                activity!!.startService(mServiceIntent)
+            }
+        } catch (e: Exception) {
+
         }
 
         /*remoteConfig = FirebaseRemoteConfig.getInstance()

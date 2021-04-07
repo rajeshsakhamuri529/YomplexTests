@@ -14,8 +14,7 @@ public class UserContentVersion {
     public String calculus1version;
     public String calculus2version;
     public String otherversion;
-    @ServerTimestamp
-    public Date updatedtime;
+    public String updatedtime;
 
     public String getPhonenumber() {
         return phonenumber;
@@ -81,11 +80,11 @@ public class UserContentVersion {
         this.userid = userid;
     }
 
-    public Date getUpdatedtime() {
+    public String getUpdatedtime() {
         return updatedtime;
     }
 
-    public void setUpdatedtime(Date updatedtime) {
+    public void setUpdatedtime(String updatedtime) {
         this.updatedtime = updatedtime;
     }
 }

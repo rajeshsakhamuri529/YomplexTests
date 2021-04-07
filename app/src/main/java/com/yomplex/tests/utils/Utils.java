@@ -3,6 +3,7 @@ package com.yomplex.tests.utils;
 import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.content.Context;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
@@ -140,6 +141,24 @@ public class Utils {
                 .getStreamMaxVolume(AudioManager.STREAM_MUSIC);
         volume = actualVolume/maxVolume;
 
+    }
+
+    public static boolean isMyServiceRunning(Context _activity, Class<?> serviceClass) {
+        try {
+            ActivityManager manager = (ActivityManager) _activity.getSystemService(Context.ACTIVITY_SERVICE);
+            if (manager != null) {
+                for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+                    if (serviceClass.getName().equals(service.service.getClassName())) {
+                        Log.i("isMyServiceRunning?", true + "");
+                        return true;
+                    }
+                }
+            }
+            Log.i("isMyServiceRunning?", false + "");
+        } catch (SecurityException | NullPointerException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
 

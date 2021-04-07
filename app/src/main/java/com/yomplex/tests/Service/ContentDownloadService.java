@@ -28,6 +28,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
 import com.google.gson.Gson;
+import com.yomplex.tests.activity.ContentVersionUpdateService;
 import com.yomplex.tests.database.QuizGameDataBase;
 import com.yomplex.tests.model.PlayCount;
 import com.yomplex.tests.model.TestDownload;
@@ -423,7 +424,7 @@ public class ContentDownloadService extends JobIntentService {
                                             dirFile.delete();
                                        //     File dirFile1 = new File(context1.getCacheDir(),testtype+"/test");
                                         //    boolean isdeleted = Utils.deleteFolder(dirFile1);
-                                            if(usermail.equals("")){
+                                            /*if(usermail.equals("")){
                                                 CollectionReference docRef = firestore.collection("usercontentversion");
                                                 docRef.whereEqualTo("phonenumber",phone).whereEqualTo("userid",userid)
                                                         .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -462,7 +463,7 @@ public class ContentDownloadService extends JobIntentService {
                                                         }
                                                     }
                                                 });
-                                            }
+                                            }*/
 
 
                                             //UpdateContentVersionService.enqueueWork(context1, firestore);
@@ -474,11 +475,25 @@ public class ContentDownloadService extends JobIntentService {
                                                 //Log.e("content download","date......................."+format1.format(Utils.date));
                                                 dataBase.insertContentUpdateDate(format1.format(Utils.date));
                                             }
+                                            SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+                                            String currentDate = sdf.format(new Date());
+                                            sharedPrefs.setPrefVal(context1,"contentupdatedate",currentDate);
                                             dataBase.updatetestcontentversion(version,testtype);
                                             dataBase.updatetestcontentdownloadstatus(1,testtype);
-                                            dataBase.updatetestcontentsyncstatus(1,testtype);
+                                            dataBase.updatetestcontentsyncstatus(0,testtype);
                                             dataBase.updatetestcontenturl(url,testtype);
                                             dataBase.updateCourseExist("CALCULUS 1",0);
+                                            try{
+                                                ContentVersionUpdateService mSensorService = new ContentVersionUpdateService();
+                                                Intent mServiceIntent = new Intent(context1, mSensorService.getClass());
+                                                if (!Utils.isMyServiceRunning(context1, mSensorService.getClass())) {
+                                                    startService(mServiceIntent);
+                                                }
+                                            }catch(Exception e){
+
+                                            }
+
+
                                             try{
                                                 String jsonstr = Utils.readFromFile(dirpath+"/"+testtype+"/jee-calculus-1/coursetestinfo.json");
                                                 Gson gson = new Gson();
@@ -491,16 +506,20 @@ public class ContentDownloadService extends JobIntentService {
                                                         dataBase.insertPlayCount(playCount);
                                                     }
                                                 }
-                                                String jsonstr1 = Utils.readFromFile(dirpath+"/"+testtype+"/jee-calculus-1/coursetestdelete.json");
-                                                ArrayList<PlayCount> list1 = gson.fromJson(jsonstr1, REVIEW_TYPE);
-                                                if(list1.size() > 0){
-                                                    for(int i = 0; i < list1.size();i++){
-                                                        PlayCount playCount = list1.get(i);
-                                                        int count = dataBase.deletePlayCount(playCount.getCourse(), playCount.getTopic(),playCount.getLevel());
+                                                File f4=new File(dirpath+"/"+testtype+"/jee-calculus-1/coursetestdelete.json");
+                                                if(f4.exists()){
+                                                    String jsonstr1 = Utils.readFromFile(dirpath+"/"+testtype+"/jee-calculus-1/coursetestdelete.json");
+                                                    ArrayList<PlayCount> list1 = gson.fromJson(jsonstr1, REVIEW_TYPE);
+                                                    if(list1.size() > 0){
+                                                        for(int i = 0; i < list1.size();i++){
+                                                            PlayCount playCount = list1.get(i);
+                                                            int count = dataBase.deletePlayCount(playCount.getCourse(), playCount.getTopic(),playCount.getLevel());
+
+                                                        }
 
                                                     }
-
                                                 }
+
                                             }catch (Exception e){
 
                                             }
@@ -533,7 +552,7 @@ public class ContentDownloadService extends JobIntentService {
                                                     }
                                                 }
                                             });*/
-                                            if(usermail.equals("")){
+                                            /*if(usermail.equals("")){
                                                 CollectionReference docRef = firestore.collection("usercontentversion");
                                                 docRef.whereEqualTo("phonenumber",phone).whereEqualTo("userid",userid)
                                                         .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -572,7 +591,7 @@ public class ContentDownloadService extends JobIntentService {
                                                         }
                                                     }
                                                 });
-                                            }
+                                            }*/
                                            // UpdateContentVersionService.enqueueWork(context1, firestore);
                                             SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd");
                                             String date = dataBase.getContentDate();
@@ -582,11 +601,24 @@ public class ContentDownloadService extends JobIntentService {
                                                 //Log.e("content download","date......................."+format1.format(Utils.date));
                                                 dataBase.insertContentUpdateDate(format1.format(Utils.date));
                                             }
+                                            SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+                                            String currentDate = sdf.format(new Date());
+                                            sharedPrefs.setPrefVal(context1,"contentupdatedate",currentDate);
                                             dataBase.updatetestcontentversion(version,testtype);
                                             dataBase.updatetestcontentdownloadstatus(1,testtype);
-                                            dataBase.updatetestcontentsyncstatus(1,testtype);
+                                            dataBase.updatetestcontentsyncstatus(0,testtype);
                                             dataBase.updatetestcontenturl(url,testtype);
                                             dataBase.updateCourseExist("ALGEBRA",0);
+                                            try{
+                                                ContentVersionUpdateService mSensorService = new ContentVersionUpdateService();
+                                                Intent mServiceIntent = new Intent(context1, mSensorService.getClass());
+                                                if (!Utils.isMyServiceRunning(context1, mSensorService.getClass())) {
+                                                    startService(mServiceIntent);
+                                                }
+                                            }catch(Exception e){
+
+                                            }
+
                                             try{
                                                 String jsonstr = Utils.readFromFile(dirpath+"/"+testtype+"/ii-algebra/coursetestinfo.json");
                                                 Gson gson = new Gson();
@@ -599,16 +631,20 @@ public class ContentDownloadService extends JobIntentService {
                                                         dataBase.insertPlayCount(playCount);
                                                     }
                                                 }
-                                                String jsonstr1 = Utils.readFromFile(dirpath+"/"+testtype+"/ii-algebra/coursetestdelete.json");
-                                                ArrayList<PlayCount> list1 = gson.fromJson(jsonstr1, REVIEW_TYPE);
-                                                if(list1.size() > 0){
-                                                    for(int i = 0; i < list1.size();i++){
-                                                        PlayCount playCount = list1.get(i);
-                                                        int count = dataBase.deletePlayCount(playCount.getCourse(), playCount.getTopic(),playCount.getLevel());
+                                                File f3=new File(dirpath+"/"+testtype+"/ii-algebra/coursetestdelete.json");
+                                                if(f3.exists()){
+                                                    String jsonstr1 = Utils.readFromFile(dirpath+"/"+testtype+"/ii-algebra/coursetestdelete.json");
+                                                    ArrayList<PlayCount> list1 = gson.fromJson(jsonstr1, REVIEW_TYPE);
+                                                    if(list1.size() > 0){
+                                                        for(int i = 0; i < list1.size();i++){
+                                                            PlayCount playCount = list1.get(i);
+                                                            int count = dataBase.deletePlayCount(playCount.getCourse(), playCount.getTopic(),playCount.getLevel());
+
+                                                        }
 
                                                     }
-
                                                 }
+
                                             }catch (Exception e){
 
                                             }
@@ -640,7 +676,7 @@ public class ContentDownloadService extends JobIntentService {
                                                     }
                                                 }
                                             });*/
-                                            if(usermail.equals("")){
+                                            /*if(usermail.equals("")){
                                                 CollectionReference docRef = firestore.collection("usercontentversion");
                                                 docRef.whereEqualTo("phonenumber",phone).whereEqualTo("userid",userid)
                                                         .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -679,7 +715,7 @@ public class ContentDownloadService extends JobIntentService {
                                                         }
                                                     }
                                                 });
-                                            }
+                                            }*/
                                            // UpdateContentVersionService.enqueueWork(context1, firestore);
                                             SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd");
                                             String date = dataBase.getContentDate();
@@ -689,11 +725,24 @@ public class ContentDownloadService extends JobIntentService {
                                                 //Log.e("content download","date......................."+format1.format(Utils.date));
                                                 dataBase.insertContentUpdateDate(format1.format(Utils.date));
                                             }
+                                            SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+                                            String currentDate = sdf.format(new Date());
+                                            sharedPrefs.setPrefVal(context1,"contentupdatedate",currentDate);
                                             dataBase.updatetestcontentversion(version,testtype);
                                             dataBase.updatetestcontentdownloadstatus(1,testtype);
-                                            dataBase.updatetestcontentsyncstatus(1,testtype);
+                                            dataBase.updatetestcontentsyncstatus(0,testtype);
                                             dataBase.updatetestcontenturl(url,testtype);
                                             dataBase.updateCourseExist("CALCULUS 2",0);
+                                            try{
+                                                ContentVersionUpdateService mSensorService = new ContentVersionUpdateService();
+                                                Intent mServiceIntent = new Intent(context1, mSensorService.getClass());
+                                                if (!Utils.isMyServiceRunning(context1, mSensorService.getClass())) {
+                                                    startService(mServiceIntent);
+                                                }
+                                            }catch(Exception e){
+
+                                            }
+
                                             try{
                                                 String jsonstr = Utils.readFromFile(dirpath+"/"+testtype+"/jee-calculus-2/coursetestinfo.json");
                                                 Gson gson = new Gson();
@@ -706,16 +755,20 @@ public class ContentDownloadService extends JobIntentService {
                                                         dataBase.insertPlayCount(playCount);
                                                     }
                                                 }
-                                                String jsonstr1 = Utils.readFromFile(dirpath+"/"+testtype+"/jee-calculus-2/coursetestdelete.json");
-                                                ArrayList<PlayCount> list1 = gson.fromJson(jsonstr1, REVIEW_TYPE);
-                                                if(list1.size() > 0){
-                                                    for(int i = 0; i < list1.size();i++){
-                                                        PlayCount playCount = list1.get(i);
-                                                        int count = dataBase.deletePlayCount(playCount.getCourse(), playCount.getTopic(),playCount.getLevel());
+                                                File f2=new File(dirpath+"/"+testtype+"/jee-calculus-2/coursetestdelete.json");
+                                                if(f2.exists()){
+                                                    String jsonstr1 = Utils.readFromFile(dirpath+"/"+testtype+"/jee-calculus-2/coursetestdelete.json");
+                                                    ArrayList<PlayCount> list1 = gson.fromJson(jsonstr1, REVIEW_TYPE);
+                                                    if(list1.size() > 0){
+                                                        for(int i = 0; i < list1.size();i++){
+                                                            PlayCount playCount = list1.get(i);
+                                                            int count = dataBase.deletePlayCount(playCount.getCourse(), playCount.getTopic(),playCount.getLevel());
+
+                                                        }
 
                                                     }
-
                                                 }
+
                                             }catch (Exception e){
 
                                             }
@@ -747,7 +800,7 @@ public class ContentDownloadService extends JobIntentService {
                                                     }
                                                 }
                                             });*/
-                                            if(usermail.equals("")){
+                                            /*if(usermail.equals("")){
                                                 CollectionReference docRef = firestore.collection("usercontentversion");
                                                 docRef.whereEqualTo("phonenumber",phone).whereEqualTo("userid",userid)
                                                         .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -786,7 +839,7 @@ public class ContentDownloadService extends JobIntentService {
                                                         }
                                                     }
                                                 });
-                                            }
+                                            }*/
                                           //  UpdateContentVersionService.enqueueWork(context1, firestore);
                                             SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd");
                                             String date = dataBase.getContentDate();
@@ -796,11 +849,24 @@ public class ContentDownloadService extends JobIntentService {
                                                // Log.e("content download","date......................."+format1.format(Utils.date));
                                                 dataBase.insertContentUpdateDate(format1.format(Utils.date));
                                             }
+                                            SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+                                            String currentDate = sdf.format(new Date());
+                                            sharedPrefs.setPrefVal(context1,"contentupdatedate",currentDate);
                                             dataBase.updatetestcontentversion(version,testtype);
                                             dataBase.updatetestcontentdownloadstatus(1,testtype);
-                                            dataBase.updatetestcontentsyncstatus(1,testtype);
+                                            dataBase.updatetestcontentsyncstatus(0,testtype);
                                             dataBase.updatetestcontenturl(url,testtype);
                                             dataBase.updateCourseExist("GEOMETRY",0);
+                                            try{
+                                                ContentVersionUpdateService mSensorService = new ContentVersionUpdateService();
+                                                Intent mServiceIntent = new Intent(context1, mSensorService.getClass());
+                                                if (!Utils.isMyServiceRunning(context1, mSensorService.getClass())) {
+                                                    startService(mServiceIntent);
+                                                }
+                                            }catch(Exception e){
+
+                                            }
+
                                             try{
                                                 String jsonstr = Utils.readFromFile(dirpath+"/"+testtype+"/iii-geometry/coursetestinfo.json");
                                                 Gson gson = new Gson();
@@ -813,16 +879,20 @@ public class ContentDownloadService extends JobIntentService {
                                                         dataBase.insertPlayCount(playCount);
                                                     }
                                                 }
-                                                String jsonstr1 = Utils.readFromFile(dirpath+"/"+testtype+"/iii-geometry/coursetestdelete.json");
-                                                ArrayList<PlayCount> list1 = gson.fromJson(jsonstr1, REVIEW_TYPE);
-                                                if(list1.size() > 0){
-                                                    for(int i = 0; i < list1.size();i++){
-                                                        PlayCount playCount = list1.get(i);
-                                                        int count = dataBase.deletePlayCount(playCount.getCourse(), playCount.getTopic(),playCount.getLevel());
+                                                File f1=new File(dirpath+"/"+testtype+"/iii-geometry/coursetestdelete.json");
+                                                if(f1.exists()){
+                                                    String jsonstr1 = Utils.readFromFile(dirpath+"/"+testtype+"/iii-geometry/coursetestdelete.json");
+                                                    ArrayList<PlayCount> list1 = gson.fromJson(jsonstr1, REVIEW_TYPE);
+                                                    if(list1.size() > 0){
+                                                        for(int i = 0; i < list1.size();i++){
+                                                            PlayCount playCount = list1.get(i);
+                                                            int count = dataBase.deletePlayCount(playCount.getCourse(), playCount.getTopic(),playCount.getLevel());
+
+                                                        }
 
                                                     }
-
                                                 }
+
                                             }catch (Exception e){
 
                                             }
@@ -854,7 +924,7 @@ public class ContentDownloadService extends JobIntentService {
                                                     }
                                                 }
                                             });*/
-                                            if(usermail.equals("")){
+                                            /*if(usermail.equals("")){
                                                 CollectionReference docRef = firestore.collection("usercontentversion");
                                                 docRef.whereEqualTo("phonenumber",phone).whereEqualTo("userid",userid)
                                                         .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -893,7 +963,7 @@ public class ContentDownloadService extends JobIntentService {
                                                         }
                                                     }
                                                 });
-                                            }
+                                            }*/
                                            // UpdateContentVersionService.enqueueWork(context1, firestore);
                                             SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd");
                                             String date = dataBase.getContentDate();
@@ -903,11 +973,24 @@ public class ContentDownloadService extends JobIntentService {
                                                 //Log.e("content download","date......................."+format1.format(Utils.date));
                                                 dataBase.insertContentUpdateDate(format1.format(Utils.date));
                                             }
+                                            SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+                                            String currentDate = sdf.format(new Date());
+                                            sharedPrefs.setPrefVal(context1,"contentupdatedate",currentDate);
                                             dataBase.updatetestcontentversion(version,testtype);
                                             dataBase.updatetestcontentdownloadstatus(1,testtype);
-                                            dataBase.updatetestcontentsyncstatus(1,testtype);
+                                            dataBase.updatetestcontentsyncstatus(0,testtype);
                                             dataBase.updatetestcontenturl(url,testtype);
                                             dataBase.updateCourseExist("OTHER",0);
+                                            try{
+                                                ContentVersionUpdateService mSensorService = new ContentVersionUpdateService();
+                                                Intent mServiceIntent = new Intent(context1, mSensorService.getClass());
+                                                if (!Utils.isMyServiceRunning(context1, mSensorService.getClass())) {
+                                                    startService(mServiceIntent);
+                                                }
+                                            }catch(Exception e){
+
+                                            }
+
                                             try{
                                                 String jsonstr = Utils.readFromFile(dirpath+"/"+testtype+"/other/coursetestinfo.json");
                                                 Gson gson = new Gson();
@@ -920,16 +1003,20 @@ public class ContentDownloadService extends JobIntentService {
                                                         dataBase.insertPlayCount(playCount);
                                                     }
                                                 }
-                                                String jsonstr1 = Utils.readFromFile(dirpath+"/"+testtype+"/other/coursetestdelete.json");
-                                                ArrayList<PlayCount> list1 = gson.fromJson(jsonstr1, REVIEW_TYPE);
-                                                if(list1.size() > 0){
-                                                    for(int i = 0; i < list1.size();i++){
-                                                        PlayCount playCount = list1.get(i);
-                                                        int count = dataBase.deletePlayCount(playCount.getCourse(), playCount.getTopic(),playCount.getLevel());
+                                                File f=new File(dirpath+"/"+testtype+"/other/coursetestdelete.json");
+                                                if(f.exists()){
+                                                    String jsonstr1 = Utils.readFromFile(dirpath+"/"+testtype+"/other/coursetestdelete.json");
+                                                    ArrayList<PlayCount> list1 = gson.fromJson(jsonstr1, REVIEW_TYPE);
+                                                    if(list1.size() > 0){
+                                                        for(int i = 0; i < list1.size();i++){
+                                                            PlayCount playCount = list1.get(i);
+                                                            int count = dataBase.deletePlayCount(playCount.getCourse(), playCount.getTopic(),playCount.getLevel());
+
+                                                        }
 
                                                     }
-
                                                 }
+
                                             }catch (Exception e){
 
                                             }

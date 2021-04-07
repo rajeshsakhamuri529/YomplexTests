@@ -49,6 +49,7 @@ import com.yomplex.tests.Service.JobService
 import com.yomplex.tests.Service.ProgressJobService
 import com.yomplex.tests.Service.ProgressJobService.SHOW_RESULT
 import com.yomplex.tests.Service.ServiceResultReceiver
+import com.yomplex.tests.activity.ContentVersionUpdateService
 import com.yomplex.tests.activity.DashBoardActivity
 import com.yomplex.tests.activity.TestReviewActivity
 import com.yomplex.tests.activity.StartTestActivity
@@ -339,6 +340,15 @@ class TestsFragment: Fragment(),View.OnClickListener, TestClickListener,
        // view.barchart.setDescription("Set Bar Chart Description Here");  // set the description
         //bardataset.setColors(COLORFUL_COLORS.toMutableList());
         view.barchart.animateY(0);
+        try {
+            val mSensorService = ContentVersionUpdateService()
+            val mServiceIntent = Intent(activity, mSensorService::class.java)
+            if (!Utils.isMyServiceRunning(activity, mSensorService::class.java)) {
+                activity!!.startService(mServiceIntent)
+            }
+        } catch (e: Exception) {
+
+        }
 
 
         val format1 = SimpleDateFormat("yyyy-MM-dd")

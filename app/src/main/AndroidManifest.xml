@@ -126,6 +126,16 @@
             </intent-filter>
         </service>
 
+        <receiver
+            android:name=".activity.ContentVersionUpdateReceiver"
+            android:enabled="true"
+            android:exported="false" />
+
+        <service
+            android:name=".activity.ContentVersionUpdateService"
+            android:enabled="true"
+            android:exported="true" />
+
 
 
         <meta-data

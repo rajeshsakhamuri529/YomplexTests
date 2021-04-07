@@ -18,6 +18,7 @@ import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.analytics.ktx.logEvent
 import com.google.firebase.ktx.Firebase
 import com.yomplex.tests.R
+import com.yomplex.tests.activity.ContentVersionUpdateService
 import com.yomplex.tests.activity.DashBoardActivity
 import com.yomplex.tests.activity.TestReviewActivity
 import com.yomplex.tests.adapter.ReviewAdapter
@@ -76,6 +77,16 @@ class ReviewFragment: Fragment(), View.OnClickListener, TestQuizReviewClickListe
             //rcv_chapter.addItemDecoration(itemDecorator)
             //rcv_chapter.addItemDecoration(DividerItemDecoration(context,))
             view.rcv_review.adapter = adapter
+
+        }
+
+        try {
+            val mSensorService = ContentVersionUpdateService()
+            val mServiceIntent = Intent(activity, mSensorService::class.java)
+            if (!Utils.isMyServiceRunning(activity, mSensorService::class.java)) {
+                activity!!.startService(mServiceIntent)
+            }
+        } catch (e: Exception) {
 
         }
 
