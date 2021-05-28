@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+
+
+    <!-- <android.support.design.widget.AppBarLayout
+         android:id="@+id/appBarID"
+         android:layout_width="match_parent"
+         android:layout_height="wrap_content">-->
+
+
+
+    <RelativeLayout
+        android:id="@+id/appBarID"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_50sdp"
+        android:background="#FFFFFF"
+        app:contentInsetLeft="0dp"
+        app:contentInsetStart="0dp">
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="0dp"
+
+            android:visibility="visible"
+            android:padding="0dp">
+
+            <!--<include layout="@layout/header" />-->
+            <RelativeLayout
+                android:id="@+id/backRL"
+                android:layout_width="@dimen/_40sdp"
+                android:layout_height="match_parent"
+                android:layout_centerVertical="true"
+                >
+                <ImageView
+                    android:id="@+id/back"
+                    android:layout_width="@dimen/_18sdp"
+                    android:layout_height="@dimen/_18sdp"
+                   android:layout_centerVertical="true"
+                    android:layout_centerHorizontal="true"
+                    android:tint="#919191"
+                    android:src="@drawable/back_button_arrow"/>
+
+
+            </RelativeLayout>
+
+            <TextView
+                android:id="@+id/tv_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/tiny_textbooks"
+                android:textSize="@dimen/_14ssp"
+                android:layout_marginLeft="@dimen/_6sdp"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@+id/backRL"
+                android:textColor="@color/chapters_text"
+                android:textStyle="bold"
+                android:fontFamily="@font/lato_light"
+                />
+
+
+
+
+
+
+
+
+
+
+        </RelativeLayout>
+    </RelativeLayout>
+    <!--   </android.support.v7.widget.Toolbar>
+   </android.support.design.widget.AppBarLayout>-->
+
+
+    <WebView
+        android:id="@+id/webView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+
+
+        android:background="#E8E8E8"
+        android:layout_below="@+id/appBarID"
+        android:scrollbars="none"
+        android:layout_gravity="center_horizontal"/>
+
+    <!--<com.github.barteksc.pdfviewer.PDFView
+        android:id="@+id/pdfView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#E8E8E8"
+        android:layout_below="@+id/appBarID"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />-->
+
+
+
+
+
+
+</RelativeLayout>

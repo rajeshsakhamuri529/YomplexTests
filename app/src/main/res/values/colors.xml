@@ -107,4 +107,6 @@
     <color name="chart_blue_color">#7A81FF</color>
     <color name="chart_green_color">#21BF73</color>
 
+    <color name="black_transfarent">#40000000</color>
+
 </resources>

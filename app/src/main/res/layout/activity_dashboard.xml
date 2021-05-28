@@ -24,7 +24,7 @@
             android:layout_height="?android:attr/actionBarSize"
 
             app:itemTextColor="@drawable/bottom_nav_bar_selector"
-            android:background="#ffffff"
+            android:background="#F1F1F1"
             app:labelVisibilityMode="labeled"
             android:theme="@style/Widget.BottomNavigationView"
             android:layout_alignParentBottom="true"

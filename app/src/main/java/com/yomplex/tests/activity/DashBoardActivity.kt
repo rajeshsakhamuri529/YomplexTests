@@ -1,38 +1,26 @@
 package com.yomplex.tests.activity
 
-import android.app.PendingIntent.getActivity
+
+import android.app.Activity
 import android.content.ActivityNotFoundException
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-
-import androidx.core.app.ActivityCompat
-
+import android.os.PersistableBundle
 import android.util.Log
 import android.view.MenuItem
-import android.view.WindowManager
-import android.widget.Toast
-
-import kotlinx.android.synthetic.main.activity_dashboard.*
-import java.io.File
-import java.sql.Time
-
-import androidx.core.content.ContextCompat.getSystemService
-import android.icu.lang.UCharacter.GraphemeClusterBreak.T
-import android.net.Uri
-import android.os.PersistableBundle
-
 import android.widget.Button
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
-
-
+import com.downloader.Error
+import com.downloader.OnDownloadListener
+import com.downloader.PRDownloader
 import com.google.android.gms.analytics.GoogleAnalytics
-import com.google.android.gms.analytics.HitBuilders
 import com.google.android.gms.analytics.Tracker
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.Task
@@ -43,21 +31,17 @@ import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.*
 import com.google.firebase.ktx.Firebase
-
-
-import com.google.firebase.remoteconfig.FirebaseRemoteConfig
-import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
 import com.google.firebase.remoteconfig.ktx.remoteConfig
 import com.google.firebase.remoteconfig.ktx.remoteConfigSettings
 import com.google.gson.Gson
-import com.yomplex.tests.BuildConfig
 import com.yomplex.tests.R
+import com.yomplex.tests.Service.BooksDownloadService
 import com.yomplex.tests.Service.JobService
 import com.yomplex.tests.database.QuizGameDataBase
+import com.yomplex.tests.fragment.BooksFragment
 import com.yomplex.tests.fragment.ReviewFragment
 import com.yomplex.tests.fragment.SettingFragment
 import com.yomplex.tests.fragment.TestsFragment
-import com.yomplex.tests.fragment.VideoFragment
 import com.yomplex.tests.model.PlayCount
 import com.yomplex.tests.model.TestDownload
 import com.yomplex.tests.model.UserContentVersion
@@ -66,7 +50,8 @@ import com.yomplex.tests.utils.ConstantPath.TITLE_TOPIC
 import com.yomplex.tests.utils.SharedPrefs
 import com.yomplex.tests.utils.Utils
 import com.yomplex.tests.utils.Utils.getPlayer
-import java.text.SimpleDateFormat
+import kotlinx.android.synthetic.main.activity_dashboard.*
+import java.io.File
 import java.util.*
 
 
@@ -146,6 +131,30 @@ class DashBoardActivity : BaseActivity(),
                 startService(mServiceIntent)
             }
         } catch (e: Exception) {
+
+        }
+
+        //for adding books into database
+        try{
+           // downloadServiceFromBackground(this@DashBoardActivity,db)
+
+
+            /*val booksJsonString = loadJSONFromAsset( "books.json")
+           Log.e("dashboard","booksJsonString..."+booksJsonString);
+               val gsonFile = Gson()
+               val courseType = object : TypeToken<List<Books>>() {}.type
+               val booksCountmodel: ArrayList<Books> = gsonFile
+                   .fromJson(booksJsonString, courseType)
+           Log.e("dashboard","booksJsonString...booksCountmodel..."+booksCountmodel.size);
+               for(i in 0 until booksCountmodel.size){
+                   val booksCount = booksCountmodel[i]
+                   val count = databaseHandler!!.getBooksCount(booksCount.title, booksCount.category)
+                   if (count == 0) {
+                       Log.e("dash board","booksJsonString...count......."+count)
+                       databaseHandler!!.insertBooks(booksCount)
+                   }
+               }*/
+        }catch (e:Exception){
 
         }
 
@@ -491,7 +500,10 @@ class DashBoardActivity : BaseActivity(),
         }
 
 
+
         try{
+
+
 
             val allcount = databaseHandler!!.getAllPlayCount()
             Log.e("dashboard","allcount......"+allcount);
@@ -827,10 +839,15 @@ class DashBoardActivity : BaseActivity(),
                 val revisionItem = navigation.getMenu().getItem(0)
                 // Select home item
                 navigation.setSelectedItemId(revisionItem.getItemId());
+            }else if(fragment == "books"){
+                loadFragment(BooksFragment())
+                val revisionItem = navigation.getMenu().getItem(2)
+                // Select home item
+                navigation.setSelectedItemId(revisionItem.getItemId());
             }
             else if(fragment == "Settings"){
                 loadFragment(SettingFragment())
-                val revisionItem = navigation.getMenu().getItem(2)
+                val revisionItem = navigation.getMenu().getItem(3)
                 // Select home item
                 navigation.setSelectedItemId(revisionItem.getItemId());
             }else if(fragment == "review"){
@@ -876,7 +893,11 @@ class DashBoardActivity : BaseActivity(),
             getWindow().setNavigationBarColor(getResources().getColor(R.color.colorbottomnav));
         }
     }
-
+    private fun downloadServiceFromBackground(
+        mainActivity: Activity, db: FirebaseFirestore
+    ) {
+        BooksDownloadService.enqueueWork(mainActivity, db)
+    }
     private fun downloadDataFromBackground(
         mainActivity: DashBoardActivity,
         url: String,version:String,type:String
@@ -1066,7 +1087,30 @@ class DashBoardActivity : BaseActivity(),
 
 
             }*/
+            R.id.nav_books -> {
+                val fragmentManager = supportFragmentManager
+                val currentFragment = fragmentManager.findFragmentById(R.id.fragment_container)
+                sound = sharedPrefs?.getBooleanPrefVal(this!!, ConstantPath.SOUNDS) ?: true
+                if(!sound) {
+                    //MusicManager.getInstance().play(context, R.raw.amount_low);
+                    // Is the sound loaded already?
+                    if (Utils.loaded) {
+                        Utils.soundPool.play(Utils.soundID, Utils.volume, Utils.volume, 1, 0, 1f);
+                        Log.e("Test", "Played sound...volume..." + Utils.volume);
+                        //Toast.makeText(context,"end",Toast.LENGTH_SHORT).show()
+                    }
+                }
+                fetchVersion()
+                if(currentFragment!! is BooksFragment){
+                    fragment = currentFragment
+                }else{
 
+                    fragment = BooksFragment()
+
+                }
+
+
+            }
 
             R.id.nav_settings -> {
                 val fragmentManager = supportFragmentManager
@@ -1113,6 +1157,22 @@ class DashBoardActivity : BaseActivity(),
                 backPressToastMessage!!.show()
             }
             backPressedTime=System.currentTimeMillis()
+        }else if(currentFragment!! is BooksFragment) {
+            Log.e("dash board","on back pressed.....settings fragment");
+            /*if(backPressedTime+2000>System.currentTimeMillis()){
+                backPressToastMessage!!.cancel()
+                finishAffinity()
+                return
+            }
+            else{
+                backPressToastMessage = Toast.makeText(this, R.string.exit_message, Toast.LENGTH_SHORT)
+                backPressToastMessage!!.show()
+            }
+            backPressedTime=System.currentTimeMillis()*/
+            loadFragment(TestsFragment())
+            val revisionItem = navigation.getMenu().getItem(0)
+            // Select home item
+            navigation.setSelectedItemId(revisionItem.getItemId());
         }else if(currentFragment!! is SettingFragment) {
             Log.e("dash board","on back pressed.....settings fragment");
             /*if(backPressedTime+2000>System.currentTimeMillis()){

@@ -1,5 +1,6 @@
 package com.yomplex.tests.fragment
 
+
 import android.app.Activity
 import android.app.DatePickerDialog
 import android.app.Dialog
@@ -13,31 +14,25 @@ import android.net.NetworkInfo
 import android.os.Bundle
 import android.os.Handler
 import android.os.SystemClock
-
 import android.util.Log
 import android.view.*
 import android.widget.Button
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
-import androidx.core.content.ContextCompat.getSystemService
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.github.mikephil.charting.components.Legend
-import com.github.mikephil.charting.components.LegendEntry
+import com.github.mikephil.charting.components.LimitLine
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.components.YAxis
-import com.github.mikephil.charting.data.BarData
-import com.github.mikephil.charting.data.BarDataSet
-import com.github.mikephil.charting.data.BarEntry
+import com.github.mikephil.charting.data.Entry
+import com.github.mikephil.charting.data.LineData
+import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.IAxisValueFormatter
-import com.github.mikephil.charting.interfaces.datasets.IBarDataSet
-import com.github.mikephil.charting.utils.Fill
-
-
+import com.github.mikephil.charting.formatter.IFillFormatter
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.analytics.ktx.logEvent
-import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreSettings
 import com.google.firebase.ktx.Firebase
@@ -46,24 +41,24 @@ import com.google.gson.reflect.TypeToken
 import com.yomplex.tests.R
 import com.yomplex.tests.Service.ContentDownloadService
 import com.yomplex.tests.Service.JobService
-import com.yomplex.tests.Service.ProgressJobService
 import com.yomplex.tests.Service.ProgressJobService.SHOW_RESULT
 import com.yomplex.tests.Service.ServiceResultReceiver
 import com.yomplex.tests.activity.ContentVersionUpdateService
 import com.yomplex.tests.activity.DashBoardActivity
-import com.yomplex.tests.activity.TestReviewActivity
 import com.yomplex.tests.activity.StartTestActivity
+import com.yomplex.tests.activity.TestReviewActivity
+import com.yomplex.tests.adapter.CourseAdapter
 import com.yomplex.tests.adapter.TestsAdapter
 import com.yomplex.tests.database.QuizGameDataBase
 import com.yomplex.tests.interfaces.TestClickListener
-import com.yomplex.tests.interfaces.TestQuizReviewClickListener
 import com.yomplex.tests.model.*
-import com.yomplex.tests.utils.*
+import com.yomplex.tests.utils.ConstantPath
 import com.yomplex.tests.utils.ConstantPath.TOPIC_SIZE
-import kotlinx.android.synthetic.main.activity_test_quiz.*
-import kotlinx.android.synthetic.main.tests_challenge.*
-import kotlinx.android.synthetic.main.tests_challenge.view.*
-import org.apache.commons.io.FileUtils
+import com.yomplex.tests.utils.MyAxisValueFormatter1
+import com.yomplex.tests.utils.SharedPrefs
+import com.yomplex.tests.utils.Utils
+import kotlinx.android.synthetic.main.test_fragment_new.*
+import kotlinx.android.synthetic.main.test_fragment_new.view.*
 import java.io.File
 import java.io.IOException
 import java.nio.charset.Charset
@@ -72,7 +67,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
-class TestsFragment: Fragment(),View.OnClickListener, TestClickListener,
+class TestFragmentNew: Fragment(),View.OnClickListener, TestClickListener,
     ServiceResultReceiver.Receiver {
 
 
@@ -80,6 +75,7 @@ class TestsFragment: Fragment(),View.OnClickListener, TestClickListener,
     private var testItemList:ArrayList<TestsModel>?=null
     lateinit var testmodel:TestsModel
     var adapter: TestsAdapter?= null
+    var adapter1: CourseAdapter?= null
     var databaseHandler: QuizGameDataBase?= null
     //lateinit var  mSoundManager: SoundManager;
     var jsonStringBasic: String? =""
@@ -107,7 +103,7 @@ class TestsFragment: Fragment(),View.OnClickListener, TestClickListener,
     protected lateinit var tfLight: Typeface
     var mLastClickTime:Long = 0;
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.tests_challenge, container, false)
+        return inflater.inflate(R.layout.test_fragment_new, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -127,11 +123,11 @@ class TestsFragment: Fragment(),View.OnClickListener, TestClickListener,
 
         //firebaseAnalytics = FirebaseAnalytics.getInstance(activity!!)
         firebaseAnalytics = Firebase.analytics
-       // firebaseAnalytics.setCurrentScreen(activity!!, "Test", null /* class override */)
+        // firebaseAnalytics.setCurrentScreen(activity!!, "Test", null /* class override */)
 
         firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW) {
             param(FirebaseAnalytics.Param.SCREEN_NAME, "TestsTab")
-            param(FirebaseAnalytics.Param.SCREEN_CLASS, "TestsFragment")
+            param(FirebaseAnalytics.Param.SCREEN_CLASS, "HomeFragment")
         }
         //view.test_btn.setOnClickListener(this)
 
@@ -141,8 +137,8 @@ class TestsFragment: Fragment(),View.OnClickListener, TestClickListener,
             readFileLocally()
         }*/
         Log.e("test fragment","getWeekOfYear()..........."+getWeekOfYear());
-       // Log.e("test fragment","getWeekStartDate()..........."+getWeekStartDate());
-       // Log.e("test fragment","getWeekEndDate()..........."+getWeekEndDate());
+        // Log.e("test fragment","getWeekStartDate()..........."+getWeekStartDate());
+        // Log.e("test fragment","getWeekEndDate()..........."+getWeekEndDate());
 
 
         var totalScore:Int = 0
@@ -150,7 +146,7 @@ class TestsFragment: Fragment(),View.OnClickListener, TestClickListener,
         for(i in 0 until testscorelist!!.size) {
             totalScore = totalScore + (testscorelist!!.get(i).highestscore).toInt()
         }
-        view.tv_txt3.setText(" "+totalScore+" / 20")
+       // view.tv_txt3.setText(" "+totalScore+" / 20")
         //testtypeslist = ArrayList<Course>()
 
 
@@ -163,13 +159,16 @@ class TestsFragment: Fragment(),View.OnClickListener, TestClickListener,
             view.tv_no_review.visibility = View.VISIBLE
             view.rcv_tests.visibility = View.GONE
         }else{*/
-            view.rcv_tests.visibility = View.VISIBLE
-            view.tv_no_review.visibility = View.GONE
+        view.rcv_tests.visibility = View.GONE
+        //view.tv_no_review.visibility = View.GONE
 
         testtypeslist = databaseHandler!!.getAllCourses()
-        Log.e("test fragment","test type list...size..."+testtypeslist!!.size)
+        Log.e("test fragment","testscorelist...size..."+testscorelist!!.size)
         if(testtypeslist!!.size > 0){
-            adapter = TestsAdapter(context!!, testtypeslist!!,testscorelist!!,this)
+           // adapter = TestsAdapter(context!!, testtypeslist!!,testscorelist!!,this)
+            //adapter1 = CourseAdapter(context!!, testtypeslist!!,this)
+            loadTestScores()
+
         }else{
             try{
                 var testtypeslist1: ArrayList<String>? = null
@@ -190,31 +189,231 @@ class TestsFragment: Fragment(),View.OnClickListener, TestClickListener,
                 }
 
                 testtypeslist = databaseHandler!!.getAllCourses()
-                adapter = TestsAdapter(context!!, testtypeslist!!,testscorelist!!,this)
+                loadTestScores()
+                //adapter = TestsAdapter(context!!, testtypeslist!!,testscorelist!!,this)
+                //adapter1 = CourseAdapter(context!!, testtypeslist!!,this)
             }catch (e:Exception){
 
             }
         }
 
+        layoutLL.setOnClickListener {
+            OnTopicItemClicked("A")
+        }
+        layoutLL1.setOnClickListener {
+            OnTopicItemClicked("G")
+        }
+        layoutLL2.setOnClickListener {
+            OnTopicItemClicked("C1")
+        }
+        layoutLL3.setOnClickListener {
+            OnTopicItemClicked("C2")
+        }
+        layoutLL4.setOnClickListener {
+            OnTopicItemClicked("OT")
+        }
 
 
 
+        //view.rcv_tests.addItemDecoration(HorigontalSpaceItemDecoration(60));
+        //rcv_chapter.addItemDecoration(itemDecorator)
+        //rcv_chapter.addItemDecoration(DividerItemDecoration(context,))
+       // view.rcv_tests.adapter = adapter
 
-            view.rcv_tests.addItemDecoration(VerticalSpaceItemDecoration(30));
-            //rcv_chapter.addItemDecoration(itemDecorator)
-            //rcv_chapter.addItemDecoration(DividerItemDecoration(context,))
-            view.rcv_tests.adapter = adapter
-      //  }
+        //view.rcv_tests1.addItemDecoration(HorigontalSpaceItemDecoration(20));
+       // view.rcv_tests1.adapter = adapter1
+        //  }
 
         //uncomment it for enable date(testing purpose)
-        val format = SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH)
+         val format = SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH)
 
-        view.tv_date.setText(""+format.format(Utils.date))
-        view.dateRL.setOnClickListener(this)
+         tv_date.setText(""+format.format(Utils.date))
+         dateRL.setOnClickListener(this)
         view.infoRl.setOnClickListener(this)
 
+        tfRegular = Typeface.createFromAsset(activity!!.getAssets(), "lato_black.ttf")
+        tfLight = Typeface.createFromAsset(activity!!.getAssets(), "lato_black.ttf")
         //code for bar chart
-        //BarChart barChart = (BarChart) findViewById(R.id.barchart);
+
+        // no description text
+
+        // no description text
+        view.barchart.getDescription().setEnabled(false)
+
+        // chart.setDrawHorizontalGrid(false);
+        //
+        // enable / disable grid background
+
+        // chart.setDrawHorizontalGrid(false);
+        //
+        // enable / disable grid background
+        view.barchart.setDrawGridBackground(false)
+//        chart.getRenderer().getGridPaint().setGridColor(Color.WHITE & 0x70FFFFFF);
+
+        // enable touch gestures
+        //        chart.getRenderer().getGridPaint().setGridColor(Color.WHITE & 0x70FFFFFF);
+
+        // enable touch gestures
+        view.barchart.setTouchEnabled(true)
+
+        // enable scaling and dragging
+
+        // enable scaling and dragging
+        view.barchart.setDragEnabled(true)
+        view.barchart.setScaleEnabled(true)
+
+        // if disabled, scaling can be done on x- and y-axis separately
+
+        // if disabled, scaling can be done on x- and y-axis separately
+        view.barchart.setPinchZoom(false)
+
+       // view.barchart.setBackgroundColor(color)
+
+        // set custom chart offsets (automatic offset calculation is hereby disabled)
+
+        // set custom chart offsets (automatic offset calculation is hereby disabled)
+        //view.barchart.setViewPortOffsets(10f, 0f, 10f, 0f)
+        var  entries:ArrayList<Entry> = ArrayList<Entry>();
+        // add data
+        var count = 0
+        for (n in 5 downTo 1) {
+            Log.e("test fragment","n value......."+n);
+            count++
+            var total = databaseHandler!!.getWeekTotalScore(getWeekOfYear()-(n-1));
+            Log.e("test fragment","count value......."+count);
+            entries.add(Entry( count.toFloat(),total.toFloat()))
+            /*if(total >= 0 && total <=7){
+                //gradientFills
+                gradientFills.add(Fill(getResources().getColor(R.color.chart_orange_color)))
+            }else if(total >= 8 && total <=11){
+                gradientFills.add(Fill(getResources().getColor(R.color.chart_purple_color)))
+            }else if(total >= 12 && total <=15){
+                gradientFills.add(Fill(getResources().getColor(R.color.chart_blue_color)))
+            }else if(total >= 16 && total <=20){
+                gradientFills.add(Fill(getResources().getColor(R.color.chart_green_color)))
+            }
+            else {
+                gradientFills.add(Fill(getResources().getColor(R.color.chart_color)))
+            }*/
+        }
+        // create a dataset and give it a type
+
+        // create a dataset and give it a type
+        val set1 = LineDataSet(entries, "DataSet 1")
+        // set1.setFillAlpha(110);
+        // set1.setFillColor(Color.RED);
+
+        // set1.setFillAlpha(110);
+        // set1.setFillColor(Color.RED);
+        set1.lineWidth = 1.25f
+        set1.circleRadius = 3f
+        set1.circleHoleRadius = 2f
+        set1.color = getResources().getColor(R.color.light_blue)
+        set1.setCircleColor(getResources().getColor(R.color.light_blue))
+        set1.highLightColor = getResources().getColor(R.color.light_blue)
+        set1.setDrawValues(false)
+
+        // set the filled area
+        set1.setDrawFilled(true)
+        /*set1.fillFormatter =
+            IFillFormatter { dataSet, dataProvider -> view.barchart.getAxisLeft().getAxisMinimum() }*/
+        // drawables only supported on api level 18 and above
+        val drawable = ContextCompat.getDrawable(activity!!, R.drawable.fade_red)
+        set1.fillDrawable = drawable
+        var lineData = LineData(set1)
+        // add data
+        view.barchart.setData(lineData)
+        (lineData.getDataSetByIndex(0) as LineDataSet).circleHoleColor = getResources().getColor(R.color.light_blue)
+        // get the legend (only possible after setting data)
+
+        // get the legend (only possible after setting data)
+        val l: Legend = view.barchart.getLegend()
+        l.isEnabled = false
+
+        //view.barchart.getAxisLeft().setEnabled(true)
+        //view.barchart.getAxisLeft().setSpaceTop(40f)
+        //view.barchart.getAxisLeft().setSpaceBottom(40f)
+        //view.barchart.getAxisRight().setEnabled(false)
+
+        val ll1 = LimitLine(20f, "Upper Limit")
+        ll1.lineWidth = 1f
+        ll1.enableDashedLine(20f, 10f, 0f)
+        ll1.labelPosition = LimitLine.LimitLabelPosition.RIGHT_TOP
+        ll1.textSize = 10f
+        ll1.lineColor = getResources().getColor(R.color.chart_green_color)
+        ll1.typeface = tfRegular
+        view.barchart.getAxisLeft().addLimitLine(ll1)
+        // draw limit lines behind data instead of on top
+        // chart.getAxisLeft().setDrawLimitLinesBehindData(true);
+        // chart.getXAxis().setDrawLimitLinesBehindData(true);
+
+
+        // draw limit lines behind data instead of on top
+        // chart.getAxisLeft().setDrawLimitLinesBehindData(true);
+        // chart.getXAxis().setDrawLimitLinesBehindData(true);
+        //view.barchart.getXAxis().setEnabled(false)
+
+
+        //        l.setYOffset(11f);
+        val xAxisFormatter: IAxisValueFormatter = MyAxisValueFormatter1()
+        val xAxis: XAxis = view.barchart.getXAxis()
+        //xAxis.labelRotationAngle = 25f
+        //xAxis.setMultiLineLabel(true)
+        //xAxis.xOffset = 20.0F
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM)
+        xAxis.typeface = tfLight
+        xAxis.textSize = 8f
+        xAxis.textColor = getResources().getColor(R.color.chart_text_color)
+        xAxis.axisLineColor = getResources().getColor(R.color.chart_axis_color)
+        xAxis.axisLineWidth = 1f
+       xAxis.setGranularity(1f) // only intervals of 1 day
+        xAxis.setLabelCount(5)
+        xAxis.setDrawGridLines(false)
+        xAxis.setDrawAxisLine(true)
+        //xAxis.setAvoidFirstLastClipping(true)
+        xAxis.setValueFormatter(xAxisFormatter)
+        /*view.barchart.setXAxisRenderer(
+            CustomXAxisRenderer(
+                view.barchart.getViewPortHandler(),
+                view.barchart.getXAxis(),
+                view.barchart.getTransformer(YAxis.AxisDependency.RIGHT)
+            )
+        )*/
+
+        val leftAxis: YAxis = view.barchart.getAxisLeft()
+        leftAxis.typeface = tfLight
+        leftAxis.textColor = Color.WHITE
+        leftAxis.axisMaximum = 20f
+        leftAxis.axisMinimum = 0f
+        leftAxis.setDrawGridLines(false)
+        leftAxis.setDrawAxisLine(false)
+        leftAxis.isGranularityEnabled = false
+
+        val rightAxis: YAxis = view.barchart.getAxisRight()
+        rightAxis.typeface = tfLight
+        rightAxis.textColor = Color.RED
+        rightAxis.axisMaximum = 20f
+        rightAxis.axisMinimum = 0f
+        rightAxis.setDrawGridLines(false)
+        rightAxis.setDrawZeroLine(false)
+        rightAxis.setDrawAxisLine(false)
+        rightAxis.zeroLineWidth = 300f
+        rightAxis.zeroLineColor = getResources().getColor(R.color.chart_axis_color)
+        rightAxis.axisLineColor = getResources().getColor(R.color.chart_axis_color)
+
+        rightAxis.isGranularityEnabled = true
+
+        view.barchart.getAxisRight().setEnabled(false)
+        view.barchart.getAxisLeft().setEnabled(true)
+        // animate calls invalidate()...
+
+        // animate calls invalidate()...
+        view.barchart.animateX(1500)
+
+
+
+
+        /*//BarChart barChart = (BarChart) findViewById(R.id.barchart);
 
         view.barchart.getDescription().setEnabled(false)
 
@@ -227,12 +426,6 @@ class TestsFragment: Fragment(),View.OnClickListener, TestClickListener,
 
         view.barchart.setDrawBarShadow(false)
         view.barchart.setDrawGridBackground(false)
-
-        tfRegular = Typeface.createFromAsset(activity!!.getAssets(), "lato_black.ttf")
-        tfLight = Typeface.createFromAsset(activity!!.getAssets(), "lato_black.ttf")
-
-
-
 
         val xAxisFormatter: IAxisValueFormatter = MyAxisValueFormatter1()
 
@@ -285,29 +478,29 @@ class TestsFragment: Fragment(),View.OnClickListener, TestClickListener,
         var  entries1:ArrayList<LegendEntry> = ArrayList<LegendEntry>();
         l.setCustom(entries1)
 
-         var  entries:ArrayList<BarEntry> = ArrayList<BarEntry>();
+        var  entries:ArrayList<BarEntry> = ArrayList<BarEntry>();
         val gradientFills = ArrayList<Fill>()
-         var count = 0
-         for (n in 5 downTo 1) {
-             Log.e("test fragment","n value......."+n);
-             count++
-             var total = databaseHandler!!.getWeekTotalScore(getWeekOfYear()-(n-1));
-             Log.e("test fragment","count value......."+count);
-             entries.add(BarEntry( count.toFloat(),total.toFloat()))
-             if(total >= 0 && total <=7){
-                 //gradientFills
-                 gradientFills.add(Fill(getResources().getColor(R.color.chart_orange_color)))
-             }else if(total >= 8 && total <=11){
-                 gradientFills.add(Fill(getResources().getColor(R.color.chart_purple_color)))
-             }else if(total >= 12 && total <=15){
-                 gradientFills.add(Fill(getResources().getColor(R.color.chart_blue_color)))
-             }else if(total >= 16 && total <=20){
-                 gradientFills.add(Fill(getResources().getColor(R.color.chart_green_color)))
-             }
-             /*else{
-                 gradientFills.add(Fill(getResources().getColor(R.color.chart_color)))
-             }*/
-         }
+        var count = 0
+        for (n in 5 downTo 1) {
+            Log.e("test fragment","n value......."+n);
+            count++
+            var total = databaseHandler!!.getWeekTotalScore(getWeekOfYear()-(n-1));
+            Log.e("test fragment","count value......."+count);
+            entries.add(BarEntry( count.toFloat(),total.toFloat()))
+            if(total >= 0 && total <=7){
+                //gradientFills
+                gradientFills.add(Fill(getResources().getColor(R.color.chart_orange_color)))
+            }else if(total >= 8 && total <=11){
+                gradientFills.add(Fill(getResources().getColor(R.color.chart_purple_color)))
+            }else if(total >= 12 && total <=15){
+                gradientFills.add(Fill(getResources().getColor(R.color.chart_blue_color)))
+            }else if(total >= 16 && total <=20){
+                gradientFills.add(Fill(getResources().getColor(R.color.chart_green_color)))
+            }
+            *//*else{
+                gradientFills.add(Fill(getResources().getColor(R.color.chart_color)))
+            }*//*
+        }
 
 
         var  bardataset: BarDataSet = BarDataSet(entries, "");
@@ -335,11 +528,11 @@ class TestsFragment: Fragment(),View.OnClickListener, TestClickListener,
         data.barWidth = 0.5f
 
         view.barchart.setBorderWidth(20f)
-       // var  data = BarData(bardataset);
+        // var  data = BarData(bardataset);
         view.barchart.setData(data); // set the data and list of labels into chart
-       // view.barchart.setDescription("Set Bar Chart Description Here");  // set the description
+        // view.barchart.setDescription("Set Bar Chart Description Here");  // set the description
         //bardataset.setColors(COLORFUL_COLORS.toMutableList());
-        view.barchart.animateY(0);
+        view.barchart.animateY(0);*/
         try {
             val mSensorService = ContentVersionUpdateService()
             val mServiceIntent = Intent(activity, mSensorService::class.java)
@@ -395,6 +588,113 @@ class TestsFragment: Fragment(),View.OnClickListener, TestClickListener,
         calendar.setFirstDayOfWeek(Calendar.MONDAY);
         calendar.setTime(Utils.date)
         return calendar.get(Calendar.WEEK_OF_YEAR)
+    }
+
+    fun loadTestScores(){
+        if(testscorelist!!.size > 0){
+            for(j in 0 until testtypeslist!!.size) {
+                for(i in 0 until testscorelist!!.size) {
+                    if(testscorelist!!.get(i).testtype.equals(testtypeslist!![j].coursename.replace("\\s".toRegex(), "").toLowerCase())){
+                        // holder.tv_score.text = testscorelist.get(i).highestscore
+                        if(testtypeslist!![j].coursename.equals("ALGEBRA")){
+                            score_tv.text = testscorelist!!.get(i).highestscore
+                            if(testscorelist!!.get(i).highestscore.equals("0")){
+                                relativeRL.background = resources.getDrawable(R.drawable.test_summary_0)
+                                score_tv.setTextColor(resources.getColor(R.color.seriously))
+                            }else if(testscorelist!!.get(i).highestscore.equals("1")){
+                                relativeRL.background = resources.getDrawable(R.drawable.test_summary_0)
+                                score_tv.setTextColor(resources.getColor(R.color.not_good))
+                            }else if(testscorelist!!.get(i).highestscore.equals("2")){
+                                score_tv.setTextColor(resources.getColor(R.color.not_bad))
+                                relativeRL.background = resources.getDrawable(R.drawable.test_summary_2)
+                            }else if(testscorelist!!.get(i).highestscore.equals("3")){
+                                relativeRL.background = resources.getDrawable(R.drawable.test_summary_3)
+                                score_tv.setTextColor(resources.getColor(R.color.good))
+                            }else if(testscorelist!!.get(i).highestscore.equals("4")){
+                                relativeRL.background = resources.getDrawable(R.drawable.test_summary_4)
+                                score_tv.setTextColor(resources.getColor(R.color.white))
+                            }
+                        }else if(testtypeslist!![j].coursename.equals("GEOMETRY")){
+                            score_tv1.text = testscorelist!!.get(i).highestscore
+                            if(testscorelist!!.get(i).highestscore.equals("0")){
+                                relativeRL1.background = resources.getDrawable(R.drawable.test_summary_0)
+                                score_tv1.setTextColor(resources.getColor(R.color.seriously))
+                            }else if(testscorelist!!.get(i).highestscore.equals("1")){
+                                relativeRL1.background = resources.getDrawable(R.drawable.test_summary_0)
+                                score_tv1.setTextColor(resources.getColor(R.color.not_good))
+                            }else if(testscorelist!!.get(i).highestscore.equals("2")){
+                                score_tv1.setTextColor(resources.getColor(R.color.not_bad))
+                                relativeRL1.background = resources.getDrawable(R.drawable.test_summary_2)
+                            }else if(testscorelist!!.get(i).highestscore.equals("3")){
+                                relativeRL1.background = resources.getDrawable(R.drawable.test_summary_3)
+                                score_tv1.setTextColor(resources.getColor(R.color.good))
+                            }else if(testscorelist!!.get(i).highestscore.equals("4")){
+                                relativeRL1.background = resources.getDrawable(R.drawable.test_summary_4)
+                                score_tv1.setTextColor(resources.getColor(R.color.white))
+                            }
+                        }else if(testtypeslist!![j].coursename.equals("CALCULUS 1")){
+                            score_tv2.text = testscorelist!!.get(i).highestscore
+                            if(testscorelist!!.get(i).highestscore.equals("0")){
+                                relativeRL2.background = resources.getDrawable(R.drawable.test_summary_0)
+                                score_tv2.setTextColor(resources.getColor(R.color.seriously))
+                            }else if(testscorelist!!.get(i).highestscore.equals("1")){
+                                relativeRL2.background = resources.getDrawable(R.drawable.test_summary_0)
+                                score_tv2.setTextColor(resources.getColor(R.color.not_good))
+                            }else if(testscorelist!!.get(i).highestscore.equals("2")){
+                                score_tv2.setTextColor(resources.getColor(R.color.not_bad))
+                                relativeRL2.background = resources.getDrawable(R.drawable.test_summary_2)
+                            }else if(testscorelist!!.get(i).highestscore.equals("3")){
+                                relativeRL2.background = resources.getDrawable(R.drawable.test_summary_3)
+                                score_tv2.setTextColor(resources.getColor(R.color.good))
+                            }else if(testscorelist!!.get(i).highestscore.equals("4")){
+                                relativeRL2.background = resources.getDrawable(R.drawable.test_summary_4)
+                                score_tv2.setTextColor(resources.getColor(R.color.white))
+                            }
+                        }else if(testtypeslist!![j].coursename.equals("CALCULUS 2")){
+                            score_tv3.text = testscorelist!!.get(i).highestscore
+                            if(testscorelist!!.get(i).highestscore.equals("0")){
+                                relativeRL3.background = resources.getDrawable(R.drawable.test_summary_0)
+                                score_tv3.setTextColor(resources.getColor(R.color.seriously))
+                            }else if(testscorelist!!.get(i).highestscore.equals("1")){
+                                relativeRL3.background = resources.getDrawable(R.drawable.test_summary_0)
+                                score_tv3.setTextColor(resources.getColor(R.color.not_good))
+                            }else if(testscorelist!!.get(i).highestscore.equals("2")){
+                                score_tv3.setTextColor(resources.getColor(R.color.not_bad))
+                                relativeRL3.background = resources.getDrawable(R.drawable.test_summary_2)
+                            }else if(testscorelist!!.get(i).highestscore.equals("3")){
+                                relativeRL3.background = resources.getDrawable(R.drawable.test_summary_3)
+                                score_tv3.setTextColor(resources.getColor(R.color.good))
+                            }else if(testscorelist!!.get(i).highestscore.equals("4")){
+                                relativeRL3.background = resources.getDrawable(R.drawable.test_summary_4)
+                                score_tv3.setTextColor(resources.getColor(R.color.white))
+                            }
+                        }else if(testtypeslist!![j].coursename.equals("OTHER")){
+                            score_tv4.text = testscorelist!!.get(i).highestscore
+                            if(testscorelist!!.get(i).highestscore.equals("0")){
+                                relativeRL4.background = resources.getDrawable(R.drawable.test_summary_0)
+                                score_tv4.setTextColor(resources.getColor(R.color.seriously))
+                            }else if(testscorelist!!.get(i).highestscore.equals("1")){
+                                relativeRL4.background = resources.getDrawable(R.drawable.test_summary_0)
+                                score_tv4.setTextColor(resources.getColor(R.color.not_good))
+                            }else if(testscorelist!!.get(i).highestscore.equals("2")){
+                                score_tv4.setTextColor(resources.getColor(R.color.not_bad))
+                                relativeRL4.background = resources.getDrawable(R.drawable.test_summary_2)
+                            }else if(testscorelist!!.get(i).highestscore.equals("3")){
+                                relativeRL4.background = resources.getDrawable(R.drawable.test_summary_3)
+                                score_tv4.setTextColor(resources.getColor(R.color.good))
+                            }else if(testscorelist!!.get(i).highestscore.equals("4")){
+                                relativeRL4.background = resources.getDrawable(R.drawable.test_summary_4)
+                                score_tv4.setTextColor(resources.getColor(R.color.white))
+                            }
+                        }
+
+
+                        break
+                    }
+
+                }
+            }
+        }
     }
 
     /*fun getWeekStartDate(): Date {
@@ -831,6 +1131,201 @@ class TestsFragment: Fragment(),View.OnClickListener, TestClickListener,
         }
     }
 
+    fun OnTopicItemClicked(topicletter:String){
+        testtypeslist = databaseHandler!!.getAllCourses()
+        Log.e("test fragment","test type list...size..."+testtypeslist!!.size)
+        if(testtypeslist!!.size > 0){
+            if(topicletter.equals("A")){
+                onClickOnTopic(testtypeslist!!.get(0).coursename,testtypeslist!!.get(0).courseexist)
+            }else if(topicletter.equals("G")){
+                onClickOnTopic(testtypeslist!!.get(1).coursename,testtypeslist!!.get(1).courseexist)
+            }else if(topicletter.equals("C1")){
+                onClickOnTopic(testtypeslist!!.get(2).coursename,testtypeslist!!.get(2).courseexist)
+            }else if(topicletter.equals("C2")){
+                onClickOnTopic(testtypeslist!!.get(3).coursename,testtypeslist!!.get(3).courseexist)
+            }else if(topicletter.equals("OT")){
+                onClickOnTopic(testtypeslist!!.get(4).coursename,testtypeslist!!.get(4).courseexist)
+            }
+
+        }else{
+            try{
+                var testtypeslist1: ArrayList<String>? = null
+                testtypeslist1 = ArrayList<String>()
+
+
+                testtypeslist1!!.add("ALGEBRA")
+                testtypeslist1!!.add("GEOMETRY")
+                testtypeslist1!!.add("CALCULUS 1")
+                testtypeslist1!!.add("CALCULUS 2")
+                testtypeslist1!!.add("OTHER")
+                var count = databaseHandler!!.getAllCoursesCount()
+                Log.e("test fragment","count..size..."+count)
+                if(count == 0){
+                    for(i in 0 until testtypeslist1.size){
+                        databaseHandler!!.insertCourse(Course(testtypeslist1.get(i),0))
+                    }
+                }
+
+                testtypeslist = databaseHandler!!.getAllCourses()
+
+                if(topicletter.equals("A")){
+                    onClickOnTopic(testtypeslist!!.get(0).coursename,testtypeslist!!.get(0).courseexist)
+                }else if(topicletter.equals("G")){
+                    onClickOnTopic(testtypeslist!!.get(1).coursename,testtypeslist!!.get(1).courseexist)
+                }else if(topicletter.equals("C1")){
+                    onClickOnTopic(testtypeslist!!.get(2).coursename,testtypeslist!!.get(2).courseexist)
+                }else if(topicletter.equals("C2")){
+                    onClickOnTopic(testtypeslist!!.get(3).coursename,testtypeslist!!.get(3).courseexist)
+                }else if(topicletter.equals("OT")){
+                    onClickOnTopic(testtypeslist!!.get(4).coursename,testtypeslist!!.get(4).courseexist)
+                }
+                //adapter = TestsAdapter(context!!, testtypeslist!!,testscorelist!!,this)
+                //adapter1 = CourseAdapter(context!!, testtypeslist!!,this)
+            }catch (e:Exception){
+
+            }
+        }
+    }
+
+    fun onClickOnTopic(topicName: String,count:Int) {
+        var filename = ""
+        var firestoreversionkey=""
+        var originalfilename = topicName
+        if (topicName.equals("CALCULUS 1")) {
+            filename = "jee-calculus-1"
+            firestoreversionkey = "Calculus1Version"
+        } else if (topicName.equals("CALCULUS 2")) {
+            filename = "jee-calculus-2"
+            firestoreversionkey = "Calculus2Version"
+        } else if (topicName.equals("ALGEBRA")) {
+            filename = "ii-algebra"
+            firestoreversionkey = "AlgebraVersion"
+        } else if (topicName.equals("OTHER")) {
+            filename = "other"
+            firestoreversionkey = "BasicVersion"
+        } else if (topicName.equals("GEOMETRY")) {
+            filename = "iii-geometry"
+            firestoreversionkey = "GeometryVersion"
+        }
+        Log.e("test fragment","on click filename...."+filename)
+        var topicname = topicName.replace("\\s".toRegex(), "")
+        /*var version:String = ""
+        var testcontentlist1: List<TestDownload>? = databaseHandler!!.gettestContent()
+
+        for(i in 0 until testcontentlist1!!.size) {
+            if (testcontentlist1.get(i).testtype.equals(topicname.toLowerCase())) {
+                version = testcontentlist1.get(i).testversion
+                break
+            }
+        }
+        try{
+            val docRef = db.collection("testcontentdownload").document("nJUIWEtshPEmAXjqn7y4")
+            docRef.get().addOnSuccessListener {
+                if (it != null) {
+                    val firestoreversion = it.getData()!!.get(firestoreversionkey)!!.toString()
+                    Log.e("test fragment","version....."+version)
+                    Log.e("test fragment","firestoreversion....."+firestoreversion)
+                    if(version.equals(firestoreversion)){
+
+                    }else{
+                        databaseHandler!!.updatetestcontentdownloadstatus(0,topicname.toLowerCase())
+                        if(isNetworkConnected()) {
+                            downloadServiceFromBackground(activity!!,db)
+                        }
+                    }
+
+                }
+            }
+
+
+        }catch (e:Exception){
+
+        }*/
+
+
+
+
+        /*var topicname = ""
+        if(topicName.equals("OTHER")){
+            topicname ="basic"
+        }else{*/
+
+        // }
+
+        var downloadstatus:Int = -1
+        var testcontentlist: List<TestDownload>? = databaseHandler!!.gettestContent()
+        for(i in 0 until testcontentlist!!.size) {
+            if (testcontentlist.get(i).testtype.equals(topicname.toLowerCase())) {
+                downloadstatus = testcontentlist.get(i).testdownloadstatus
+                break
+            }
+        }
+        Log.e("test fragment","on click topicname...."+topicname)
+        Log.e("test fragment","on click download status...."+downloadstatus)
+
+
+        sound = sharedPrefs?.getBooleanPrefVal(activity!!, ConstantPath.SOUNDS) ?: true
+        if(!sound){
+            // mediaPlayer = MediaPlayer.create(this,R.raw.amount_low)
+            //  mediaPlayer.start()
+            if (Utils.loaded) {
+                Utils.soundPool.play(Utils.soundID, Utils.volume, Utils.volume, 1, 0, 1f);
+                Log.e("Test", "Played sound...volume..."+ Utils.volume);
+                //Toast.makeText(context,"end",Toast.LENGTH_SHORT).show()
+            }
+        }
+        if(downloadstatus == 1){
+            // Toast.makeText(context,"download status 1...read from local...",Toast.LENGTH_SHORT).show()
+            val dirFile = File(activity!!.getCacheDir(),topicname.toLowerCase()+"/"+filename)
+            val size = File(activity!!.getCacheDir(),topicname.toLowerCase()+"/"+filename)
+                .walkTopDown()
+                .map { it.length() }
+                .sum() // in bytes
+            Log.e("test fragment","folder size......."+size);
+            Log.e("test fragment","dirFile path......."+dirFile.absolutePath);
+            if(dirFile.isDirectory()){
+                var files = dirFile.list();
+                Log.e("test fragment","files size......."+files.size);
+                if (files.size == 0) {
+                    //directory is empty
+                    Log.e("test fragment","files.size......empty.");
+                    val connectivityManager = activity!!.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+                    val activeNetwork: NetworkInfo? = connectivityManager.activeNetworkInfo
+                    val isConnected: Boolean = activeNetwork?.isConnected == true
+
+                    databaseHandler!!.updatetestcontentdownloadstatus(0,topicname.toLowerCase())
+                    if(isNetworkConnected()) {
+                        downloadServiceFromBackground(activity!!,db)
+                    }
+                    readFileFromAssetsNew(topicname.toLowerCase(),filename,originalfilename)
+
+                }else{
+                    Log.e("test fragment","files.size.....not...empty.");
+                    readFileLocally(topicname.toLowerCase(),filename,originalfilename,count)
+                    //readFileFromAssetsNew(topicname.toLowerCase(),filename,originalfilename)
+
+
+
+                }
+            }
+
+
+
+
+        }else{
+            //  Toast.makeText(context,"download status 0...read from assets...",Toast.LENGTH_SHORT).show()
+            // databaseHandler!!.updatetestcontentdownloadstatus(0,topicname.toLowerCase())
+            if(isNetworkConnected()) {
+                downloadServiceFromBackground(activity!!,db)
+            }
+            //readFileLocally(topicname.toLowerCase(),filename,originalfilename,count)
+            readFileFromAssetsNew(topicname.toLowerCase(),filename,originalfilename)
+            //gotoStartScreenThroughAssets(topicname,originalfilename)
+        }
+
+        //gotoReviewScreen(topicname)
+    }
+
 
     override fun onClick(topicName: String,count:Int) {
         var filename = ""
@@ -895,7 +1390,7 @@ class TestsFragment: Fragment(),View.OnClickListener, TestClickListener,
             topicname ="basic"
         }else{*/
 
-       // }
+        // }
 
         var downloadstatus:Int = -1
         var testcontentlist: List<TestDownload>? = databaseHandler!!.gettestContent()
@@ -920,7 +1415,7 @@ class TestsFragment: Fragment(),View.OnClickListener, TestClickListener,
             }
         }
         if(downloadstatus == 1){
-           // Toast.makeText(context,"download status 1...read from local...",Toast.LENGTH_SHORT).show()
+            // Toast.makeText(context,"download status 1...read from local...",Toast.LENGTH_SHORT).show()
             val dirFile = File(activity!!.getCacheDir(),topicname.toLowerCase()+"/"+filename)
             val size = File(activity!!.getCacheDir(),topicname.toLowerCase()+"/"+filename)
                 .walkTopDown()
@@ -931,40 +1426,40 @@ class TestsFragment: Fragment(),View.OnClickListener, TestClickListener,
             if(dirFile.isDirectory()){
                 var files = dirFile.list();
                 Log.e("test fragment","files size......."+files.size);
-                    if (files.size == 0) {
-                        //directory is empty
-                        Log.e("test fragment","files.size......empty.");
-                        val connectivityManager = activity!!.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-                        val activeNetwork: NetworkInfo? = connectivityManager.activeNetworkInfo
-                        val isConnected: Boolean = activeNetwork?.isConnected == true
+                if (files.size == 0) {
+                    //directory is empty
+                    Log.e("test fragment","files.size......empty.");
+                    val connectivityManager = activity!!.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+                    val activeNetwork: NetworkInfo? = connectivityManager.activeNetworkInfo
+                    val isConnected: Boolean = activeNetwork?.isConnected == true
 
-                        databaseHandler!!.updatetestcontentdownloadstatus(0,topicname.toLowerCase())
-                        if(isNetworkConnected()) {
-                            downloadServiceFromBackground(activity!!,db)
-                        }
-                        readFileFromAssetsNew(topicname.toLowerCase(),filename,originalfilename)
-
-                    }else{
-                        Log.e("test fragment","files.size.....not...empty.");
-                        readFileLocally(topicname.toLowerCase(),filename,originalfilename,count)
-                        //readFileFromAssetsNew(topicname.toLowerCase(),filename,originalfilename)
-
-
-
+                    databaseHandler!!.updatetestcontentdownloadstatus(0,topicname.toLowerCase())
+                    if(isNetworkConnected()) {
+                        downloadServiceFromBackground(activity!!,db)
                     }
+                    readFileFromAssetsNew(topicname.toLowerCase(),filename,originalfilename)
+
+                }else{
+                    Log.e("test fragment","files.size.....not...empty.");
+                    readFileLocally(topicname.toLowerCase(),filename,originalfilename,count)
+                    //readFileFromAssetsNew(topicname.toLowerCase(),filename,originalfilename)
+
+
+
+                }
             }
 
 
 
 
         }else{
-          //  Toast.makeText(context,"download status 0...read from assets...",Toast.LENGTH_SHORT).show()
-           // databaseHandler!!.updatetestcontentdownloadstatus(0,topicname.toLowerCase())
+            //  Toast.makeText(context,"download status 0...read from assets...",Toast.LENGTH_SHORT).show()
+            // databaseHandler!!.updatetestcontentdownloadstatus(0,topicname.toLowerCase())
             if(isNetworkConnected()) {
                 downloadServiceFromBackground(activity!!,db)
             }
             //readFileLocally(topicname.toLowerCase(),filename,originalfilename,count)
-             readFileFromAssetsNew(topicname.toLowerCase(),filename,originalfilename)
+            readFileFromAssetsNew(topicname.toLowerCase(),filename,originalfilename)
             //gotoStartScreenThroughAssets(topicname,originalfilename)
         }
 
@@ -978,7 +1473,7 @@ class TestsFragment: Fragment(),View.OnClickListener, TestClickListener,
 
     fun isNetworkConnected(): Boolean {
         val connectivityManager = activity!!.getSystemService(Context.
-            CONNECTIVITY_SERVICE) as ConnectivityManager
+        CONNECTIVITY_SERVICE) as ConnectivityManager
         val activeNetwork: NetworkInfo? = connectivityManager.activeNetworkInfo
         val isConnected: Boolean = activeNetwork?.isConnected == true
         return isConnected
@@ -1045,9 +1540,9 @@ class TestsFragment: Fragment(),View.OnClickListener, TestClickListener,
         }
         dialog!!.show()
         var layoutParams =  WindowManager.LayoutParams();
-            layoutParams.copyFrom(dialog!!.getWindow()!!.getAttributes());
-            layoutParams.width = WindowManager.LayoutParams.MATCH_PARENT;
-            layoutParams.height = WindowManager.LayoutParams.MATCH_PARENT;
+        layoutParams.copyFrom(dialog!!.getWindow()!!.getAttributes());
+        layoutParams.width = WindowManager.LayoutParams.MATCH_PARENT;
+        layoutParams.height = WindowManager.LayoutParams.MATCH_PARENT;
         dialog!!.getWindow()!!.setAttributes(layoutParams);
 
 
@@ -1167,12 +1662,12 @@ class TestsFragment: Fragment(),View.OnClickListener, TestClickListener,
             folderPath = localPath+topic.folderName
             Log.e("test fragment","testQuiz.folderPath......"+folderPath)
             jsonStringBasic = loadJSONFromAsset("$folderPath/basic.json")
-           // jsonStringBasic =  Utils.readFromFile("$folderPath/basic.json")
+            // jsonStringBasic =  Utils.readFromFile("$folderPath/basic.json")
             lastplayed = "basic"
 
-         //   databaseHandler!!.deleteAllQuizTopicsLatPlayed(topictype.toLowerCase())
+            //   databaseHandler!!.deleteAllQuizTopicsLatPlayed(topictype.toLowerCase())
 
-          //  databaseHandler!!.insertquiztopiclastplayed(topic.title,topic.displayNo,lastplayed,topictype.toLowerCase());
+            //  databaseHandler!!.insertquiztopiclastplayed(topic.title,topic.displayNo,lastplayed,topictype.toLowerCase());
         }else{
 
             if(branchesItemList!!.size == (testQuiz.serialNo).toInt()){
@@ -1182,9 +1677,9 @@ class TestsFragment: Fragment(),View.OnClickListener, TestClickListener,
                 jsonStringBasic = loadJSONFromAsset("$folderPath/basic.json")
                 //jsonStringBasic =  Utils.readFromFile("$folderPath/basic.json")
                 lastplayed = "basic"
-             //   databaseHandler!!.deleteAllQuizTopicsLatPlayed(topictype.toLowerCase())
+                //   databaseHandler!!.deleteAllQuizTopicsLatPlayed(topictype.toLowerCase())
 
-             //   databaseHandler!!.insertquiztopiclastplayed(topic.title,topic.displayNo,lastplayed,topictype.toLowerCase());
+                //   databaseHandler!!.insertquiztopiclastplayed(topic.title,topic.displayNo,lastplayed,topictype.toLowerCase());
             }else{
                 if(((testQuiz.serialNo).toInt())-1 < branchesItemList!!.size){
                     topic = branchesItemList!![((testQuiz.serialNo).toInt())-1].topic
@@ -1197,19 +1692,19 @@ class TestsFragment: Fragment(),View.OnClickListener, TestClickListener,
                     jsonStringBasic = loadJSONFromAsset("$folderPath/intermediate.json")
                     //jsonStringBasic =  Utils.readFromFile("$folderPath/intermediate.json")
                     lastplayed = "intermediate"
-                //    databaseHandler!!.deleteAllQuizTopicsLatPlayed(topictype.toLowerCase())
+                    //    databaseHandler!!.deleteAllQuizTopicsLatPlayed(topictype.toLowerCase())
 
-                 //   databaseHandler!!.insertquiztopiclastplayed(topic.title,topic.displayNo,lastplayed,topictype.toLowerCase());
+                    //   databaseHandler!!.insertquiztopiclastplayed(topic.title,topic.displayNo,lastplayed,topictype.toLowerCase());
                 }else{
                     topic = branchesItemList!![((testQuiz.serialNo).toInt())].topic
                     folderPath = localPath+topic.folderName
                     Log.e("test fragment","testQuiz.folderPath......"+folderPath)
                     jsonStringBasic = loadJSONFromAsset("$folderPath/basic.json")
-                   // jsonStringBasic =  Utils.readFromFile("$folderPath/basic.json")
+                    // jsonStringBasic =  Utils.readFromFile("$folderPath/basic.json")
                     lastplayed = "basic"
-                 //   databaseHandler!!.deleteAllQuizTopicsLatPlayed(topictype.toLowerCase())
+                    //   databaseHandler!!.deleteAllQuizTopicsLatPlayed(topictype.toLowerCase())
 
-                  //  databaseHandler!!.insertquiztopiclastplayed(topic.title,topic.displayNo,lastplayed,topictype.toLowerCase());
+                    //  databaseHandler!!.insertquiztopiclastplayed(topic.title,topic.displayNo,lastplayed,topictype.toLowerCase());
 
                 }
             }
@@ -1277,7 +1772,7 @@ class TestsFragment: Fragment(),View.OnClickListener, TestClickListener,
 
             //databaseHandler!!.deleteAllQuizTopicsLatPlayed(topictype.toLowerCase())
 
-           // databaseHandler!!.insertquiztopiclastplayed(topic.title,topic.displayNo,lastplayed,topictype.toLowerCase());
+            // databaseHandler!!.insertquiztopiclastplayed(topic.title,topic.displayNo,lastplayed,topictype.toLowerCase());
         }else{
 
             if(branchesItemList!!.size == (testQuiz.serialNo).toInt()){
@@ -1286,9 +1781,9 @@ class TestsFragment: Fragment(),View.OnClickListener, TestClickListener,
                 Log.e("test fragment","testQuiz.folderPath......"+folderPath)
                 jsonStringBasic =  Utils.readFromFile("$folderPath/basic.json")
                 lastplayed = "basic"
-             //   databaseHandler!!.deleteAllQuizTopicsLatPlayed(topictype.toLowerCase())
+                //   databaseHandler!!.deleteAllQuizTopicsLatPlayed(topictype.toLowerCase())
 
-              //  databaseHandler!!.insertquiztopiclastplayed(topic.title,topic.displayNo,lastplayed,topictype.toLowerCase());
+                //  databaseHandler!!.insertquiztopiclastplayed(topic.title,topic.displayNo,lastplayed,topictype.toLowerCase());
             }else{
                 if(((testQuiz.serialNo).toInt())-1 < branchesItemList!!.size){
                     topic = branchesItemList!![((testQuiz.serialNo).toInt())-1].topic
@@ -1301,18 +1796,18 @@ class TestsFragment: Fragment(),View.OnClickListener, TestClickListener,
                 if(testQuiz.lastplayed.equals("basic")){
                     jsonStringBasic =  Utils.readFromFile("$folderPath/intermediate.json")
                     lastplayed = "intermediate"
-                 //   databaseHandler!!.deleteAllQuizTopicsLatPlayed(topictype.toLowerCase())
+                    //   databaseHandler!!.deleteAllQuizTopicsLatPlayed(topictype.toLowerCase())
 
-                  //  databaseHandler!!.insertquiztopiclastplayed(topic.title,topic.displayNo,lastplayed,topictype.toLowerCase());
+                    //  databaseHandler!!.insertquiztopiclastplayed(topic.title,topic.displayNo,lastplayed,topictype.toLowerCase());
                 }else{
                     topic = branchesItemList!![((testQuiz.serialNo).toInt())].topic
                     folderPath = localPath+topic.folderName
                     Log.e("test fragment","testQuiz.folderPath......"+folderPath)
                     jsonStringBasic =  Utils.readFromFile("$folderPath/basic.json")
                     lastplayed = "basic"
-                  //  databaseHandler!!.deleteAllQuizTopicsLatPlayed(topictype.toLowerCase())
+                    //  databaseHandler!!.deleteAllQuizTopicsLatPlayed(topictype.toLowerCase())
 
-                  //  databaseHandler!!.insertquiztopiclastplayed(topic.title,topic.displayNo,lastplayed,topictype.toLowerCase());
+                    //  databaseHandler!!.insertquiztopiclastplayed(topic.title,topic.displayNo,lastplayed,topictype.toLowerCase());
 
                 }
             }

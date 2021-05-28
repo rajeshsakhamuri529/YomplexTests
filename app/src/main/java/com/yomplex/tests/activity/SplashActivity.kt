@@ -1,5 +1,6 @@
 package com.yomplex.tests.activity
 
+import android.app.Activity
 import android.content.DialogInterface
 import android.content.Intent
 import android.net.Uri
@@ -16,11 +17,18 @@ import android.util.Log
 import androidx.core.content.ContextCompat.getSystemService
 import android.icu.lang.UCharacter.GraphemeClusterBreak.T
 import androidx.appcompat.app.AlertDialog
+import com.google.common.reflect.TypeToken
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.analytics.ktx.logEvent
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
+import com.google.gson.Gson
 import com.yomplex.tests.R
+import com.yomplex.tests.Service.BooksDownloadService
+import com.yomplex.tests.Service.CopyService
+import com.yomplex.tests.database.QuizGameDataBase
+import com.yomplex.tests.model.Books
 import com.yomplex.tests.utils.ForceUpdateChecker
 import com.yomplex.tests.utils.Utils
 
@@ -30,6 +38,7 @@ class SplashActivity : BaseActivity(), ForceUpdateChecker.OnUpdateNeededListener
     private lateinit var firebaseAnalytics: FirebaseAnalytics
     private var mDelayHandler: Handler? = null
     private val SPLASH_DELAY: Long = 1000 //1 seconds
+    var databaseHandler: QuizGameDataBase?= null
     //var sharedPrefs: SharedPrefs? = null
     internal val mRunnable: Runnable = Runnable {
         if (!isFinishing) {
@@ -47,6 +56,41 @@ class SplashActivity : BaseActivity(), ForceUpdateChecker.OnUpdateNeededListener
         Utils.getPlayer(this)
         Log.d("onCreate","Splash")
         firebaseAnalytics = Firebase.analytics
+        databaseHandler = QuizGameDataBase(this);
+        /*try{
+            // downloadServiceFromBackground(this@DashBoardActivity,db)
+
+
+            val booksJsonString = loadJSONFromAsset( "books.json")
+           Log.e("dashboard","booksJsonString..."+booksJsonString);
+               val gsonFile = Gson()
+               val courseType = object : TypeToken<List<Books>>() {}.type
+               val booksCountmodel: ArrayList<Books> = gsonFile
+                   .fromJson(booksJsonString, courseType)
+           Log.e("dashboard","booksJsonString...booksCountmodel..."+booksCountmodel.size);
+               for(i in 0 until booksCountmodel.size){
+                   val booksCount = booksCountmodel[i]
+                   val count = databaseHandler!!.getBooksCount(booksCount.title, booksCount.category)
+                   if (count == 0) {
+                       Log.e("dash board","booksJsonString...count......."+count)
+                       databaseHandler!!.insertBooks(booksCount)
+                   }
+               }
+        }catch (e:Exception){
+
+        }*/
+
+
+       var statuslist = databaseHandler!!.getbookscopystatusList()
+        if(statuslist.size > 0){
+            if(statuslist.contains(0)){
+                startcopyService(this@SplashActivity)
+            }
+        }else{
+            startcopyService(this@SplashActivity)
+        }
+
+
         /*val action: String? = intent?.action
         val data: Uri? = intent?.data
         var extras:Bundle? = intent.extras
@@ -82,7 +126,9 @@ class SplashActivity : BaseActivity(), ForceUpdateChecker.OnUpdateNeededListener
             getWindow().setNavigationBarColor(getResources().getColor(R.color.colorbottomnav));
         }
     }
-
+    private fun startcopyService(mainActivity: Activity) {
+        CopyService.enqueueWork(mainActivity)
+    }
     override fun onSaveInstanceState(outState: Bundle, outPersistentState: PersistableBundle) {
         super.onSaveInstanceState(outState, outPersistentState)
     }

@@ -47,6 +47,20 @@ public class XAxis extends AxisBase {
      */
     private boolean mAvoidFirstLastClipping = false;
 
+    private boolean mMultiLineLabel = false;
+    /**
+     * returns true if multiline label is enabled, false if not
+     *
+     * @return
+     */
+    public boolean isMultiLineLabelEnabled() {
+        return mMultiLineLabel;
+    }
+
+
+    public void setMultiLineLabel(boolean enabled) {
+        mMultiLineLabel = enabled;
+    }
     /**
      * the position of the x-labels relative to the chart
      */

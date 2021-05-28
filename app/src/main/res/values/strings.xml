@@ -6,6 +6,7 @@
     <string name="quiz">QUIZ</string>
     <string name="tests">TESTS</string>
     <string name="tiny_tests">TINY TESTS</string>
+    <string name="tiny_textbooks">TINY TEXTBOOKS</string>
     <string name="review">REVIEW</string>
     <string name="home">HOME</string>
     <string name="str_daily_chanllenge">Daily Challenges</string>
@@ -58,7 +59,6 @@
     <string name="emoji">&#129300;</string>
 
     <string name="emoji_disappointment">&#128542;</string>
-
 
 
     <string name="tips_text1">Work regularly! Try to solve at least one Test per Topic every week.</string>

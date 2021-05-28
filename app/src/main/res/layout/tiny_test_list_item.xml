@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="@dimen/_50sdp"
+    android:layout_height="wrap_content"
+    android:id="@+id/rl_single_topics"
+
+    >
+
+
+    <RelativeLayout
+        android:id="@+id/top_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+
+        >
+
+        <LinearLayout
+            android:id="@+id/layoutLL"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_centerHorizontal="true"
+            >
+
+            <!--<RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/rounded_square">
+
+
+
+            </RelativeLayout>-->
+
+            <RelativeLayout
+                android:id="@+id/totalRL"
+                android:layout_width="@dimen/_40sdp"
+                android:layout_height="@dimen/_40sdp"
+                android:background="@drawable/test_name_round"
+                >
+                <TextView
+                    android:id="@+id/tv_score"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="A"
+                    android:visibility="visible"
+
+                    android:layout_centerInParent="true"
+                    android:layout_gravity="center"
+                    android:textSize="@dimen/_15ssp"
+
+                    android:textColor="@color/white"
+                    android:fontFamily="@font/lato_black"/>
+
+            </RelativeLayout>
+
+            <TextView
+                android:id="@+id/tv_topic_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/layoutLL"
+                android:text="Algebra"
+
+               android:layout_gravity="center"
+
+                android:textColor="@color/course_text"
+                android:fontFamily="@font/lato_bold"
+                android:textSize="@dimen/_8ssp"
+                android:layout_marginTop="5dp"/>
+
+        </LinearLayout>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    </RelativeLayout>
+
+
+
+
+
+
+
+
+
+
+</RelativeLayout>

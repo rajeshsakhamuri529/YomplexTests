@@ -10,6 +10,7 @@ import android.util.Log;
 
 
 import com.yomplex.tests.BuildConfig;
+import com.yomplex.tests.model.Books;
 import com.yomplex.tests.model.Challenge;
 import com.yomplex.tests.model.Course;
 import com.yomplex.tests.model.PlayCount;
@@ -21,7 +22,9 @@ import com.yomplex.tests.model.User;
 import com.yomplex.tests.utils.Utils;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import static android.os.Build.*;
@@ -71,6 +74,7 @@ public class QuizGameDataBase extends SQLiteOpenHelper {
 
     private static final String KEY_ID = "id";
     private static final String TABLE_CONTENT_CHECK_DATE = "contentcheckdate";
+    private static final String BOOK_CONTENT_CHECK_DATE = "bookcontentcheckdate";
 
     private static final String TABLE_CHALLENGE_STATUS = "challenge_status";
     private static final String KEY_DATE = "date";
@@ -116,6 +120,38 @@ public class QuizGameDataBase extends SQLiteOpenHelper {
 
     private static final String TABLE_COURSE = "course";
     private static final String KEY_COURSE_EXIST= "courseexist";
+
+    private static final String TABLE_BOOKS = "books";
+
+    private static final String KEY_CATEGORY= "Category";
+    private static final String KEY_SOURCE_URL = "SourceUrl";
+    private static final String KEY_THUMB_NAIL = "Thumbnail";
+    private static final String KEY_PUBLISHED_ON = "PublishedOn";
+    private static final String KEY_READ_STATUS = "readstatus";
+    private static final String KEY_STARRED_STATUS = "starredstatus";
+
+    private static final String KEY_SORT_ORDER = "sortorder";
+    private static final String KEY_VERSION = "version";
+    private static final String KEY_BOOK_DOWNLOAD_STATUS = "bookdownloadstatus";
+
+    private static final String KEY_COPY_STATUS = "copystatus";
+    private static final String KEY_FOLDER_NAME = "foldername";
+    private static final String KEY_READ_FILE_STATUS = "readfilestatus";
+
+    String CREATE_TABLE_BOOKS = "CREATE TABLE " + TABLE_BOOKS + "("
+            + KEY_TITLE + " TEXT, "
+            + KEY_FOLDER_NAME + " TEXT,"
+            + KEY_CATEGORY + " TEXT, "
+            + KEY_SOURCE_URL + " TEXT, "
+            + KEY_THUMB_NAIL + " TEXT,"
+            + KEY_PUBLISHED_ON + " TEXT,"
+            + KEY_READ_STATUS + " TEXT,"
+            + KEY_STARRED_STATUS + " TEXT,"
+            + KEY_SORT_ORDER + " TEXT,"
+            + KEY_VERSION + " TEXT,"
+            + KEY_COPY_STATUS + " TEXT,"
+            + KEY_READ_FILE_STATUS + " TEXT,"
+            + KEY_BOOK_DOWNLOAD_STATUS + " TEXT)";
 
     String CREATE_TABLE_COURSE = "CREATE TABLE " + TABLE_COURSE + "("
             + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
@@ -165,6 +201,10 @@ public class QuizGameDataBase extends SQLiteOpenHelper {
 
 
     String CREATE_TABLE_CONTENT_CHECK_DATE = "CREATE TABLE " + TABLE_CONTENT_CHECK_DATE + "("
+            + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+            + KEY_DATE + " TEXT)";
+
+    String CREATE_BOOK_CONTENT_CHECK_DATE = "CREATE TABLE " + BOOK_CONTENT_CHECK_DATE + "("
             + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
             + KEY_DATE + " TEXT)";
 
@@ -228,10 +268,12 @@ public class QuizGameDataBase extends SQLiteOpenHelper {
         db.execSQL(CREATE_TABLE_CHALLENGE_WEEKLY);
 
         db.execSQL(CREATE_TABLE_CONTENT_CHECK_DATE);
+        db.execSQL(CREATE_BOOK_CONTENT_CHECK_DATE);
+
 
         db.execSQL(CREATE_TABLE_PLAY_COUNT);
         db.execSQL(CREATE_TABLE_COURSE);
-
+        db.execSQL(CREATE_TABLE_BOOKS);
 
 
 
@@ -266,7 +308,38 @@ public class QuizGameDataBase extends SQLiteOpenHelper {
                 }catch(Exception e){
                     e.printStackTrace();
                 }*/
+        try {
+            db.execSQL(CREATE_TABLE_BOOKS);
+        } catch (Exception e) {
+            e.printStackTrace();
+            //db.execSQL(CREATE_TABLE_COURSE);
+        }
 
+        try {
+            db.execSQL(CREATE_BOOK_CONTENT_CHECK_DATE);
+        } catch (Exception e) {
+            e.printStackTrace();
+            //db.execSQL(CREATE_TABLE_COURSE);
+        }
+
+        /*try {
+            db.execSQL("alter table " + TABLE_BOOKS + "  add column " + KEY_BOOK_DOWNLOAD_STATUS + " INTEGER default 0");
+        } catch (Exception e) {
+            e.printStackTrace();
+            //db.execSQL(CREATE_TABLE_COURSE);
+        }
+        try {
+            db.execSQL("alter table " + TABLE_BOOKS + "  add column " + KEY_SORT_ORDER + " TEXT default null");
+        } catch (Exception e) {
+            e.printStackTrace();
+            //db.execSQL(CREATE_TABLE_COURSE);
+        }
+        try {
+            db.execSQL("alter table " + TABLE_BOOKS + "  add column " + KEY_VERSION + " TEXT default null");
+        } catch (Exception e) {
+            e.printStackTrace();
+            //db.execSQL(CREATE_TABLE_COURSE);
+        }*/
                 try {
                     db.execSQL("alter table " + TABLE_QUIZ_WITH_TIMER_FINAL + "  add column " + KEY_REVIEW_EXIST + " INTEGER default 0");
                 } catch (Exception e) {
@@ -318,6 +391,562 @@ public class QuizGameDataBase extends SQLiteOpenHelper {
         // Create tables again
         onCreate(db);*/
     }
+
+
+
+    public void insertBooks(Books books) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+
+        values.put(KEY_TITLE, books.getTitle());
+        values.put(KEY_CATEGORY, books.getCategory());
+        values.put(KEY_SOURCE_URL, books.getSourceUrl());
+        values.put(KEY_THUMB_NAIL, books.getThumbnail());
+        values.put(KEY_PUBLISHED_ON, books.getPublishedOn());
+        values.put(KEY_READ_STATUS, books.getReadstatus());
+        values.put(KEY_STARRED_STATUS, books.getStarredstatus());
+
+        values.put(KEY_BOOK_DOWNLOAD_STATUS, books.getBookdownloadstatus());
+        values.put(KEY_SORT_ORDER, books.getSortorder());
+        values.put(KEY_VERSION, books.getVersion());
+
+        values.put(KEY_COPY_STATUS, books.getCopystatus());
+        values.put(KEY_READ_FILE_STATUS, books.getReadfilestatus());
+
+        values.put(KEY_FOLDER_NAME, books.getFolderName());
+
+
+
+
+
+
+
+        // Inserting Row
+        db.insert(TABLE_BOOKS, null, values);
+        //2nd argument is String containing nullColumnHack
+        db.close(); // Closing database connection
+    }
+    public String getBooksVersion(String title, String category) {
+        //DailyChallenge dailyChallenge=new DailyChallenge();
+        //Log.e("quiz database","getChallengeForDate....fromdate..."+fromdate);
+        String version = "";
+        Log.e("dash board","booksJsonString...title......."+title.replaceAll("'","\\\'"));
+        Log.e("dash board","booksJsonString...category......."+category);
+        Log.e("dash board","booksJsonString...title......."+title.replaceAll("'","\\\'"));
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT * FROM " + TABLE_BOOKS + " WHERE " + KEY_TITLE + "=? AND "+KEY_CATEGORY+"=?";
+        Cursor cur = db.rawQuery(query, new String[]{title.replaceAll("'","\\'"),category});
+
+        //Cursor cur = db.rawQuery("SELECT * FROM " + TABLE_QUIZ_WITH_TIMER_FINAL + " WHERE " + KEY_TITLE + "='" + title+"' AND "+KEY_PRESENT_DATE + " ='"+pdate+"' AND "+KEY_TYPE_OF_PLAY +"= '"+typeofplay+"'", new String[]{});
+        if (cur.moveToFirst()) {
+            do {
+                /*TestDownload testDownload=new TestDownload();
+                testDownload.setTestdownloadstatus((cur.getInt(cur.getColumnIndex(KEY_TEST_DOWNLOAD_STATUS))));
+                testDownload.setTesturl((cur.getString(cur.getColumnIndex(KEY_TEST_CONTENT_URL))));
+                testDownload.setTesttype((cur.getString(cur.getColumnIndex(KEY_TEST_TYPE))));
+                testDownload.setTestversion((cur.getString(cur.getColumnIndex(KEY_TEST_CONTENT_VERSION))));*/
+
+                version = ((cur.getString(cur.getColumnIndex(KEY_VERSION))));
+
+
+
+            } while (cur.moveToNext());
+        }
+
+        cur.close();
+        db.close();
+
+        //  Log.e("quiz game database","answers.........."+answers);
+        // return contact
+        Log.e("dash board","booksJsonString...version......."+version);
+        return version;
+    }
+
+    public List<Integer> getbooksdownloadstatus() {
+        //DailyChallenge dailyChallenge=new DailyChallenge();
+        int version = 0;
+        List<Integer> statusList = new ArrayList<Integer>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cur = db.rawQuery("SELECT * FROM " + TABLE_BOOKS, new String[]{});
+        /*Cursor cursor = db.query(TABLE_DAILY_CHALLENGE, new String[] { KEY_ID,
+                        KEY_VERSION }, KEY_ID + "=?",
+                new String[] { String.valueOf(id) }, null, null, null, null);*/
+        if (cur.moveToFirst()) {
+            do {
+                /*TestDownload testDownload=new TestDownload();
+                testDownload.setTestdownloadstatus((cur.getInt(cur.getColumnIndex(KEY_TEST_DOWNLOAD_STATUS))));
+                testDownload.setTesturl((cur.getString(cur.getColumnIndex(KEY_TEST_CONTENT_URL))));
+                testDownload.setTesttype((cur.getString(cur.getColumnIndex(KEY_TEST_TYPE))));
+                testDownload.setTestversion((cur.getString(cur.getColumnIndex(KEY_TEST_CONTENT_VERSION))));*/
+
+                statusList.add((cur.getInt(cur.getColumnIndex(KEY_BOOK_DOWNLOAD_STATUS))));
+
+
+
+            } while (cur.moveToNext());
+        }
+        cur.close();
+        db.close();
+
+        Log.e("quiz game database","getbooksdownloadstatus...statusList......."+statusList.size());
+        // return contact
+        return statusList;
+    }
+
+    public int getAllBooksCount() {
+        //DailyChallenge dailyChallenge=new DailyChallenge();
+        //Log.e("quiz database","getChallengeForDate....fromdate..."+fromdate);
+        int count = 0;
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cur = db.rawQuery("SELECT * FROM " + TABLE_BOOKS , new String[]{});
+
+        //Cursor cur = db.rawQuery("SELECT * FROM " + TABLE_QUIZ_WITH_TIMER_FINAL + " WHERE " + KEY_TITLE + "='" + title+"' AND "+KEY_PRESENT_DATE + " ='"+pdate+"' AND "+KEY_TYPE_OF_PLAY +"= '"+typeofplay+"'", new String[]{});
+        count = cur.getCount();
+
+        cur.close();
+        db.close();
+
+        //  Log.e("quiz game database","answers.........."+answers);
+        // return contact
+        return count;
+    }
+    public int getBooksCount(String title, String category) {
+        //DailyChallenge dailyChallenge=new DailyChallenge();
+        //Log.e("quiz database","getChallengeForDate....fromdate..."+fromdate);
+        int count = 0;
+        Log.e("dash board","booksJsonString...title......."+title.replaceAll("'","\\\'"));
+        Log.e("dash board","booksJsonString...category......."+category);
+        Log.e("dash board","booksJsonString...title......."+title.replaceAll("'","\\\'"));
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT * FROM " + TABLE_BOOKS + " WHERE " + KEY_TITLE + "=? AND "+KEY_CATEGORY+"=?";
+        Cursor cur = db.rawQuery(query, new String[]{title.replaceAll("'","\\'"),category});
+
+        //Cursor cur = db.rawQuery("SELECT * FROM " + TABLE_QUIZ_WITH_TIMER_FINAL + " WHERE " + KEY_TITLE + "='" + title+"' AND "+KEY_PRESENT_DATE + " ='"+pdate+"' AND "+KEY_TYPE_OF_PLAY +"= '"+typeofplay+"'", new String[]{});
+        count = cur.getCount();
+
+        cur.close();
+        db.close();
+
+        //  Log.e("quiz game database","answers.........."+answers);
+        // return contact
+        Log.e("dash board","booksJsonString...getBooksCount......."+count);
+        return count;
+    }
+    public int updatebooksversionFromLocal(String version,String category) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        //values.put(KEY_NAME, contact.getName());
+        values.put(KEY_VERSION, version);
+
+        // updating row
+        return db.update(TABLE_BOOKS, values, KEY_CATEGORY+" =?",
+                new String[] { category });
+    }
+    public int updatebooksversion(String version,String title, String category) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        //values.put(KEY_NAME, contact.getName());
+        values.put(KEY_VERSION, version);
+
+        // updating row
+        return db.update(TABLE_BOOKS, values, KEY_TITLE + " = ? AND "+KEY_CATEGORY+" =?",
+                new String[] { String.valueOf(title),category });
+    }
+    public int updatebooksthumbnail(String thumbnail,String foldername, String category) {
+        Log.e("quiz game database","updatebooksthumbnail...statys.....type..."+foldername);
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        //values.put(KEY_NAME, contact.getName());
+        values.put(KEY_THUMB_NAIL, thumbnail);
+
+        // updating row
+        return db.update(TABLE_BOOKS, values, KEY_FOLDER_NAME + " = ? AND "+KEY_CATEGORY+" =?",
+                new String[] { String.valueOf(foldername),category });
+    }
+    public int updatebooksdownloadstatusfromlocal(int status, String category) {
+        Log.e("quiz game database","updatetestcontentdownloadstatus...statys.....type..."+status);
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        //values.put(KEY_NAME, contact.getName());
+        values.put(KEY_BOOK_DOWNLOAD_STATUS, status);
+
+        // updating row
+        return db.update(TABLE_BOOKS, values, KEY_CATEGORY+" =?",
+                new String[] { category });
+    }
+    public int updatebooksdownloadstatus(int status,String title, String category) {
+        Log.e("quiz game database","updatetestcontentdownloadstatus...statys.....type..."+status+"....."+title);
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        //values.put(KEY_NAME, contact.getName());
+        values.put(KEY_BOOK_DOWNLOAD_STATUS, status);
+
+        // updating row
+        return db.update(TABLE_BOOKS, values, KEY_TITLE + " = ? AND "+KEY_CATEGORY+" =?",
+                new String[] { String.valueOf(title),category });
+    }
+
+    public int updateBooksStarredStatus(int count,String title, String category) {
+        Log.e("quiz database","count....."+count);
+        Log.e("quiz database","title....."+title);
+        Log.e("quiz database","category....."+category);
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        //values.put(KEY_NAME, contact.getName());
+        values.put(KEY_STARRED_STATUS, count);
+
+        // updating row
+        return db.update(TABLE_BOOKS, values, KEY_TITLE + " = ? AND "+KEY_CATEGORY+" =?",
+                new String[] { String.valueOf(title),category });
+    }
+
+    public int updateBooksReadStatus(int count,String title, String category) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        //values.put(KEY_NAME, contact.getName());
+        values.put(KEY_READ_STATUS, count);
+
+        // updating row
+        return db.update(TABLE_BOOKS, values, KEY_TITLE + " = ? AND "+KEY_CATEGORY+" =?",
+                new String[] { String.valueOf(title),category });
+    }
+
+    public int updatebookscopystatus(int status,String title, String category) {
+        Log.e("quiz game database","updatebookscopystatus...statys.....type..."+status+"....."+title+"....."+category);
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        //values.put(KEY_NAME, contact.getName());
+        values.put(KEY_COPY_STATUS, status);
+
+        // updating row
+        return db.update(TABLE_BOOKS, values, KEY_FOLDER_NAME + " = ? AND "+KEY_CATEGORY+" =?",
+                new String[] { String.valueOf(title),category });
+    }
+    public int updatebooksreadfilestatus(int status,String title, String category) {
+        Log.e("quiz game database","updatebooksreadfilestatus...statys.....type..."+status+"....."+title);
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        //values.put(KEY_NAME, contact.getName());
+        values.put(KEY_READ_FILE_STATUS, status);
+
+        // updating row
+        return db.update(TABLE_BOOKS, values, KEY_FOLDER_NAME + " = ? AND "+KEY_CATEGORY+" =?",
+                new String[] { String.valueOf(title),category });
+    }
+    public int updatebooksreadfilestatusfromlocal(int status,String category) {
+        Log.e("quiz game database","updatebooksreadfilestatusfromlocal...statys.....type..."+status);
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        //values.put(KEY_NAME, contact.getName());
+        values.put(KEY_READ_FILE_STATUS, status);
+
+        // updating row
+        return db.update(TABLE_BOOKS, values, KEY_CATEGORY+" =?",
+                new String[] { category });
+    }
+
+
+
+    public List<Integer> getbookscopystatusList() {
+        //DailyChallenge dailyChallenge=new DailyChallenge();
+        int version = 0;
+        List<Integer> statusList = new ArrayList<Integer>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cur = db.rawQuery("SELECT * FROM " + TABLE_BOOKS, new String[]{});
+        /*Cursor cursor = db.query(TABLE_DAILY_CHALLENGE, new String[] { KEY_ID,
+                        KEY_VERSION }, KEY_ID + "=?",
+                new String[] { String.valueOf(id) }, null, null, null, null);*/
+        if (cur.moveToFirst()) {
+            do {
+                /*TestDownload testDownload=new TestDownload();
+                testDownload.setTestdownloadstatus((cur.getInt(cur.getColumnIndex(KEY_TEST_DOWNLOAD_STATUS))));
+                testDownload.setTesturl((cur.getString(cur.getColumnIndex(KEY_TEST_CONTENT_URL))));
+                testDownload.setTesttype((cur.getString(cur.getColumnIndex(KEY_TEST_TYPE))));
+                testDownload.setTestversion((cur.getString(cur.getColumnIndex(KEY_TEST_CONTENT_VERSION))));*/
+
+                statusList.add((cur.getInt(cur.getColumnIndex(KEY_COPY_STATUS))));
+
+
+
+            } while (cur.moveToNext());
+        }
+        cur.close();
+        db.close();
+
+        Log.e("quiz game database","getbooksdownloadstatus...statusList......."+statusList.size());
+        // return contact
+        return statusList;
+    }
+
+    public int getBooksReadFileStatus(String title, String category) {
+        //DailyChallenge dailyChallenge=new DailyChallenge();
+        // Log.e("quiz database","getWeekTotalScore....weekofyear..."+weekofyear);
+        int status = -1;
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT * FROM " + TABLE_BOOKS + " WHERE " + KEY_TITLE + "=? AND "+KEY_CATEGORY+"=?";
+        Cursor cur = db.rawQuery(query, new String[]{title.replaceAll("'","\\'"),category});
+        //Cursor cur = db.rawQuery("SELECT * FROM " + TABLE_BOOKS +" WHERE " +KEY_TITLE+"='"+title+"' AND "+KEY_CATEGORY+"='"+category+"'", new String[]{});
+
+        //Cursor cur = db.rawQuery("SELECT * FROM " + TABLE_QUIZ_WITH_TIMER_FINAL + " WHERE " + KEY_TITLE + "='" + title+"' AND "+KEY_PRESENT_DATE + " ='"+pdate+"' AND "+KEY_TYPE_OF_PLAY +"= '"+typeofplay+"'", new String[]{});
+        //count = cur.getCount();
+        if (cur.moveToFirst()) {
+            do {
+
+                status = (cur.getInt(cur.getColumnIndex(KEY_READ_FILE_STATUS)));
+
+
+
+            } while (cur.moveToNext());
+        }
+        cur.close();
+        db.close();
+
+        Log.e("quiz game database","status.........."+status);
+        // return contact
+        return status;
+    }
+    public int getBooksCopyStatus(String title, String category) {
+        //DailyChallenge dailyChallenge=new DailyChallenge();
+        // Log.e("quiz database","getWeekTotalScore....weekofyear..."+weekofyear);
+        int status = -1;
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT * FROM " + TABLE_BOOKS + " WHERE " + KEY_TITLE + "=? AND "+KEY_CATEGORY+"=?";
+        Cursor cur = db.rawQuery(query, new String[]{title.replaceAll("'","\\'"),category});
+        //Cursor cur = db.rawQuery("SELECT * FROM " + TABLE_BOOKS +" WHERE " +KEY_TITLE+"='"+title+"' AND "+KEY_CATEGORY+"='"+category+"'", new String[]{});
+
+        //Cursor cur = db.rawQuery("SELECT * FROM " + TABLE_QUIZ_WITH_TIMER_FINAL + " WHERE " + KEY_TITLE + "='" + title+"' AND "+KEY_PRESENT_DATE + " ='"+pdate+"' AND "+KEY_TYPE_OF_PLAY +"= '"+typeofplay+"'", new String[]{});
+        //count = cur.getCount();
+        if (cur.moveToFirst()) {
+            do {
+
+                status = (cur.getInt(cur.getColumnIndex(KEY_COPY_STATUS)));
+
+
+
+            } while (cur.moveToNext());
+        }
+        cur.close();
+        db.close();
+
+        Log.e("quiz game database","status.........."+status);
+        // return contact
+        return status;
+    }
+    public int getBooksStarredStatus(String title, String category) {
+        //DailyChallenge dailyChallenge=new DailyChallenge();
+        // Log.e("quiz database","getWeekTotalScore....weekofyear..."+weekofyear);
+        int status = -1;
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT * FROM " + TABLE_BOOKS + " WHERE " + KEY_TITLE + "=? AND "+KEY_CATEGORY+"=?";
+        Cursor cur = db.rawQuery(query, new String[]{title.replaceAll("'","\\'"),category});
+        //Cursor cur = db.rawQuery("SELECT * FROM " + TABLE_BOOKS +" WHERE " +KEY_TITLE+"='"+title+"' AND "+KEY_CATEGORY+"='"+category+"'", new String[]{});
+
+        //Cursor cur = db.rawQuery("SELECT * FROM " + TABLE_QUIZ_WITH_TIMER_FINAL + " WHERE " + KEY_TITLE + "='" + title+"' AND "+KEY_PRESENT_DATE + " ='"+pdate+"' AND "+KEY_TYPE_OF_PLAY +"= '"+typeofplay+"'", new String[]{});
+        //count = cur.getCount();
+        if (cur.moveToFirst()) {
+            do {
+
+                status = (cur.getInt(cur.getColumnIndex(KEY_STARRED_STATUS)));
+
+
+
+            } while (cur.moveToNext());
+        }
+        cur.close();
+        db.close();
+
+        Log.e("quiz game database","status.........."+status);
+        // return contact
+        return status;
+    }
+    public ArrayList<Books> getAllBooks() {
+        //DailyChallenge dailyChallenge=new DailyChallenge();
+        //Log.e("quiz database","getChallengeForDate....fromdate..."+fromdate);
+        int count = 0;
+        ArrayList<Books> booksArrayList = new ArrayList<Books>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cur = db.rawQuery("SELECT * FROM " + TABLE_BOOKS+" ORDER BY "+KEY_SORT_ORDER, new String[]{});
+
+        //Cursor cur = db.rawQuery("SELECT * FROM " + TABLE_QUIZ_WITH_TIMER_FINAL + " WHERE " + KEY_TITLE + "='" + title+"' AND "+KEY_PRESENT_DATE + " ='"+pdate+"' AND "+KEY_TYPE_OF_PLAY +"= '"+typeofplay+"'", new String[]{});
+
+        if (cur.moveToFirst()) {
+            do {
+
+                Books books=new Books();
+                books.setTitle((cur.getString(cur.getColumnIndex(KEY_TITLE))));
+                books.setCategory((cur.getString(cur.getColumnIndex(KEY_CATEGORY))));
+                books.setSourceUrl((cur.getString(cur.getColumnIndex(KEY_SOURCE_URL))));
+                books.setThumbnail((cur.getString(cur.getColumnIndex(KEY_THUMB_NAIL))));
+                books.setPublishedOn((cur.getString(cur.getColumnIndex(KEY_PUBLISHED_ON))));
+                books.setReadstatus((cur.getInt(cur.getColumnIndex(KEY_READ_STATUS))));
+                books.setStarredstatus((cur.getInt(cur.getColumnIndex(KEY_STARRED_STATUS))));
+
+                books.setBookdownloadstatus((cur.getInt(cur.getColumnIndex(KEY_BOOK_DOWNLOAD_STATUS))));
+                books.setSortorder((cur.getString(cur.getColumnIndex(KEY_SORT_ORDER))));
+                books.setVersion((cur.getString(cur.getColumnIndex(KEY_VERSION))));
+
+                books.setCopystatus((cur.getInt(cur.getColumnIndex(KEY_COPY_STATUS))));
+                books.setReadfilestatus((cur.getInt(cur.getColumnIndex(KEY_READ_FILE_STATUS))));
+
+                books.setFolderName((cur.getString(cur.getColumnIndex(KEY_FOLDER_NAME))));
+
+
+
+                booksArrayList.add(books);
+            } while (cur.moveToNext());
+        }
+
+
+
+        cur.close();
+        db.close();
+
+        //  Log.e("quiz game database","answers.........."+answers);
+        // return contact
+        return booksArrayList;
+    }
+    public ArrayList<Books> getAllBooksFromWeek() {
+        //DailyChallenge dailyChallenge=new DailyChallenge();
+        //Log.e("quiz database","getChallengeForDate....fromdate..."+fromdate);
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(Utils.date);
+        calendar.add(Calendar.DATE, -7);
+        SimpleDateFormat format1 =new SimpleDateFormat("yyyy-MM-dd");
+        String s = format1.format(calendar.getTime());
+        int count = 0;
+        ArrayList<Books> booksArrayList = new ArrayList<Books>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cur = db.rawQuery("SELECT * FROM " + TABLE_BOOKS+" WHERE "+KEY_PUBLISHED_ON+">"+"'"+s+"'", new String[]{});
+
+        //Cursor cur = db.rawQuery("SELECT * FROM " + TABLE_QUIZ_WITH_TIMER_FINAL + " WHERE " + KEY_TITLE + "='" + title+"' AND "+KEY_PRESENT_DATE + " ='"+pdate+"' AND "+KEY_TYPE_OF_PLAY +"= '"+typeofplay+"'", new String[]{});
+
+        if (cur.moveToFirst()) {
+            do {
+
+                Books books=new Books();
+                books.setTitle((cur.getString(cur.getColumnIndex(KEY_TITLE))));
+                books.setCategory((cur.getString(cur.getColumnIndex(KEY_CATEGORY))));
+                books.setSourceUrl((cur.getString(cur.getColumnIndex(KEY_SOURCE_URL))));
+                books.setThumbnail((cur.getString(cur.getColumnIndex(KEY_THUMB_NAIL))));
+                books.setPublishedOn((cur.getString(cur.getColumnIndex(KEY_PUBLISHED_ON))));
+                books.setReadstatus((cur.getInt(cur.getColumnIndex(KEY_READ_STATUS))));
+                books.setStarredstatus((cur.getInt(cur.getColumnIndex(KEY_STARRED_STATUS))));
+                books.setBookdownloadstatus((cur.getInt(cur.getColumnIndex(KEY_BOOK_DOWNLOAD_STATUS))));
+                books.setSortorder((cur.getString(cur.getColumnIndex(KEY_SORT_ORDER))));
+                books.setVersion((cur.getString(cur.getColumnIndex(KEY_VERSION))));
+                books.setCopystatus((cur.getInt(cur.getColumnIndex(KEY_COPY_STATUS))));
+                books.setReadfilestatus((cur.getInt(cur.getColumnIndex(KEY_READ_FILE_STATUS))));
+                books.setFolderName((cur.getString(cur.getColumnIndex(KEY_FOLDER_NAME))));
+                booksArrayList.add(books);
+            } while (cur.moveToNext());
+        }
+
+
+
+        cur.close();
+        db.close();
+
+        //  Log.e("quiz game database","answers.........."+answers);
+        // return contact
+        return booksArrayList;
+    }
+
+    public ArrayList<Books> getAllBooksWithStarred() {
+        //DailyChallenge dailyChallenge=new DailyChallenge();
+        //Log.e("quiz database","getChallengeForDate....fromdate..."+fromdate);
+        int count = 0;
+        ArrayList<Books> booksArrayList = new ArrayList<Books>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cur = db.rawQuery("SELECT * FROM " + TABLE_BOOKS+" WHERE "+KEY_STARRED_STATUS+"=1", new String[]{});
+
+        //Cursor cur = db.rawQuery("SELECT * FROM " + TABLE_QUIZ_WITH_TIMER_FINAL + " WHERE " + KEY_TITLE + "='" + title+"' AND "+KEY_PRESENT_DATE + " ='"+pdate+"' AND "+KEY_TYPE_OF_PLAY +"= '"+typeofplay+"'", new String[]{});
+
+        if (cur.moveToFirst()) {
+            do {
+
+                Books books=new Books();
+                books.setTitle((cur.getString(cur.getColumnIndex(KEY_TITLE))));
+                books.setCategory((cur.getString(cur.getColumnIndex(KEY_CATEGORY))));
+                books.setSourceUrl((cur.getString(cur.getColumnIndex(KEY_SOURCE_URL))));
+                books.setThumbnail((cur.getString(cur.getColumnIndex(KEY_THUMB_NAIL))));
+                books.setPublishedOn((cur.getString(cur.getColumnIndex(KEY_PUBLISHED_ON))));
+                books.setReadstatus((cur.getInt(cur.getColumnIndex(KEY_READ_STATUS))));
+                books.setStarredstatus((cur.getInt(cur.getColumnIndex(KEY_STARRED_STATUS))));
+                books.setBookdownloadstatus((cur.getInt(cur.getColumnIndex(KEY_BOOK_DOWNLOAD_STATUS))));
+                books.setSortorder((cur.getString(cur.getColumnIndex(KEY_SORT_ORDER))));
+                books.setVersion((cur.getString(cur.getColumnIndex(KEY_VERSION))));
+                books.setCopystatus((cur.getInt(cur.getColumnIndex(KEY_COPY_STATUS))));
+                books.setReadfilestatus((cur.getInt(cur.getColumnIndex(KEY_READ_FILE_STATUS))));
+                books.setFolderName((cur.getString(cur.getColumnIndex(KEY_FOLDER_NAME))));
+                booksArrayList.add(books);
+            } while (cur.moveToNext());
+        }
+
+
+
+        cur.close();
+        db.close();
+
+        //  Log.e("quiz game database","answers.........."+answers);
+        // return contact
+        return booksArrayList;
+    }
+    public ArrayList<Books> getAllBooksWithUnread() {
+        //DailyChallenge dailyChallenge=new DailyChallenge();
+        //Log.e("quiz database","getChallengeForDate....fromdate..."+fromdate);
+        int count = 0;
+        ArrayList<Books> booksArrayList = new ArrayList<Books>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cur = db.rawQuery("SELECT * FROM " + TABLE_BOOKS+" WHERE "+KEY_READ_STATUS+"=0", new String[]{});
+
+        //Cursor cur = db.rawQuery("SELECT * FROM " + TABLE_QUIZ_WITH_TIMER_FINAL + " WHERE " + KEY_TITLE + "='" + title+"' AND "+KEY_PRESENT_DATE + " ='"+pdate+"' AND "+KEY_TYPE_OF_PLAY +"= '"+typeofplay+"'", new String[]{});
+
+        if (cur.moveToFirst()) {
+            do {
+
+                Books books=new Books();
+                books.setTitle((cur.getString(cur.getColumnIndex(KEY_TITLE))));
+                books.setCategory((cur.getString(cur.getColumnIndex(KEY_CATEGORY))));
+                books.setSourceUrl((cur.getString(cur.getColumnIndex(KEY_SOURCE_URL))));
+                books.setThumbnail((cur.getString(cur.getColumnIndex(KEY_THUMB_NAIL))));
+                books.setPublishedOn((cur.getString(cur.getColumnIndex(KEY_PUBLISHED_ON))));
+                books.setReadstatus((cur.getInt(cur.getColumnIndex(KEY_READ_STATUS))));
+                books.setStarredstatus((cur.getInt(cur.getColumnIndex(KEY_STARRED_STATUS))));
+                books.setBookdownloadstatus((cur.getInt(cur.getColumnIndex(KEY_BOOK_DOWNLOAD_STATUS))));
+                books.setSortorder((cur.getString(cur.getColumnIndex(KEY_SORT_ORDER))));
+                books.setVersion((cur.getString(cur.getColumnIndex(KEY_VERSION))));
+                books.setCopystatus((cur.getInt(cur.getColumnIndex(KEY_COPY_STATUS))));
+                books.setReadfilestatus((cur.getInt(cur.getColumnIndex(KEY_READ_FILE_STATUS))));
+                books.setFolderName((cur.getString(cur.getColumnIndex(KEY_FOLDER_NAME))));
+                booksArrayList.add(books);
+            } while (cur.moveToNext());
+        }
+
+
+
+        cur.close();
+        db.close();
+
+        //  Log.e("quiz game database","answers.........."+answers);
+        // return contact
+        return booksArrayList;
+    }
+
 
 
 
@@ -639,6 +1268,58 @@ public class QuizGameDataBase extends SQLiteOpenHelper {
         //Log.e("quiz game database","user........."+user);
         // return contact
         return user;
+    }
+
+    public void insertBookContentUpdateDate(String date) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+
+        values.put(KEY_DATE, date);
+
+        // Inserting Row
+        db.insert(BOOK_CONTENT_CHECK_DATE, null, values);
+        //2nd argument is String containing nullColumnHack
+        db.close(); // Closing database connection
+    }
+
+    public int updateBookContentDate(String date,int id) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        //values.put(KEY_NAME, contact.getName());
+        values.put(KEY_DATE, date);
+
+        // updating row
+        return db.update(BOOK_CONTENT_CHECK_DATE, values, KEY_ID + " = ?",
+                new String[] { String.valueOf(id) });
+    }
+
+    public String getBookContentDate() {
+        //DailyChallenge dailyChallenge=new DailyChallenge();
+        // Log.e("quiz database","getWeekTotalScore....weekofyear..."+weekofyear);
+        String date = null;
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cur = db.rawQuery("SELECT * FROM " + BOOK_CONTENT_CHECK_DATE , new String[]{});
+
+        //Cursor cur = db.rawQuery("SELECT * FROM " + TABLE_QUIZ_WITH_TIMER_FINAL + " WHERE " + KEY_TITLE + "='" + title+"' AND "+KEY_PRESENT_DATE + " ='"+pdate+"' AND "+KEY_TYPE_OF_PLAY +"= '"+typeofplay+"'", new String[]{});
+        //count = cur.getCount();
+        if (cur.moveToFirst()) {
+            do {
+
+                date = (cur.getString(cur.getColumnIndex(KEY_DATE)));
+
+
+
+            } while (cur.moveToNext());
+        }
+        cur.close();
+        db.close();
+
+        Log.e("quiz game database","date.........."+date);
+        // return contact
+        return date;
     }
 
 
