@@ -115,11 +115,16 @@ class GradeActivity : BaseActivity(), GradeClickListener, PermissionListener  {
         databaseHandler = QuizGameDataBase(this);
         auth = FirebaseAuth.getInstance()
 
-        val settings = FirebaseFirestoreSettings.Builder()
-            .setPersistenceEnabled(true)
-            .setCacheSizeBytes(FirebaseFirestoreSettings.CACHE_SIZE_UNLIMITED)
-            .build()
-        db.firestoreSettings = settings
+        try{
+            val settings = FirebaseFirestoreSettings.Builder()
+                    .setPersistenceEnabled(true)
+                    .setCacheSizeBytes(FirebaseFirestoreSettings.CACHE_SIZE_UNLIMITED)
+                    .build()
+            db.firestoreSettings = settings
+        }catch (e:Exception){
+
+        }
+
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             getWindow().setNavigationBarColor(getResources().getColor(R.color.colorbottomnav));
         }

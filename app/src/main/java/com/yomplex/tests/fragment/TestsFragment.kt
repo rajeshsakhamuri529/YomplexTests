@@ -115,11 +115,11 @@ class TestsFragment: Fragment(),View.OnClickListener, TestClickListener,
         gradeTitle = arguments!!.getString(ConstantPath.TITLE_TOPIC)!!
         view.tests.elevation = 15F
         sharedPrefs = SharedPrefs()
-        val settings = FirebaseFirestoreSettings.Builder()
+        /*val settings = FirebaseFirestoreSettings.Builder()
             .setPersistenceEnabled(true)
             .setCacheSizeBytes(FirebaseFirestoreSettings.CACHE_SIZE_UNLIMITED)
             .build()
-        db.firestoreSettings = settings
+        db.firestoreSettings = settings*/
 
         mServiceResultReceiver = ServiceResultReceiver(Handler())
         mServiceResultReceiver?.setReceiver(this)

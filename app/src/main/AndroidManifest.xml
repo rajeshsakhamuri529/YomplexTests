@@ -23,7 +23,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:replace="android:appComponentFactory">
-        <activity android:name=".activity.OpenBookActivity"></activity>
+        <activity android:name=".activity.OpenBookActivity"
+            android:screenOrientation="portrait"></activity>
         <activity
             android:name=".activity.PhoneAuthActivity"
             android:screenOrientation="portrait"

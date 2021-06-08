@@ -7,6 +7,10 @@ import android.util.Log
 import android.view.ContextThemeWrapper
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.analytics.ktx.logEvent
+import com.google.firebase.ktx.Firebase
 import com.yomplex.tests.R
 import com.yomplex.tests.utils.ConstantPath
 import com.yomplex.tests.utils.SharedPrefs
@@ -26,17 +30,25 @@ class OpenBookActivity : BaseActivity() {
     override var layoutID: Int = R.layout.activity_open_book
     private var mDelayHandler: Handler? = null
     private val SPLASH_DELAY: Long = 1000 //3 seconds
-
+    private lateinit var firebaseAnalytics: FirebaseAnalytics
     internal val mRunnable: Runnable = Runnable {
         //if(!isDataFromFirebase){
             showProgressDialog("Please wait...");
         //}
 
     }
+    override fun onResume() {
+        super.onResume()
+        firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW) {
+            param(FirebaseAnalytics.Param.SCREEN_NAME, "BookView "+title)
+            param(FirebaseAnalytics.Param.SCREEN_CLASS, "OpenBookActivity")
+        }
+    }
     override fun initView() {
         appBarID.elevation = 20F
         sharedPrefs = SharedPrefs()
-
+        firebaseAnalytics = Firebase.analytics
+        Log.e("open book activity", "initView...");
         //Initialize the Handler
       //  mDelayHandler = Handler()
         //Navigate with delay
@@ -78,6 +90,10 @@ class OpenBookActivity : BaseActivity() {
         // Below line prevent vibration on Long click
         webView!!.setHapticFeedbackEnabled(false);
         webView!!.settings.javaScriptEnabled = true
+
+       //webView!!.setScrollBarStyle(WebView.SCROLLBARS_INSIDE_OVERLAY);
+       // webView!!.setScrollbarFadingEnabled(true);
+      //  webView!!.setVerticalScrollBarEnabled(true);
         val dirpath = File((getCacheDir())!!.absolutePath)
         val dirFile1 = File(dirpath, "Books/" + category + "/" + foldername + "/index.html")
         //var bookpath = File()

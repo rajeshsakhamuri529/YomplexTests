@@ -2,6 +2,7 @@ package com.yomplex.tests.model;
 
 public class Books {
 
+    private String id;
     private String Title;
     private String FolderName;
     private String Category;
@@ -13,10 +14,12 @@ public class Books {
     private int bookdownloadstatus;
     private String sortorder;
     private String version;
+    private String visibility;
     private int copystatus;
     private int readfilestatus;
 
-    public Books(String title, String category, String sourceurl, String thumbnail, String publishedon,int readstatus,int starredstatus,int downloadstatus,String sortorder,String version,int copystatus,int readfilestatus,String folderName){
+    public Books(String Id,String title, String category, String sourceurl, String thumbnail, String publishedon,int readstatus,int starredstatus,int downloadstatus,String sortorder,String version,int copystatus,int readfilestatus,String folderName,String visibility){
+        this.id = Id;
         this.Title = title;
         this.Category = category;
         this.SourceUrl = sourceurl;
@@ -30,10 +33,19 @@ public class Books {
         this.readfilestatus = readfilestatus;
         this.copystatus = copystatus;
         this.FolderName = folderName;
+        this.visibility = visibility;
     }
 
     public Books() {
 
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getTitle() {
@@ -138,5 +150,13 @@ public class Books {
 
     public void setFolderName(String folderName) {
         FolderName = folderName;
+    }
+
+    public String getVisibility() {
+        return visibility;
+    }
+
+    public void setVisibility(String visibility) {
+        this.visibility = visibility;
     }
 }

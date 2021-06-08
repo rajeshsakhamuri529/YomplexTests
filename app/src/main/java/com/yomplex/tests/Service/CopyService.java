@@ -64,7 +64,8 @@ public class CopyService extends JobIntentService {
             Log.e("dashboard","booksJsonString...booksCountmodel..."+booksCountmodel.size());
             for(int i = 0;i<booksCountmodel.size();i++){
                 Books booksCount = booksCountmodel.get(i);
-                int count = dataBase.getBooksCount(booksCount.getTitle(), booksCount.getCategory());
+
+                int count = dataBase.getBooksCount(booksCount.getId());
                 if (count == 0) {
                     Log.e("dash board","booksJsonString...count......."+count);
                     dataBase.insertBooks(booksCount);
@@ -114,14 +115,14 @@ public class CopyService extends JobIntentService {
                 dataBase.updatebookscopystatus(1,files[i].getName(),filename.replace(".zip",""));
                 dataBase.updatebooksreadfilestatus(1,files[i].getName(),filename.replace(".zip",""));
             }
-            SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd");
+            /*SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd");
             String date = dataBase.getBookContentDate();
             if(date != null){
                 dataBase.updateBookContentDate(format1.format(Utils.date),1);
             }else{
                 //Log.e("content download","date......................."+format1.format(Utils.date));
                 dataBase.insertBookContentUpdateDate(format1.format(Utils.date));
-            }
+            }*/
             dataBase.updatebooksdownloadstatusfromlocal(1,filename.replace(".zip",""));
 
 

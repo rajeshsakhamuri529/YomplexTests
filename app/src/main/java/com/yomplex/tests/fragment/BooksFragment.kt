@@ -24,6 +24,7 @@ import com.google.firebase.ktx.Firebase
 import com.yomplex.tests.R
 import com.yomplex.tests.Service.BooksDownloadService
 import com.yomplex.tests.Service.CopyService
+import com.yomplex.tests.activity.ContentVersionUpdateService
 import com.yomplex.tests.activity.OpenBookActivity
 import com.yomplex.tests.adapter.BooksAdapter
 import com.yomplex.tests.database.QuizGameDataBase
@@ -79,19 +80,80 @@ class BooksFragment: Fragment(), BooksClickListener {
         if(unreadList!!.size == 0){
             startcopyService(activity!!)
         }else{
-            val statuslist = databaseHandler!!.getbooksdownloadstatus()
+            /*val statuslist = databaseHandler!!.getbooksdownloadstatus()
             if(statuslist!!.contains(0)){
-                startcopyService(activity!!)
-            }else{
-                adapter = BooksAdapter(context!!,unreadList!!,this)
-                view.rcv_books.addItemDecoration(VerticalSpaceItemDecoration(getResources().getDimension(R.dimen._15sdp)
+                //startcopyService(activity!!)
+                if(isNetworkConnected()) {
+                    downloadServiceFromBackground(activity!!,db)
+                }
+
+            }else{*/
+           // if(unreadList!!.size > 0){
+            adapter = BooksAdapter(context!!,unreadList!!,this)
+            view.rcv_books.addItemDecoration(VerticalSpaceItemDecoration(getResources().getDimension(R.dimen._15sdp)
                     .toInt()));
-                view.rcv_books.addItemDecoration(HorigontalSpaceItemDecoration(getResources().getDimension(R.dimen._25sdp)
+            view.rcv_books.addItemDecoration(HorigontalSpaceItemDecoration(getResources().getDimension(R.dimen._25sdp)
                     .toInt()));
-                //rcv_chapter.addItemDecoration(itemDecorator)
-                //rcv_chapter.addItemDecoration(DividerItemDecoration(context,))
-                view.rcv_books.adapter = adapter
-            }
+            //rcv_chapter.addItemDecoration(itemDecorator)
+            //rcv_chapter.addItemDecoration(DividerItemDecoration(context,))
+            view.rcv_books.adapter = adapter
+
+
+                val format1 = SimpleDateFormat("yyyy-MM-dd")
+
+                var dbdate = databaseHandler!!.getBookContentDate()
+                if(dbdate != null){
+                    try{
+                        Log.e("books fragment","db date......"+dbdate)
+                        Log.e("books fragment","Utils.date......"+Utils.date)
+                        Log.e("books fragment","format1.parse(dbdate)......"+format1.parse(dbdate))
+                        var s = format1.format(Utils.date)
+                        Log.e("books fragment","format1.parse(s)......"+format1.parse(s))
+
+                        Log.e("books fragment","BooksDownloadService.isservice......"+BooksDownloadService.isservice)
+                        if(format1.parse(dbdate) < format1.parse(s)){
+                            val connectivityManager = activity!!.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+                            val activeNetwork: NetworkInfo? = connectivityManager.activeNetworkInfo
+                            val isConnected: Boolean = activeNetwork?.isConnected == true
+                            Log.d("isConnected",isConnected.toString()+"!")
+
+                            if(isNetworkConnected()) {
+                                if(!BooksDownloadService.isservice){
+                                    downloadServiceFromBackground(activity!!,db)
+                                }
+
+
+
+                            }
+
+
+
+                        }
+                    }catch (e:Exception){
+
+                    }
+
+                }else{
+                    val connectivityManager = activity!!.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+                    val activeNetwork: NetworkInfo? = connectivityManager.activeNetworkInfo
+                    val isConnected: Boolean = activeNetwork?.isConnected == true
+                    Log.d("isConnected",isConnected.toString()+"!")
+                    if(isNetworkConnected()) {
+
+                        if(!BooksDownloadService.isservice){
+                            downloadServiceFromBackground(activity!!,db)
+                        }
+
+
+                    }
+                }
+
+
+
+
+
+
+           // }
 
         }
 
@@ -291,41 +353,9 @@ class BooksFragment: Fragment(), BooksClickListener {
 
         }
 
-        val format1 = SimpleDateFormat("yyyy-MM-dd")
-
-        var dbdate = databaseHandler!!.getBookContentDate()
-        if(dbdate != null){
-            try{
-                Log.e("tests fragment","db date......"+dbdate)
-                Log.e("tests fragment","Utils.date......"+Utils.date)
-                Log.e("tests fragment","format1.parse(dbdate)......"+format1.parse(dbdate))
-                var s = format1.format(Utils.date)
-                Log.e("tests fragment","format1.parse(s)......"+format1.parse(s))
 
 
-                if(format1.parse(dbdate) < format1.parse(s)){
-                    val connectivityManager = activity!!.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-                    val activeNetwork: NetworkInfo? = connectivityManager.activeNetworkInfo
-                    val isConnected: Boolean = activeNetwork?.isConnected == true
-                    Log.d("isConnected",isConnected.toString()+"!")
-                    if(isNetworkConnected()) {
-                        downloadServiceFromBackground(activity!!,db)
-                    }
 
-                }
-            }catch (e:Exception){
-
-            }
-
-        }else{
-            val connectivityManager = activity!!.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-            val activeNetwork: NetworkInfo? = connectivityManager.activeNetworkInfo
-            val isConnected: Boolean = activeNetwork?.isConnected == true
-            Log.d("isConnected",isConnected.toString()+"!")
-            if(isNetworkConnected()) {
-                downloadServiceFromBackground(activity!!,db)
-            }
-        }
 
 
 
@@ -379,8 +409,10 @@ class BooksFragment: Fragment(), BooksClickListener {
                 //Toast.makeText(context,"end",Toast.LENGTH_SHORT).show()
             }
         }
+       // Log.e("books fragment", "onReadClick...status..."+ status);
+       // Log.e("books fragment", "onReadClick...book.bookdownloadstatus..."+ book.bookdownloadstatus);
         if(status == 1){
-            if(book.bookdownloadstatus == 1){
+            if(book.readfilestatus == 1){
                // view.startAnimation(buttonClick)
                 //buttonEffect(view,true)
                 databaseHandler!!.updateBooksReadStatus(status,book.title,book.category)
@@ -394,11 +426,11 @@ class BooksFragment: Fragment(), BooksClickListener {
                 startActivity(i)
                 (activity as Activity).overridePendingTransition(0, 0)
             }else{
-
+                //Toast.makeText(activity!!,"status 1 else...."+book.readfilestatus,Toast.LENGTH_SHORT).show()
             }
 
         }else{
-            if(book.bookdownloadstatus == 1){
+            if(book.readfilestatus == 1){
                // view.startAnimation(buttonClick)
                 //buttonEffect(view,true)
                 val i = Intent(activity, OpenBookActivity::class.java)
@@ -408,7 +440,7 @@ class BooksFragment: Fragment(), BooksClickListener {
                 startActivity(i)
                 (activity as Activity).overridePendingTransition(0, 0)
             }else{
-
+                //Toast.makeText(activity!!,"status 0 else...."+book.readfilestatus,Toast.LENGTH_SHORT).show()
             }
 
         }

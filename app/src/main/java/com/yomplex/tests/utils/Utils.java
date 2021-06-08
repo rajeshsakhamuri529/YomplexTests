@@ -4,6 +4,8 @@ import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.app.job.JobInfo;
+import android.app.job.JobScheduler;
 import android.content.Context;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
@@ -21,10 +23,12 @@ import android.text.style.RelativeSizeSpan;
 import android.util.Log;
 import android.webkit.WebView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Tracker;
 import com.yomplex.tests.R;
+import com.yomplex.tests.Service.BooksDownloadService;
 import com.yomplex.tests.activity.PhoneAuthActivity;
 
 import org.jsoup.Jsoup;
@@ -155,6 +159,25 @@ public class Utils {
                 }
             }
             Log.i("isMyServiceRunning?", false + "");
+        } catch (SecurityException | NullPointerException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public static boolean isMyDownloadServiceRunning(Context _activity, Class<?> serviceClass) {
+        try {
+            ActivityManager manager = (ActivityManager) _activity.getSystemService(Context.ACTIVITY_SERVICE);
+            if (manager != null) {
+                for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+
+                    if (serviceClass.getName().equals(service.service.getClassName())) {
+                        Log.i("isMyDownloadService?", true + "");
+                        return true;
+                    }
+                }
+            }
+            Log.i("isMyDownloadService?", false + "");
         } catch (SecurityException | NullPointerException e) {
             e.printStackTrace();
         }
@@ -813,6 +836,23 @@ public class Utils {
     public static int getTimerTime(){
 
         return timerTime;
+    }
+
+    public static boolean isJobServiceOn( Context context ) {
+        JobScheduler scheduler = (JobScheduler) context.getSystemService( Context.JOB_SCHEDULER_SERVICE );
+
+        boolean hasBeenScheduled = false ;
+
+        for ( JobInfo jobInfo : scheduler.getAllPendingJobs() ) {
+            if ( jobInfo.getId() == 1001 ) {
+                hasBeenScheduled = true ;
+                break ;
+            }
+        }
+
+            Toast.makeText(context,"hasBeenScheduled....."+hasBeenScheduled,Toast.LENGTH_SHORT).show();
+
+        return hasBeenScheduled ;
     }
 
 

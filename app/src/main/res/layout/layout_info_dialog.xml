@@ -55,7 +55,7 @@
                     android:id="@+id/titleTxt"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="TinyTests for JEE Maths"
+                    android:text="JEE Maths"
 
 
                     android:textColor="#00ce73"

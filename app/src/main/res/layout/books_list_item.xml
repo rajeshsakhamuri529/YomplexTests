@@ -38,7 +38,7 @@
             android:layout_width="@dimen/_8sdp"
             android:layout_height="@dimen/_8sdp"
             android:background="@drawable/books_unread_dot"
-            android:layout_marginTop="@dimen/_5sdp"
+            android:layout_marginTop="@dimen/_6sdp"
             android:layout_marginLeft="@dimen/_8sdp">
         </RelativeLayout>
 

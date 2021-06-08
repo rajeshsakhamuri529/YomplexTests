@@ -54,13 +54,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/tiny_textbooks"
-                android:textSize="@dimen/_14ssp"
-                android:layout_marginLeft="@dimen/_6sdp"
+                android:textSize="@dimen/_15ssp"
+                android:layout_marginLeft="@dimen/_5sdp"
                 android:layout_centerVertical="true"
                 android:layout_toRightOf="@+id/backRL"
                 android:textColor="@color/chapters_text"
                 android:textStyle="bold"
-                android:fontFamily="@font/lato_light"
+                android:fontFamily="@font/lato_black"
                 />
 
 
@@ -82,11 +82,15 @@
         android:id="@+id/webView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-
-
+        android:scrollbarSize="@dimen/_3sdp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:padding="@dimen/_3sdp"
         android:background="#E8E8E8"
         android:layout_below="@+id/appBarID"
-        android:scrollbars="none"
+        android:scrollbars="vertical"
+        android:scrollbarThumbVertical="@drawable/scrollbarcolor"
         android:layout_gravity="center_horizontal"/>
 
     <!--<com.github.barteksc.pdfviewer.PDFView
