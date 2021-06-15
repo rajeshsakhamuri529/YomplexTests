@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
+
+<svg 
+     version="1.1"
+     baseProfile="full"
+     xmlns="http://www.w3.org/2000/svg"
+     xmlns:xlink="http://www.w3.org/1999/xlink"
+     xmlns:ev="http://www.w3.org/2001/xml-events"
+     width="10.608cm"
+     height="6.0cm"
+     viewBox="0 0 881 499"
+     >
+<title>
+
+</title>
+<g stroke-linejoin="miter" stroke-dashoffset="0.0000" stroke-dasharray="none" stroke-width="1.0000" stroke-miterlimit="10.000" stroke-linecap="square">
+<g id="misc">
+</g><!-- misc -->
+<g id="layer0">
+<clipPath id="clipfbf94531-09be-4029-8d3c-ccfd984aecff">
+  <path d="M 0.0000 0.0000 L 0.0000 500.00 L 884.00 500.00 L 884.00 0.0000 z"/>
+</clipPath>
+<g clip-path="url(#clip1)">
+<g stroke-linejoin="round" stroke-width="4.5000" stroke-linecap="round" fill="none" stroke-opacity=".69804" stroke="#0096ff">
+  <path d="M 1006.5 -2.0000 C 6.5000 164.67 6.5000 331.33 1006.5 498.00"/>
+<title>Parabola c</title>
+<desc>c: y² = x</desc>
+
+</g> <!-- drawing style -->
+</g> <!-- clip1 -->
+<clipPath id="clip3b46d193-74c4-44c0-8dd3-94993e8be111">
+  <path d="M 0.0000 0.0000 L 0.0000 500.00 L 884.00 500.00 L 884.00 0.0000 z"/>
+</clipPath>
+<g clip-path="url(#clip2)">
+<g stroke-linejoin="round" stroke-dasharray="7.0000,4.0000" stroke-width="3.0000" stroke-linecap="butt" fill="none" stroke-opacity=".69804" stroke="#404040">
+  <path d="M -5.0000 248.00 L 889.00 248.00"/>
+<title>Line g</title>
+<desc>g: y = 0</desc>
+
+</g> <!-- drawing style -->
+</g> <!-- clip2 -->
+<clipPath id="clipa5af69cc-6ec1-403f-b48a-a0742694c2fb">
+  <path d="M 0.0000 0.0000 L 0.0000 500.00 L 884.00 500.00 L 884.00 0.0000 z"/>
+</clipPath>
+<g clip-path="url(#clip3)">
+<g fill-opacity="1.0000" fill-rule="nonzero" stroke="none" fill="#202020">
+  <path d="M 263.50 248.00 C 263.50 251.87 260.37 255.00 256.50 255.00 C 252.63 255.00 249.50 251.87 249.50 248.00 C 249.50 244.13 252.63 241.00 256.50 241.00 C 260.37 241.00 263.50 244.13 263.50 248.00 z"/>
+<title>Point O</title>
+<desc>O = (0, 0)</desc>
+
+</g> <!-- drawing style -->
+</g> <!-- clip3 -->
+<g transform="matrix(51.000, 0.0000, 0.0000, 51.000, 204.00, 297.85)">
+<clipPath id="clipbad72b15-4527-4116-813a-e1d6ad8a111f">
+  <path d="M -4.0000 -5.8402 L -4.0000 3.9637 L 13.333 3.9637 L 13.333 -5.8402 z"/>
+</clipPath>
+<g clip-path="url(#clip4)">
+<g fill-opacity="1.0000" fill-rule="nonzero" stroke="none" fill="#404040">
+  <path d="M .73438 -.43750 L .73438 -.43750 Q .73438 -.28125 .62500 -.15625 Q .53125 -.031250 .39062 .015625 Q .34375 .015625 .31250 .015625 Q .18750 .015625 .10938 -.062500 Q .046875 -.14062 .046875 -.25000 Q .046875 -.39062 .15625 -.53125 Q .25000 -.65625 .39062 -.68750 Q .43750 -.70312 .48438 -.70312 Q .60938 -.70312 .68750 -.60938 Q .73438 -.54688 .73438 -.43750 z M .31250 -0.0000 L .31250 -0.0000 Q .40625 -0.0000 .48438 -.093750 Q .51562 -.10938 .53125 -.12500 Q .62500 -.25000 .64062 -.42188 Q .65625 -.45312 .65625 -.46875 Q .65625 -.60938 .56250 -.65625 Q .56250 -.65625 .56250 -.65625 Q .51562 -.68750 .48438 -.68750 Q .39062 -.68750 .29688 -.59375 Q .26562 -.56250 .23438 -.53125 Q .15625 -.40625 .14062 -.25000 Q .14062 -.23438 .14062 -.21875 Q .14062 -.093750 .21875 -.031250 Q .26562 -0.0000 .31250 -0.0000 z"/>
+<title>$O$</title>
+<desc>text1_1 = “$O$”</desc>
+
+</g> <!-- drawing style -->
+</g> <!-- clip4 -->
+</g> <!-- transform -->
+</g><!-- layer0 -->
+</g> <!-- default stroke -->
+</svg> <!-- bounding box -->

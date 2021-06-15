@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xl="http://www.w3.org/1999/xlink" viewBox="0 0 300 200" width="300" height="200">
+  <defs/>
+  <metadata> Produced by OmniGraffle 7.18.5\n2021-05-21 13:36:07 +0000</metadata>
+  <g id="Canvas_1" stroke-dasharray="none" fill="none" stroke-opacity="1" stroke="none" fill-opacity="1">
+    <title>Canvas 1</title>
+    <g id="Canvas_1_Hyperbola">
+      <title>Hyperbola</title>
+      <g id="Group_45">
+        <title>_x33_D_Shapes</title>
+        <g id="Group_60">
+          <title>Cone_x5F_Top</title>
+          <g id="Graphic_67">
+            <title>Base_triangle_5_</title>
+            <path d="M 92.04998 100.3 C 92.04998 100.3 50.449975 31 50.449975 28.2 C 50.449975 25.4 66.249975 15.8 92.04998 15.8 C 117.84998 15.8 133.64998 25.8 133.64998 28.2 C 133.64998 30.6 92.04998 100.3 92.04998 100.3 Z" fill="#e1e1e1"/>
+          </g>
+          <g id="Graphic_66">
+            <title>Triangle_shadow_4_</title>
+            <path d="M 92.04998 100.3 C 92.04998 100.3 98.94998 68.1 101.64998 54.6 C 104.44998 40.3 106.54998 16.9 106.54998 16.9 C 106.54998 16.9 117.14998 18.9 121.64998 20.8 C 126.14998 22.7 133.64998 28.2 133.64998 28.2 Z" fill="#d7d7d7"/>
+          </g>
+          <g id="Graphic_65">
+            <title>Triangle_shine_4_</title>
+            <path d="M 92.04998 100.3 L 57.249975 22.8 C 57.249975 22.8 58.749975 22.3 64.249975 20.1 C 69.749975 17.9 92.04998 100.3 92.04998 100.3 Z" fill="#ebebeb"/>
+          </g>
+          <g id="Graphic_64">
+            <title>Orange_back_line</title>
+            <path d="M 119.54998 20.1 C 119.54998 20.1 118.84998 55.2 105.44998 77.7" stroke="#0096ff" stroke-opacity=".4" stroke-linecap="butt" stroke-linejoin="round" stroke-width="2"/>
+          </g>
+          <g id="Group_61">
+            <title>External_triangle_stroke_3_</title>
+            <g id="Graphic_63">
+              <path d="M 92.04998 100.3 C 92.04998 100.3 50.449975 31 50.449975 28.2 C 50.449975 25.4 66.249975 15.8 92.04998 15.8 C 117.84998 15.8 133.64998 25.8 133.64998 28.2 C 133.64998 30.6 92.04998 100.3 92.04998 100.3 Z" stroke="#5e5e5e" stroke-linecap="butt" stroke-linejoin="round" stroke-width="2"/>
+            </g>
+            <g id="Graphic_62">
+              <title>line</title>
+              <path d="M 133.64998 28.2 C 133.64998 28.2 128.84998 38.2 92.04998 38.2 C 55.249975 38.2 50.449975 28.2 50.449975 28.2" stroke="#5e5e5e" stroke-linecap="butt" stroke-linejoin="round" stroke-width="2"/>
+            </g>
+          </g>
+        </g>
+        <g id="Group_54">
+          <title>Cone_x5F_Bottom</title>
+          <g id="Graphic_59">
+            <title>Base_triangle_6_</title>
+            <path d="M 92.04998 100.3 C 92.04998 100.3 50.449975 169.6 50.449975 172.4 C 50.449975 175.1 66.249975 184.8 92.04998 184.8 C 117.84998 184.8 133.64998 174.8 133.64998 172.4 C 133.64998 169.9 92.04998 100.3 92.04998 100.3 Z" fill="#e1e1e1"/>
+          </g>
+          <g id="Graphic_58">
+            <title>Triangle_shadow_5_</title>
+            <path d="M 92.04998 100.3 C 92.04998 100.3 98.94998 132.5 101.64998 146 C 104.44998 160.2 106.54998 183.7 106.54998 183.7 C 106.54998 183.7 117.14998 181.7 121.64998 179.8 C 126.14998 177.9 133.64998 172.4 133.64998 172.4 Z" fill="#d7d7d7"/>
+          </g>
+          <g id="Graphic_57">
+            <title>Triangle_shine_5_</title>
+            <path d="M 92.04998 100.3 L 57.249975 177.7 C 57.249975 177.7 58.749975 178.2 64.249975 180.4 C 69.749975 182.5 92.04998 100.3 92.04998 100.3 Z" fill="#ebebeb"/>
+          </g>
+          <g id="Graphic_56">
+            <title>Dotted_line_5_</title>
+            <path d="M 133.64998 172.3 C 133.64998 172.3 128.84998 162.3 92.04998 162.3 C 55.249975 162.3 50.449975 172.3 50.449975 172.3" stroke="#c1c1c1" stroke-linecap="butt" stroke-linejoin="round" stroke-width="2"/>
+          </g>
+          <g id="Line_74">
+            <title>added-line</title>
+            <path d="M 111.71735 133.98927 C 117.62075 156.7084 117.97853 163.86404 117.97853 163.86404" stroke="#0096ff" stroke-opacity=".4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+          </g>
+          <g id="Graphic_55">
+            <title>External_triangle_stroke</title>
+            <path d="M 92.04998 100.3 C 92.04998 100.3 50.449975 169.6 50.449975 172.4 C 50.449975 175.1 66.249975 184.8 92.04998 184.8 C 117.84998 184.8 133.64998 174.8 133.64998 172.4 C 133.64998 169.9 92.04998 100.3 92.04998 100.3 Z" stroke="#5e5e5e" stroke-linecap="butt" stroke-linejoin="round" stroke-width="2"/>
+          </g>
+        </g>
+        <g id="Graphic_53">
+          <title>Plane</title>
+          <path d="M 104.64998 16.6 L 83.14998 28.6 L 83.14998 37.9 L 83.14998 85.3 L 83.14998 115.1 L 83.14998 184.3 L 83.14998 192.2 L 89.24998 184.7 L 89.64998 184.1 C 90.34998 178.6 96.34998 134.5 102.84998 130.4 C 106.24998 128.3 110.14998 131.9 113.44998 136.4 C 116.24998 140.2 118.54998 144.6 120.34998 146.6 L 120.34998 53.7 C 114.94998 61.5 109.94998 70.1 105.44998 77.7 C 100.54998 85.9 87.24998 38.1 87.24998 38.1 L 120.34998 19.5 L 120.34998 19.4 L 120.34998 7.8 Z" fill="#b9e8ff"/>
+        </g>
+        <g id="Graphic_52">
+          <title>Cone_x5F_Top_Stroke</title>
+          <path d="M 104.94998 78.5 C 117.24998 57.8 133.64998 29.7 133.64998 28.2 C 133.64998 28.2 128.84998 38.2 92.04998 38.2 C 90.34998 38.2 88.74998 38.2 87.24998 38.1" stroke="#5e5e5e" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+        </g>
+        <g id="Group_49">
+          <title>Cone_x5F_Bottom_Stroke</title>
+          <g id="Graphic_51">
+            <path d="M 111.64998 133.7 C 110.64998 132.4 109.84998 131.4 109.04998 130.7" stroke="#5e5e5e" stroke-linecap="butt" stroke-linejoin="round" stroke-width="2"/>
+          </g>
+          <g id="Graphic_50">
+            <path d="M 111.64998 133.7 C 112.24998 134.5 112.84998 135.4 113.54998 136.5 C 123.74998 154 133.74998 171.2 133.74998 172.3 C 133.74998 174.7 117.94998 184.7 92.14998 184.7 C 91.34998 184.7 90.44998 184.7 89.64998 184.7" stroke="#5e5e5e" stroke-linecap="butt" stroke-linejoin="round" stroke-width="2"/>
+          </g>
+        </g>
+        <g id="Graphic_48">
+          <title>Cone_x5F_Bottom_Orange_top_line</title>
+          <path d="M 109.04998 130.7 C 107.74998 129.5 106.64998 129 105.64998 129 C 104.64998 129.1 103.74998 129.4 102.84998 130.5 C 98.14998 136.5 90.04998 179.5 89.34998 185.8" stroke="#0096ff" stroke-linecap="butt" stroke-linejoin="round" stroke-width="2"/>
+        </g>
+        <g id="Group_46">
+          <title>Cone_x5F_top_Orange_top_line</title>
+          <g id="Graphic_47">
+            <path d="M 104.94998 78.5 C 101.54998 84.5 89.04998 44.4 87.44998 38.8 L 87.24998 38.2" stroke="#0096ff" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+          </g>
+        </g>
+      </g>
+      <g id="Group_68">
+        <title>Orange_Lines</title>
+        <g id="Graphic_70">
+          <title>Orange_Line_Bottom</title>
+          <path d="M 261.70005 141.7 C 261.70005 141.7 230.90005 109.5 217.00005 109.5 C 203.10005 109.5 172.30005 141.7 172.30005 141.7" stroke="#0096ff" stroke-linecap="butt" stroke-linejoin="round" stroke-width="2"/>
+        </g>
+        <g id="Graphic_69">
+          <title>Orange_Line_Top</title>
+          <path d="M 172.30005 58.3 C 172.30005 58.3 203.10005 90.5 217.00005 90.5 C 230.90005 90.5 261.70005 58.3 261.70005 58.3" stroke="#0096ff" stroke-linecap="butt" stroke-linejoin="round" stroke-width="2"/>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>

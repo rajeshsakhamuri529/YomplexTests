@@ -354,18 +354,7 @@ public class BooksDownloadService extends JobIntentService {
                                             File dirFile = new File(context1.getCacheDir(),"Books/"+category+"/"+foldername+".zip");
                                             dirFile.delete();
                                             File dirFile1 = new File(context1.getCacheDir(),"Books/"+category+"/"+foldername+"/thumbnail.svg");
-                                            /*dataBase.updatebooksversionbasedonId(version,id);
-                                            dataBase.updatebooksdownloadstatusbasedonId(1,id);
-                                            dataBase.updatebooksreadfilestatusbasedonId(1,id);
-                                            dataBase.updatebooksthumbnailbasedonId(dirFile1.getAbsolutePath(),id);
 
-                                            dataBase.updatebookstitlebasedonId(title,id);
-
-                                            dataBase.updatebooksurlbasedonId(url,id);
-                                            dataBase.updatebookssortorderbasedonId(sortorder,id);
-                                            dataBase.updatebookspublishedonbasedonId(publishedon,id);
-                                            dataBase.updatebookscategorybasedonId(category,id);
-                                            dataBase.updatebooksvisibilitybasedonId(visibility,id);*/
 
                                             dataBase.updatebooksValues(id,version,1,1,dirFile1.getAbsolutePath(),title,url,sortorder,publishedon,category,visibility);
                                             SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd");

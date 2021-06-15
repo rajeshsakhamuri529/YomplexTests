@@ -1,0 +1,242 @@
+@font-face {
+        font-family: 'Lato';
+        src: url('fonts/Lato-Black.ttf');
+	font-weight: 900;
+	font-style: bold;
+}
+@font-face {
+        font-family: 'Lato';
+        src: url('fonts/Lato-Bold.ttf');
+        font-weight: 700;
+	font-style: bold;
+}
+@font-face {
+        font-family: 'Lato';
+        src: url('fonts/Lato-Regular.ttf');
+        font-weight: 400;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'MathJaxMain';
+	src: url('fonts/MathJax_Main-Regular.otf');
+	font-style: normal;
+	font-weight: 600;
+}
+
+@font-face {
+	font-family: 'MathJaxMain';
+	src: url('fonts/MathJax_Main-Bold.otf');
+	font-style: bold;
+	font-weight: 700;
+}
+
+@font-face {
+        font-family: 'MathJaxMain';
+        src: url('fonts/MathJax_Main-Italic.otf');
+	font-style: italic;
+	font-weight: 600;
+}
+
+body {
+	background-color: transparent;
+	font-size: 121% !important;
+	font-family: 'MathJaxMain' !important;
+	font-style: normal;
+	margin: 0px 0px 100px 0px;
+	line-height: 28px;
+	color: #424242;
+	counter-reset: h2counter;
+	padding: 1.2em;
+}
+
+html body{
+	line-height: 1.5;
+}
+
+hr{
+	border: 1px solid #ddd;
+}
+
+table, th, td {
+	border: 1px solid #ddd;
+}
+table{
+	width: 100%;
+	border-collapse: collapse;
+}
+th{
+	background-color: #f2f2f2;
+}
+th, td {
+	padding: 5px;
+	text-align: left;
+}
+
+img{
+	width: 100%;
+}
+
+h1 {
+        counter-reset: h2counter;
+}
+h2:before {
+	content: counter(h2counter) ".\0000a0\0000a0";
+        counter-increment: h2counter;
+        counter-reset: h3counter;
+}
+
+.katex {
+	font: normal 1em KaTeX_Main,Times New Roman,serif
+}
+
+html body[for="html-export"]:not([data-presentation-mode]) .markdown-preview{
+	font-size: 110% !important;
+}
+
+h2, h3{
+	font-family: 'Lato', sans-serif;
+}
+
+html body h2{
+	font-size: 1em;
+	padding: 25px 0px; /*25px 15px;*/
+	margin: 0px; /*3em -1.0em 1.5em;*/
+	font-weight: 900;
+	flex: 1;
+}
+
+html body h3{
+	font-size: 0.95em;
+}
+
+html body ul, html body ol{
+	padding-left: 1em;
+}
+
+html body ul ul, html body ol ol{
+        padding-left: 1em;
+}
+
+html body ul > li::marker, html body ol > li::marker,
+html body ul > li:before, html body ol > li:before{
+	font-weight: 700;
+	font-family: 'Lato', sans-serif;
+	font-size: 90%;
+}
+
+html body li{
+	padding-left: 8px;
+}
+
+html body ul > li, html body ol > li{
+	margin-bottom: 10px;
+}
+
+html body ul > li > p, html body ol > li > p{
+	font-weight: normal;
+}
+
+html body ul > li > ul, html body ol > li > ol{
+	list-style-type: lower-alpha;
+}
+
+u{
+	text-underline-offset: 1px;
+	text-decoration-thickness: 0.07em;
+}
+
+nav {
+	font-family: 'Lato', sans-serif;
+	font-size: 90% !important;
+}
+nav a, nav a:active{
+	text-decoration: none;
+	color: #7A81FF;
+}
+nav ul{
+	list-style: decimal;
+	font-weight: 700;
+}
+
+figure{
+	margin: 0px;
+	line-height: 0px;
+}
+figure img{
+	margin: 10px 0px;
+}
+img{
+	margin: 20px 0px 15px 0px;
+}
+figcaption{
+	display: none;
+}
+
+img.accordion{
+	width: 10px;
+	height: 10px;
+        transition: transform 400ms linear;
+        transform-origin: center;
+	margin: 0px;
+	padding-left: 5px;
+	padding-right: 5px;
+	fill: #7A81FF;
+}
+div.active img.accordion{
+        transform: rotate(180deg);
+}
+
+.viewanswer{
+	margin-top: -10px;
+	padding: 0px 0px 10px;
+        color: #7A81FF;
+	font-family: 'Lato', sans-serif;
+	font-weight: 400;
+	font-size: 12px;
+	text-transform: uppercase;
+	letter-spacing: 1px;
+}
+.answer{
+	display: none;
+	height: 0;
+	opacity: 0;
+	transition: all 400ms ease;
+	font-weight: normal;
+	font-size: 90% !important;
+	background-color: #f2f2f2;
+	padding: 10px 15px 10px 15px;
+	border-radius: 5px;
+	margin-left: -15px;
+}
+
+ol ol .viewanswer{
+	padding: 12px 0px 10px;
+	margin: 0px;
+}
+.active+div {
+	display: block;
+	opacity: 1;
+	height: auto;
+}
+
+.MathJax_SVG_Display{
+	overflow-x: auto;
+}
+
+div.gototop{
+	align-items: center;
+	display: flex;
+	padding: 0px 15px;
+	margin: 3em -1.2em 1.5em;
+}
+div.gototop a{
+	line-height: 0px;
+}
+div.gototop img{
+	margin: 0px;
+	width: 16px;
+	height: 16px;
+	padding: 0px 10px;
+	vertical-align: middle;
+}

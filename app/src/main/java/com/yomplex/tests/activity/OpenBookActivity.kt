@@ -1,5 +1,6 @@
 package com.yomplex.tests.activity
 
+import android.app.Activity
 import android.app.ProgressDialog
 import android.content.Intent
 import android.os.Handler
@@ -10,8 +11,10 @@ import android.webkit.WebViewClient
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.analytics.ktx.logEvent
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
 import com.yomplex.tests.R
+import com.yomplex.tests.Service.BooksDownloadService
 import com.yomplex.tests.utils.ConstantPath
 import com.yomplex.tests.utils.SharedPrefs
 import com.yomplex.tests.utils.Utils
@@ -30,6 +33,7 @@ class OpenBookActivity : BaseActivity() {
     override var layoutID: Int = R.layout.activity_open_book
     private var mDelayHandler: Handler? = null
     private val SPLASH_DELAY: Long = 1000 //3 seconds
+    private val db: FirebaseFirestore = FirebaseFirestore.getInstance()
     private lateinit var firebaseAnalytics: FirebaseAnalytics
     internal val mRunnable: Runnable = Runnable {
         //if(!isDataFromFirebase){
@@ -96,6 +100,7 @@ class OpenBookActivity : BaseActivity() {
       //  webView!!.setVerticalScrollBarEnabled(true);
         val dirpath = File((getCacheDir())!!.absolutePath)
         val dirFile1 = File(dirpath, "Books/" + category + "/" + foldername + "/index.html")
+
         //var bookpath = File()
         Log.e("open book activity","dirFile1.absolutePath......"+dirFile1.absolutePath)
         webView.setWebViewClient(object : WebViewClient() {
@@ -103,7 +108,19 @@ class OpenBookActivity : BaseActivity() {
                 hideProgressDialog()
             }
         })
-        webView!!.loadUrl(ConstantPath.WEBVIEW_FILE_PATH + dirFile1.absolutePath)
+        if(dirFile1.exists()){
+            webView!!.loadUrl(ConstantPath.WEBVIEW_FILE_PATH + dirFile1.absolutePath)
+        }else{
+            downloadServiceFromBackground(this@OpenBookActivity,db)
+            webView!!.loadUrl(ConstantPath.WEBVIEW_PATH + "Books1/" + category + "/" + foldername + "/index.html")
+        }
+
+    }
+
+    private fun downloadServiceFromBackground(
+            mainActivity: Activity, db: FirebaseFirestore
+    ) {
+        BooksDownloadService.enqueueWork(mainActivity, db)
     }
 
     fun showProgressDialog(loadText: String) {

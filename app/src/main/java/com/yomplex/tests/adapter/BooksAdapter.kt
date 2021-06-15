@@ -45,14 +45,15 @@ class BooksAdapter(val context: Context, val bookslist: ArrayList<Books>, val bo
         var books = bookslist[position]
 
         var path = File(books.thumbnail)
-        val fileInputStream = FileInputStream(path)
+        var dr: Drawable? = null
+        //Log.e("books adapter","path.exists()...."+path.exists())
+        if(path.exists()){
 
-          val svg: SVG = SVG.getFromInputStream(fileInputStream)
+            val fileInputStream = FileInputStream(path)
 
-        /*Log.e("books adapter", "svg.documentWidth....." +svg.documentWidth)
-        Log.e("books adapter", "svg.documentHeight....." + svg.documentHeight)
-        Log.e("books adapter", "svg.documentAspectRatio....." + svg.documentAspectRatio)
-        // Create a Bitmap to render our SVG to*/
+            val svg: SVG = SVG.getFromInputStream(fileInputStream)
+
+
 
             // Create a Bitmap to render our SVG to
             val bm = Bitmap.createBitmap((svg.documentWidth).toInt(), (svg.documentHeight).toInt(), Bitmap.Config.ARGB_8888)
@@ -64,30 +65,35 @@ class BooksAdapter(val context: Context, val bookslist: ArrayList<Books>, val bo
             // Now render the SVG to the Canvas
             svg.renderToCanvas(canvas)
 
-            // And restore the Canvas's matrix to what it was before we altered it
-
-            // And restore the Canvas's matrix to what it was before we altered it
             canvas.restore()
-            /*val drawable: Picture = svg.renderToPicture()
-         val canvas = drawable.beginRecording(drawable.width,drawable.height)
-
-        val myBitmap: Bitmap = Bitmap.createBitmap(200, 200, Bitmap.Config.RGB_565)
-        canvas.setBitmap(myBitmap)*/
-
-            val dr: Drawable = BitmapDrawable(bm)
-            /*Glide.with(context).load(path).into(object : SimpleTarget<Drawable?>() {
-            *//*override fun onResourceReady(resource: Drawable?, transition: Transition<in Drawable?>?) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                    yourRelativeLayout.setBackground(resource)
-                }
-            }*//*
-
-            override fun onResourceReady(resource: Drawable, transition: Transition<in Drawable?>?) {
-
-            }
 
 
-        })*/
+            dr = BitmapDrawable(bm)
+        }else{
+       // Log.e("books adapter","books category...."+books.category)
+            var str:String = "Books1/"+books.category+"/"+books.folderName+"/thumbnail.svg"
+        //Log.e("books adapter","str...."+str)
+            val svg: SVG = SVG.getFromAsset(context.assets,str)
+
+
+
+            // Create a Bitmap to render our SVG to
+            val bm = Bitmap.createBitmap((svg.documentWidth).toInt(), (svg.documentHeight).toInt(), Bitmap.Config.ARGB_8888)
+            // Create a Canvas to use for rendering
+            val canvas = Canvas(bm)
+            // Now render the SVG to the Canvas
+
+            canvas.save();
+            // Now render the SVG to the Canvas
+            svg.renderToCanvas(canvas)
+
+            canvas.restore()
+
+
+            dr = BitmapDrawable(bm)
+        }
+
+
 
             // /data/data/com.yomplex.tests/cache/Books/OTHER TOPICS/axiomatic-probability/thumbnail.svg
             if (books.category.equals("ALGEBRA")) {

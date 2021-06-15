@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xl="http://www.w3.org/1999/xlink" viewBox="0 0 300 200" width="300" height="200">
+  <defs/>
+  <metadata> Produced by OmniGraffle 7.18.5\n2021-05-21 13:33:01 +0000</metadata>
+  <g id="Canvas_1" stroke-dasharray="none" fill="none" stroke-opacity="1" stroke="none" fill-opacity="1">
+    <title>Canvas 1</title>
+    <g id="Canvas_1_Ellipse">
+      <title>Ellipse</title>
+      <g id="Group_22">
+        <title>_x32_D_shapes</title>
+        <g id="Graphic_23">
+          <title>Circle</title>
+          <ellipse cx="217.00005" cy="100" rx="49.2001032168126" ry="28.0000587412755" stroke="#0096ff" stroke-linecap="butt" stroke-linejoin="round" stroke-width="2"/>
+        </g>
+      </g>
+      <g id="Group_24">
+        <title>_x33_D_Shapes</title>
+        <g id="Group_37">
+          <title>Cone_x5F_top</title>
+          <g id="Graphic_42">
+            <title>Base_triangle_3_</title>
+            <path d="M 92.04998 100 C 92.04998 100 50.449975 30.7 50.449975 27.9 C 50.449975 25.1 66.249975 15.5 92.04998 15.5 C 117.84998 15.5 133.64998 25.5 133.64998 27.9 C 133.64998 30.3 92.04998 100 92.04998 100 Z" fill="#e1e1e1"/>
+            <path d="M 92.04998 100 C 92.04998 100 50.449975 30.7 50.449975 27.9 C 50.449975 25.1 66.249975 15.5 92.04998 15.5 C 117.84998 15.5 133.64998 25.5 133.64998 27.9 C 133.64998 30.3 92.04998 100 92.04998 100 Z" stroke="#5e5e5e" stroke-linecap="butt" stroke-linejoin="round" stroke-width="2"/>
+          </g>
+          <g id="Graphic_41">
+            <title>Triangle_shadow_2_</title>
+            <path d="M 92.04998 100 C 92.04998 100 98.94998 67.8 101.64998 54.3 C 104.44998 40 106.54998 16.6 106.54998 16.6 C 106.54998 16.6 117.14998 18.6 121.64998 20.5 C 126.14998 22.4 133.64998 27.9 133.64998 27.9 Z" fill="#d7d7d7"/>
+          </g>
+          <g id="Graphic_40">
+            <title>Triangle_shine_2_</title>
+            <path d="M 92.04998 100 L 57.249975 22.6 C 57.249975 22.6 58.749975 22.1 64.249975 19.9 C 69.749975 17.7 92.04998 100 92.04998 100 Z" fill="#ebebeb"/>
+          </g>
+          <g id="Graphic_39">
+            <title>External_triangle_stroke_3_</title>
+            <path d="M 92.04998 100 C 92.04998 100 50.449975 30.7 50.449975 27.9 C 50.449975 25.1 66.249975 15.5 92.04998 15.5 C 117.84998 15.5 133.64998 25.5 133.64998 27.9 C 133.64998 30.3 92.04998 100 92.04998 100 Z" stroke="#5e5e5e" stroke-linecap="butt" stroke-linejoin="round" stroke-width="2"/>
+          </g>
+          <g id="Graphic_38">
+            <title>Dotted_line_2_</title>
+            <path d="M 133.64998 27.9 C 133.64998 27.9 128.84998 37.9 92.04998 37.9 C 55.249975 37.9 50.449975 27.9 50.449975 27.9" stroke="#5e5e5e" stroke-linecap="butt" stroke-linejoin="round" stroke-width="2"/>
+          </g>
+        </g>
+        <g id="Group_25">
+          <title>Cone_x5F_Bottom</title>
+          <g id="Graphic_36">
+            <title>Base_triangle_4_</title>
+            <path d="M 92.04998 100 C 92.04998 100 50.449975 169.3 50.449975 172.1 C 50.449975 174.8 66.249975 184.5 92.04998 184.5 C 117.84998 184.5 133.64998 174.5 133.64998 172.1 C 133.64998 169.6 92.04998 100 92.04998 100 Z" fill="#e1e1e1"/>
+            <path d="M 92.04998 100 C 92.04998 100 50.449975 169.3 50.449975 172.1 C 50.449975 174.8 66.249975 184.5 92.04998 184.5 C 117.84998 184.5 133.64998 174.5 133.64998 172.1 C 133.64998 169.6 92.04998 100 92.04998 100 Z" stroke="#5e5e5e" stroke-linecap="butt" stroke-linejoin="round" stroke-width="2"/>
+          </g>
+          <g id="Graphic_35">
+            <title>Triangle_shadow_3_</title>
+            <path d="M 92.04998 100 C 92.04998 100 98.94998 132.2 101.64998 145.7 C 104.44998 159.9 106.54998 183.4 106.54998 183.4 C 106.54998 183.4 117.14998 181.4 121.64998 179.5 C 126.14998 177.6 133.64998 172.1 133.64998 172.1 Z" fill="#d7d7d7"/>
+          </g>
+          <g id="Graphic_34">
+            <title>Triangle_shine_3_</title>
+            <path d="M 92.04998 100 L 57.249975 177.4 C 57.249975 177.4 58.749975 177.9 64.249975 180.1 C 69.749975 182.2 92.04998 100 92.04998 100 Z" fill="#ebebeb"/>
+          </g>
+          <g id="Graphic_33">
+            <title>Dotted_line_3_</title>
+            <path d="M 133.64998 172 C 133.64998 172 128.84998 162 92.04998 162 C 55.249975 162 50.449975 172 50.449975 172" stroke="#c1c1c1" stroke-linecap="butt" stroke-linejoin="round" stroke-width="2"/>
+          </g>
+          <g id="Graphic_32">
+            <title>External_triangle_stroke_2_</title>
+            <path d="M 92.04998 100 C 92.04998 100 50.449975 169.3 50.449975 172.1 C 50.449975 174.8 66.249975 184.5 92.04998 184.5 C 117.84998 184.5 133.64998 174.5 133.64998 172.1 C 133.64998 169.6 92.04998 100 92.04998 100 Z" stroke="#5e5e5e" stroke-linecap="butt" stroke-linejoin="round" stroke-width="2"/>
+          </g>
+          <g id="Graphic_31">
+            <title>External_triangle_stroke_4_</title>
+            <path d="M 101.74998 116.2 C 96.14998 106.8 92.04998 99.9 92.04998 99.9 C 92.04998 99.9 82.54998 115.8 72.649975 132.6" stroke="#5e5e5e" stroke-linecap="butt" stroke-linejoin="round" stroke-width="2"/>
+          </g>
+          <g id="Graphic_30">
+            <title>Plane</title>
+            <path d="M 122.34998 109.6 L 103.54998 119.2 C 106.24998 123.7 109.14998 128.7 112.14998 133.8 C 112.24998 133.9 116.14998 144.1 91.34998 155 C 66.449975 166 59.049975 157 60.949975 152.5 C 63.949975 147.4 67.249975 141.7 70.649975 135.9 L 54.849975 144 L 57.549975 157.8 L 60.849975 174.7 L 119.44998 146.1 L 139.94998 136.1 L 122.34998 109.6 Z" fill="#aceaff"/>
+          </g>
+          <g id="Graphic_29">
+            <title>Orange_top_line</title>
+            <path d="M 111.94998 133.5 L 112.54998 134.4 C 114.84998 139.7 105.04998 149.1 91.04998 155.1 C 77.049975 161.2 63.249975 161.8 60.949975 156.5 C 60.349975 155.1 60.649975 153.3 61.649975 151.4" stroke="#0096ff" stroke-linecap="butt" stroke-linejoin="round" stroke-width="2"/>
+          </g>
+          <g id="Graphic_28">
+            <title>Orange_back_line</title>
+            <path d="M 111.94998 133.5 C 111.74998 133.2 111.44998 133 111.14998 132.7 C 106.84998 129.4 94.94998 130.6 82.74998 135.9 C 72.549975 140.4 64.449975 146.5 61.649975 151.5" stroke="#0096ff" stroke-opacity=".395405" stroke-linecap="butt" stroke-linejoin="round" stroke-width="2"/>
+          </g>
+          <g id="Graphic_27">
+            <title>Line_right</title>
+            <path d="M 112.14998 133.8 C 108.54998 127.6 104.94998 121.5 101.74998 116.2" stroke="#5e5e5e" stroke-linecap="butt" stroke-linejoin="round" stroke-width="2"/>
+          </g>
+          <g id="Graphic_26">
+            <title>Line_left</title>
+            <path d="M 72.649975 132.7 C 69.049975 138.8 64.849975 146 61.549975 151.7" stroke="#5e5e5e" stroke-linecap="butt" stroke-linejoin="round" stroke-width="2"/>
+          </g>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>
