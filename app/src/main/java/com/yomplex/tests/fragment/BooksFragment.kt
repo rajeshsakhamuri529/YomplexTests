@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.PorterDuff
+import android.graphics.drawable.ColorDrawable
 import android.net.ConnectivityManager
 import android.net.NetworkInfo
 import android.os.Bundle
@@ -14,7 +15,9 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AlphaAnimation
+import android.widget.Button
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.ktx.analytics
@@ -24,7 +27,6 @@ import com.google.firebase.ktx.Firebase
 import com.yomplex.tests.R
 import com.yomplex.tests.Service.BooksDownloadService
 import com.yomplex.tests.Service.CopyService
-import com.yomplex.tests.activity.ContentVersionUpdateService
 import com.yomplex.tests.activity.OpenBookActivity
 import com.yomplex.tests.adapter.BooksAdapter
 import com.yomplex.tests.database.QuizGameDataBase
@@ -33,6 +35,9 @@ import com.yomplex.tests.model.Books
 import com.yomplex.tests.utils.*
 import kotlinx.android.synthetic.main.books_fragment.*
 import kotlinx.android.synthetic.main.books_fragment.view.*
+import java.io.*
+import java.net.MalformedURLException
+import java.net.URL
 import java.text.SimpleDateFormat
 
 
@@ -411,43 +416,164 @@ class BooksFragment: Fragment(), BooksClickListener {
         }
        // Log.e("books fragment", "onReadClick...status..."+ status);
        // Log.e("books fragment", "onReadClick...book.bookdownloadstatus..."+ book.bookdownloadstatus);
-        if(status == 1){
-            if(book.readfilestatus == 1){
-               // view.startAnimation(buttonClick)
-                //buttonEffect(view,true)
-                databaseHandler!!.updateBooksReadStatus(status,book.title,book.category)
-                var unreadList1 = databaseHandler!!.getAllBooksWithUnread()
-                txt_unread.text = "Unread ("+unreadList1.size+")"
+        var str = activity!!.cacheDir.absolutePath+"/Books/"+book.category+"/"+book.folderName
+        var file = File(str)
+        Log.e("books fragment","on read click....file..."+file.absolutePath)
+        if(file.exists()) {
+            if(status == 1){
+                if(book.readfilestatus == 1){
+                    // view.startAnimation(buttonClick)
+                    //buttonEffect(view,true)
+                    databaseHandler!!.updateBooksReadStatus(status,book.title,book.category)
+                    var unreadList1 = databaseHandler!!.getAllBooksWithUnread()
+                    txt_unread.text = "Unread ("+unreadList1.size+")"
 
-                val i = Intent(activity, OpenBookActivity::class.java)
-                i.putExtra("title", book.title)
-                i.putExtra("category", book.category)
-                i.putExtra("foldername", book.folderName)
-                startActivity(i)
-                (activity as Activity).overridePendingTransition(0, 0)
+                    val i = Intent(activity, OpenBookActivity::class.java)
+                    i.putExtra("title", book.title)
+                    i.putExtra("category", book.category)
+                    i.putExtra("foldername", book.folderName)
+                    startActivity(i)
+                    (activity as Activity).overridePendingTransition(0, 0)
+                }else{
+                    //Toast.makeText(activity!!,"status 1 else...."+book.readfilestatus,Toast.LENGTH_SHORT).show()
+                }
+
             }else{
-                //Toast.makeText(activity!!,"status 1 else...."+book.readfilestatus,Toast.LENGTH_SHORT).show()
+                if(book.readfilestatus == 1){
+                    // view.startAnimation(buttonClick)
+                    //buttonEffect(view,true)
+                    val i = Intent(activity, OpenBookActivity::class.java)
+                    i.putExtra("title", book.title)
+                    i.putExtra("category", book.category)
+                    i.putExtra("foldername", book.folderName)
+                    startActivity(i)
+                    (activity as Activity).overridePendingTransition(0, 0)
+                }else{
+                    //Toast.makeText(activity!!,"status 0 else...."+book.readfilestatus,Toast.LENGTH_SHORT).show()
+                }
+
+            }
+        }else {
+            //
+            if(isNetworkConnected()) {
+                Toast.makeText(activity!!,"Please wait, Book downloading...",Toast.LENGTH_SHORT).show()
+                Thread(Runnable { DownloadFiles(book.id,book.sourceUrl,book.category,book.folderName) }).start()
+            }else{
+                nointernetDialog()
             }
 
-        }else{
-            if(book.readfilestatus == 1){
-               // view.startAnimation(buttonClick)
-                //buttonEffect(view,true)
-                val i = Intent(activity, OpenBookActivity::class.java)
-                i.putExtra("title", book.title)
-                i.putExtra("category", book.category)
-                i.putExtra("foldername", book.folderName)
-                startActivity(i)
-                (activity as Activity).overridePendingTransition(0, 0)
-            }else{
-                //Toast.makeText(activity!!,"status 0 else...."+book.readfilestatus,Toast.LENGTH_SHORT).show()
+        }
+
+
+
+
+
+    }
+
+
+    fun DownloadFiles(id:String,url:String,category: String,foldername:String){
+
+        try {
+            var u = URL(url);
+            var inputStream:InputStream = u.openStream();
+
+            var dis =  DataInputStream(inputStream);
+
+            val buffer = ByteArray(1024)
+            //var buffer = byte[1024];
+            var count = 0;
+
+            var f = activity!!.cacheDir.absolutePath + "/Books/"+category+"/"+foldername+".zip";
+
+            val file = File(f)
+            Log.e("download file","File path........"+file.absolutePath)
+
+            var fos = FileOutputStream(file);
+
+            while ({ count = dis.read(buffer);count }() != -1) {
+                fos.write(buffer, 0, count!!)
             }
+
+            /*while ((length = dis.read(buffer))>0) {
+                fos.write(buffer, 0, length);
+            }*/
+            // flushing output
+            fos.flush()
+
+            // closing streams
+            fos.close()
+            dis.close()
+
+
+            val iszip = Utils.unpackZip(activity!!.cacheDir.absolutePath  + "/Books/" + category, "/$foldername.zip")
+
+            if(iszip){
+                val dirFile = File(activity!!.cacheDir, "Books/$category/$foldername.zip")
+                dirFile.delete()
+                val dirFile1 = File(activity!!.cacheDir, "Books/$category/$foldername/thumbnail.svg")
+
+
+                databaseHandler!!.updatebooksreadfilestatusbasedonId(1, id)
+                databaseHandler!!.updatebooksdownloadstatusbasedonId(1, id)
+                databaseHandler!!.updatebooksthumbnailbasedonId(dirFile1.absolutePath, id)
+                activity!!.runOnUiThread {
+                    Toast.makeText(activity!!,"Download completed.",Toast.LENGTH_SHORT).show()
+                    unreadList = databaseHandler!!.getAllBooks()
+
+                    adapter = BooksAdapter(context!!,unreadList!!,this)
+
+                    view!!.rcv_books.adapter = adapter
+                    //adapter!!.notifyDataSetChanged()
+                }
+
+            }
+        } catch (mue: Exception) {
+            Log.e("SYNC getUpdate", "malformed url error", mue);
+        }
+    }
+
+    private fun nointernetDialog() {
+        val dialogBuilder = AlertDialog.Builder(activity!!, R.style.mytheme)
+        val inflater = this.layoutInflater
+        val dialogView = inflater.inflate(R.layout.no_network_dialog, null)
+        dialogBuilder.setView(dialogView)
+
+
+        val btn_ok = dialogView.findViewById(R.id.btn_ok) as Button
+
+
+
+
+        val alertDialog = dialogBuilder.create()
+        alertDialog.setCancelable(false)
+        btn_ok.setOnClickListener {
+            sound = sharedPrefs?.getBooleanPrefVal(activity!!, ConstantPath.SOUNDS) ?: true
+            if(!sound){
+                // mediaPlayer = MediaPlayer.create(this,R.raw.amount_low)
+                //  mediaPlayer.start()
+                if (Utils.loaded) {
+                    Utils.soundPool.play(Utils.soundID, Utils.volume, Utils.volume, 1, 0, 1f);
+                    Log.e("Test", "Played sound...volume..."+ Utils.volume);
+                    //Toast.makeText(context,"end",Toast.LENGTH_SHORT).show()
+                }
+            }
+            alertDialog.cancel()
+
+        }
+
+        //alertDialog.getWindow().setBackgroundDrawable(draw);
+        alertDialog.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT));
+        try{
+            alertDialog.show()
+        }catch (e: java.lang.Exception){
 
         }
 
     }
 
-    fun buttonEffect(button: View,isNext:Boolean) {
+
+
+fun buttonEffect(button: View,isNext:Boolean) {
 
         button.setOnTouchListener { v, event ->
 

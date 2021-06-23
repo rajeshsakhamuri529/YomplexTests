@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="40dp"
+        android:layout_marginRight="40dp"
+        android:background="@drawable/white_curved_border">
+
+
+        <TextView
+            android:id="@+id/tv_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/ll_answers"
+            android:fontFamily="@font/lato_bold"
+            android:textColor="#424242"
+            android:textSize="@dimen/_12ssp"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="@dimen/_22sdp"
+
+            android:text="No internet connection!"/>
+
+        <TextView
+            android:id="@+id/tv_message1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tv_message"
+            android:fontFamily="@font/lato_bold"
+
+            android:textColor="#424242"
+            android:textSize="@dimen/_12ssp"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="@dimen/_22sdp"
+            android:layout_marginLeft="@dimen/_25sdp"
+            android:layout_marginRight="@dimen/_25sdp"
+            android:gravity="center"
+            android:text="Please connect to the internet \nto download the book."/>
+
+
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/view_result_btn"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/_25sdp"
+            android:layout_below="@id/tv_message"
+            android:layout_marginTop="@dimen/_30sdp"
+            android:layout_marginLeft="@dimen/_25sdp"
+            android:layout_marginRight="@dimen/_25sdp"
+            android:layout_marginBottom="@dimen/_20sdp"
+            android:paddingLeft="@dimen/_5sdp"
+            android:paddingRight="@dimen/_5sdp"
+            android:layout_centerInParent="true"
+            android:visibility="gone"
+            android:background="@drawable/submit_active_background">
+
+            <TextView
+                android:id="@+id/txt_next"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+
+                android:layout_marginStart="4dp"
+                android:fontFamily="@font/lato_bold"
+                android:gravity="center_vertical"
+                android:letterSpacing="0.1"
+                android:text="VIEW RESULTS"
+                android:textColor="#FFFFFF"
+                android:textSize="@dimen/_10sdp"
+                app:layout_constraintVertical_bias="0.5"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/right_arrow"
+                android:layout_width="11dp"
+                android:layout_height="11dp"
+                android:tint="@color/white"
+                app:layout_constraintVertical_bias="0.5"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/txt_next"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_right_arrow" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/_25sdp"
+            android:id="@+id/btn_close1"
+            android:layout_weight="1"
+            android:visibility="gone"
+            android:layout_below="@id/tv_message1"
+            android:layout_marginTop="@dimen/_20sdp"
+            android:layout_marginLeft="@dimen/_25sdp"
+            android:layout_marginRight="@dimen/_25sdp"
+            android:layout_marginBottom="@dimen/_20sdp"
+            android:layout_centerInParent="true"
+
+            android:textSize="@dimen/_10sdp"
+            android:letterSpacing="0.1"
+            android:fontFamily="@font/lato_bold"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:background="@drawable/close_button"
+            android:text="OK"
+
+            android:textColor="#424242"
+            />
+
+
+
+
+        <Button
+            android:id="@+id/btn_ok"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/_25sdp"
+            android:layout_weight="1"
+            android:visibility="visible"
+            android:paddingLeft="@dimen/_5sdp"
+            android:paddingRight="@dimen/_5sdp"
+
+
+            android:fontFamily="@font/lato_bold"
+            android:textSize="@dimen/_10sdp"
+            android:letterSpacing="0.1"
+            android:layout_below="@id/tv_message1"
+            android:layout_marginTop="@dimen/_30sdp"
+
+            android:layout_marginBottom="@dimen/_20sdp"
+            android:layout_centerInParent="true"
+            android:background="@drawable/submit_active_background"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:text="OK"
+            android:layout_gravity="center_vertical"
+
+            android:textColor="@color/white"
+            />
+
+    </RelativeLayout>
+
+
+</RelativeLayout>

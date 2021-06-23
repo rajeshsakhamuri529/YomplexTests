@@ -1612,7 +1612,7 @@ class TestQuizActivity : BaseActivity(), View.OnClickListener {
                                 if (options.length == 0) {
                                     options.append(filename)
                                 } else {
-                                    options.append("-" + filename)
+                                    options.append("#" + filename)
                                 }
                             }
                         }
@@ -1628,7 +1628,7 @@ class TestQuizActivity : BaseActivity(), View.OnClickListener {
                                 if (options.length == 0) {
                                     options.append(filename)
                                 } else {
-                                    options.append("-" + filename)
+                                    options.append("#" + filename)
                                 }
                             }
                         }
@@ -2461,7 +2461,6 @@ class TestQuizActivity : BaseActivity(), View.OnClickListener {
                 options.append("#"+listOfOptions!!.get(i))
             }
         }
-
 
         Log.e("test question activity","selected option......."+options)
         mutanslist1[1] = options.toString()

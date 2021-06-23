@@ -155,24 +155,29 @@ class ReviewFragment: Fragment(), View.OnClickListener, TestQuizReviewClickListe
         }
 
         try{
-            val paths: String = topic.questionPathType
-            var ans:List<String> = paths.split(",")
-            var ans1:List<String> = ans.get(0).split("~")
+            if(topic.readdata.equals("files")){
+                val paths: String = topic.questionPathType
+                var ans:List<String> = paths.split(",")
+                var ans1:List<String> = ans.get(0).split("~")
 
-            var quepath = File(ans1[0])
-            if(quepath.exists()){
-                Log.e("review fragment","quepath...if....."+quepath)
-                gotoReviewScreen(topic)
+                var quepath = File(ans1[0])
+                if(quepath.exists()){
+                    Log.e("review fragment","quepath...if....."+quepath)
+                    gotoReviewScreen(topic)
+                }else{
+                    Log.e("review fragment","quepath....else...."+quepath)
+
+                    databaseHandler!!.updatequizplayReviewstatus(topic.title,1,topic.pdate,topic.typeofPlay,topic.testtype)
+                    noReviewDialog()
+                    // testquizlist = databaseHandler!!.getTestQuizList()
+                    // adapter!!.notifyDataSetChanged()
+
+
+                }
             }else{
-                Log.e("review fragment","quepath....else...."+quepath)
-
-                databaseHandler!!.updatequizplayReviewstatus(topic.title,1,topic.pdate,topic.typeofPlay,topic.testtype)
-                noReviewDialog()
-               // testquizlist = databaseHandler!!.getTestQuizList()
-               // adapter!!.notifyDataSetChanged()
-
-
+                gotoReviewScreen(topic)
             }
+
         }catch (e:Exception){
 
         }

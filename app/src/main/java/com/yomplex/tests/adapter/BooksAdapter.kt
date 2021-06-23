@@ -20,6 +20,7 @@ import com.yomplex.tests.utils.Utils
 import kotlinx.android.synthetic.main.books_list_item.view.*
 import java.io.File
 import java.io.FileInputStream
+import java.lang.Exception
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -29,6 +30,7 @@ class BooksAdapter(val context: Context, val bookslist: ArrayList<Books>, val bo
 
 
     var databaseHandler: QuizGameDataBase?= null
+
     override fun getItemCount(): Int {
         return bookslist.size
     }
@@ -43,7 +45,11 @@ class BooksAdapter(val context: Context, val bookslist: ArrayList<Books>, val bo
     override fun onBindViewHolder(holder: BooksViewHolder, position: Int) {
 
         var books = bookslist[position]
-
+        if(books.readstatus == 0){
+            holder.unreadRL1.visibility = View.VISIBLE
+        }else{
+            holder.unreadRL1.visibility = View.INVISIBLE
+        }
         var path = File(books.thumbnail)
         var dr: Drawable? = null
         //Log.e("books adapter","path.exists()...."+path.exists())
@@ -69,33 +75,43 @@ class BooksAdapter(val context: Context, val bookslist: ArrayList<Books>, val bo
 
 
             dr = BitmapDrawable(bm)
+            holder.bookRL.background = dr
+
         }else{
        // Log.e("books adapter","books category...."+books.category)
             var str:String = "Books1/"+books.category+"/"+books.folderName+"/thumbnail.svg"
         //Log.e("books adapter","str...."+str)
-            val svg: SVG = SVG.getFromAsset(context.assets,str)
+            try{
+                val svg: SVG = SVG.getFromAsset(context.assets,str)
 
 
 
-            // Create a Bitmap to render our SVG to
-            val bm = Bitmap.createBitmap((svg.documentWidth).toInt(), (svg.documentHeight).toInt(), Bitmap.Config.ARGB_8888)
-            // Create a Canvas to use for rendering
-            val canvas = Canvas(bm)
-            // Now render the SVG to the Canvas
+                // Create a Bitmap to render our SVG to
+                val bm = Bitmap.createBitmap((svg.documentWidth).toInt(), (svg.documentHeight).toInt(), Bitmap.Config.ARGB_8888)
+                // Create a Canvas to use for rendering
+                val canvas = Canvas(bm)
+                // Now render the SVG to the Canvas
 
-            canvas.save();
-            // Now render the SVG to the Canvas
-            svg.renderToCanvas(canvas)
+                canvas.save();
+                // Now render the SVG to the Canvas
+                svg.renderToCanvas(canvas)
 
-            canvas.restore()
+                canvas.restore()
 
 
-            dr = BitmapDrawable(bm)
+                dr = BitmapDrawable(bm)
+                holder.bookRL.background = dr
+
+            }catch (e:Exception){
+                holder.unreadRL1.visibility = View.INVISIBLE
+                holder.bookRL.background = context.resources.getDrawable(R.drawable.ic_dummy)
+            }
+
         }
 
 
 
-            // /data/data/com.yomplex.tests/cache/Books/OTHER TOPICS/axiomatic-probability/thumbnail.svg
+            /*// /data/data/com.yomplex.tests/cache/Books/OTHER TOPICS/axiomatic-probability/thumbnail.svg
             if (books.category.equals("ALGEBRA")) {
                 // GlideToVectorYou.justLoadImageAsBackground(context as Activity?, Uri.parse(books.thumbnail), holder.bookRL)
                 holder.bookRL.background = dr
@@ -110,12 +126,12 @@ class BooksAdapter(val context: Context, val bookslist: ArrayList<Books>, val bo
                 // holder.bottomRL.background = context.resources.getDrawable(R.drawable.g_bottom_rounded)
             } else if (books.category.equals("CALCULUS")) {
                 holder.bookRL.background = dr
-                /*Glide.with(context).load(R.drawable.ic_alg_book).into(object : SimpleTarget<Drawable?>() {
-                *//*override fun onResourceReady(resource: Drawable?, transition: Transition<in Drawable?>?) {
+                *//*Glide.with(context).load(R.drawable.ic_alg_book).into(object : SimpleTarget<Drawable?>() {
+                *//**//*override fun onResourceReady(resource: Drawable?, transition: Transition<in Drawable?>?) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
                         yourRelativeLayout.setBackground(resource)
                     }
-                }*//*
+                }*//**//*
 
                 override fun onResourceReady(resource: Drawable, transition: Transition<in Drawable?>?) {
                     holder.bookRL.background = resource
@@ -123,7 +139,7 @@ class BooksAdapter(val context: Context, val bookslist: ArrayList<Books>, val bo
                 }
 
 
-            })*/
+            })*//*
 
                 // holder.topRL.background = context.resources.getDrawable(R.drawable.c_top_rounded)
                 // holder.bottomRL.background = context.resources.getDrawable(R.drawable.c_bottom_rounded)
@@ -131,16 +147,12 @@ class BooksAdapter(val context: Context, val bookslist: ArrayList<Books>, val bo
                 holder.bookRL.background = dr
                 //  holder.topRL.background = context.resources.getDrawable(R.drawable.o_top_rounded)
                 //  holder.bottomRL.background = context.resources.getDrawable(R.drawable.o_bottom_rounded)
-            }
+            }*/
 
         holder.categoryTxt.text = books.category
         holder.titleTxt.text = books.title
 
-        if(books.readstatus == 0){
-           holder.unreadRL1.visibility = View.VISIBLE
-        }else{
-            holder.unreadRL1.visibility = View.INVISIBLE
-        }
+
 
 
        // Log.e("books adapter","books.starredstatus ......"+books.starredstatus)
@@ -274,6 +286,8 @@ class BooksAdapter(val context: Context, val bookslist: ArrayList<Books>, val bo
         val titleTxt = itemView.titleTxt
         val topRL = itemView.topRL
         val bookRL = itemView.bookRL
+        val progress_bar = itemView.progress_bar
+
 
 
         val unreadRL1 = itemView.unreadRL1

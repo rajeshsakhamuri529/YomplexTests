@@ -88,33 +88,38 @@ public class CopyService extends JobIntentService {
 
     }
     private static void copyFile(InputStream in, OutputStream out,String filename) throws IOException {
-        byte[] buffer = new byte[1024];
-        int read;
-        while((read = in.read(buffer)) != -1){
-            out.write(buffer, 0, read);
-        }
-        dataBase.updatebooksreadfilestatusfromlocal(0,filename.replace(".zip",""));
-        boolean iszip = Utils.unpackZip(dirpath+"/Books/",filename);
-        if(iszip){
-            File dirFile = new File(context1.getCacheDir(),"Books/"+filename);
-            dirFile.delete();
-           // File dirFile1 = new File(context1.getCacheDir(),"Books/"+category+"/"+title.toLowerCase().replace(" ","-").replace("'","")+"/thumbnail.svg");
-            dataBase.updatebooksversionFromLocal("1",filename.replace(".zip",""));
+       try{
+           byte[] buffer = new byte[1024];
+           int read;
+           while((read = in.read(buffer)) != -1){
+               out.write(buffer, 0, read);
+           }
+
+           dataBase.updatebooksreadfilestatusfromlocal(0,filename.replace(".zip",""));
+           boolean iszip = Utils.unpackZip(dirpath+"/Books/",filename);
+           if(iszip){
+               File dirFile = new File(context1.getCacheDir(),"Books/"+filename);
+               dirFile.delete();
+               // File dirFile1 = new File(context1.getCacheDir(),"Books/"+category+"/"+title.toLowerCase().replace(" ","-").replace("'","")+"/thumbnail.svg");
+               dataBase.updatebooksversionFromLocal("1",filename.replace(".zip",""));
 
 
-            String path = context1.getCacheDir().toString()+"/Books/"+filename.replace(".zip","");
-            Log.e("Files", "Path: " + path);
-            File directory = new File(path);
-            File[] files = directory.listFiles();
-            Log.e("Files", "Size: "+ files.length);
-            for (int i = 0; i < files.length; i++)
-            {
-                Log.e("Files", "FileName:" + files[i].getName());
-                String p = path+"/"+files[i].getName()+"/thumbnail.svg";
-                dataBase.updatebooksthumbnail(p,files[i].getName(),filename.replace(".zip",""));
-                dataBase.updatebookscopystatus(1,files[i].getName(),filename.replace(".zip",""));
-                dataBase.updatebooksreadfilestatus(1,files[i].getName(),filename.replace(".zip",""));
-            }
+               String path = context1.getCacheDir().toString()+"/Books/"+filename.replace(".zip","");
+               Log.e("Files", "Path: " + path);
+               File directory = new File(path);
+               File[] files = directory.listFiles();
+               Log.e("Files", "Size: "+ files.length);
+               for (int i = 0; i < files.length; i++)
+               {
+                   Log.e("Files", "FileName:" + files[i].getName());
+                   String p = path+"/"+files[i].getName()+"/thumbnail.svg";
+
+                   dataBase.updatebooksLocal(p,1,1,files[i].getName(),filename.replace(".zip",""));
+
+                   /*dataBase.updatebooksthumbnail(p,files[i].getName(),filename.replace(".zip",""));
+                   dataBase.updatebookscopystatus(1,files[i].getName(),filename.replace(".zip",""));
+                   dataBase.updatebooksreadfilestatus(1,files[i].getName(),filename.replace(".zip",""));*/
+               }
             /*SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd");
             String date = dataBase.getBookContentDate();
             if(date != null){
@@ -123,10 +128,14 @@ public class CopyService extends JobIntentService {
                 //Log.e("content download","date......................."+format1.format(Utils.date));
                 dataBase.insertBookContentUpdateDate(format1.format(Utils.date));
             }*/
-            dataBase.updatebooksdownloadstatusfromlocal(1,filename.replace(".zip",""));
+               dataBase.updatebooksdownloadstatusfromlocal(1,filename.replace(".zip",""));
 
 
-        }
+           }
+       }catch (Exception e){
+           e.printStackTrace();
+       }
+
     }
     @Override
     protected void onHandleWork(@NonNull Intent intent) {
@@ -171,8 +180,8 @@ public class CopyService extends JobIntentService {
                         }
                         // Analyzing all file on assets subfolder
                         for(String filename : files) {
-                            InputStream in = null;
-                            OutputStream out = null;
+                            InputStream in;
+                            OutputStream out;
                             // First: checking if there is already a target folder
                             File folder = new File(context1.getCacheDir() + "/Books");
                             boolean success = true;
@@ -185,7 +194,34 @@ public class CopyService extends JobIntentService {
                                     in = assetManager.open("Books" + "/" +filename);
                                     out = new FileOutputStream(context1.getCacheDir() + "/Books" + "/" + filename);
                                     Log.i("WEBVIEW", context1.getCacheDir() + "/Books" + "/" + filename);
+                                    /*Runnable runnable = new Runnable()
+                                    {
+                                        @Override
+                                        public void run()
+                                        {
+                                            try {
+                                                copyFile(in, out,filename);
+                                            } catch (IOException e) {
+                                                e.printStackTrace();
+                                            }
+                                        }
+                                    };*/
                                     copyFile(in, out,filename);
+                                    /*new Thread(new Runnable()
+                                    {
+                                        @Override
+                                        public void run()
+                                        {
+                                            try {
+
+                                            } catch (IOException e) {
+                                                e.printStackTrace();
+                                            }
+                                        }
+                                    }).start();//to work in Background*/
+
+                                    //copyFile(in, out,filename);
+
                                     in.close();
                                     in = null;
                                     out.flush();

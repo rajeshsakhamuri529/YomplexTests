@@ -1,6 +1,8 @@
 package com.yomplex.tests.model;
 
-public class Books {
+import java.io.Serializable;
+
+public class Books implements Serializable {
 
     private String id;
     private String Title;

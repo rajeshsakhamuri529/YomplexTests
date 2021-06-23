@@ -141,7 +141,7 @@ class SignInActivity : BaseActivity(){
         enddate = sharedPrefs!!.getPrefVal(this,"enddate")!!
         Log.e("sign in","end date.........."+enddate);
         if(enddate.isEmpty()){
-            text1.setText("valid until 31 Jul 2021")
+            text1.setText("valid until 31 Aug 2021")
 
         }else{
             text1.setText("valid until "+enddate)

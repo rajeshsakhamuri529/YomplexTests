@@ -166,6 +166,7 @@ public class BooksDownloadService extends JobIntentService {
                                     books.setThumbnail("");
                                     books.setFolderName(document.get("FolderName").toString());
                                     books.setId(document.get("id").toString());
+                                    books.setCopystatus(1);
                                     books.setCategory(document.get("Category").toString());
                                     books.setVisibility(document.get("visibility").toString());
                                     isservice = true;
@@ -186,7 +187,7 @@ public class BooksDownloadService extends JobIntentService {
                                     Log.e("books download", "id.....visibility"+Id+"......."+visibility);
                                     if(visibility.equals("1")){
                                         String dbversion = dataBase.getBooksVersion(Id);
-
+                                        dataBase.updatebookssortorderbasedonId(sortorder,Id);
                                         if(version.equals(dbversion)) {
                                             Log.e("books download", "i==0....if......"+version);
                                             //break;
@@ -211,6 +212,7 @@ public class BooksDownloadService extends JobIntentService {
                                     }else{
                                         dataBase.updatebooksvisibilitybasedonId("0",Id);
                                         dataBase.updatebooksversionbasedonId(version,Id);
+                                        dataBase.updatebookssortorderbasedonId(sortorder,Id);
                                     }
 
                                 }
@@ -241,6 +243,7 @@ public class BooksDownloadService extends JobIntentService {
                             books.setPublishedOn(document.get("PublishedOn").toString());
                             books.setSourceUrl(document.get("SourceUrl").toString());
                             books.setThumbnail("");
+                            books.setCopystatus(1);
                             books.setId(document.get("id").toString());
                             books.setFolderName(document.get("FolderName").toString());
                             books.setCategory(document.get("Category").toString());
@@ -357,18 +360,19 @@ public class BooksDownloadService extends JobIntentService {
 
 
                                             dataBase.updatebooksValues(id,version,1,1,dirFile1.getAbsolutePath(),title,url,sortorder,publishedon,category,visibility);
-                                            SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd");
-                                            String date = dataBase.getBookContentDate();
-                                            if(date != null){
-                                                dataBase.updateBookContentDate(format1.format(Utils.date),1);
-                                            }else{
-                                                //Log.e("content download","date......................."+format1.format(Utils.date));
-                                                dataBase.insertBookContentUpdateDate(format1.format(Utils.date));
-                                            }
+
                                             totaldownloads++;
                                             Log.e("books download","totaldownloads......"+totaldownloads);
                                             if(incvalue == totaldownloads){
                                                 isservice = false;
+                                                SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd");
+                                                String date = dataBase.getBookContentDate();
+                                                if(date != null){
+                                                    dataBase.updateBookContentDate(format1.format(Utils.date),1);
+                                                }else{
+                                                    //Log.e("content download","date......................."+format1.format(Utils.date));
+                                                    dataBase.insertBookContentUpdateDate(format1.format(Utils.date));
+                                                }
                                             }
                                         }
                                     }catch (Exception e){
@@ -385,6 +389,15 @@ public class BooksDownloadService extends JobIntentService {
                                 public void onError(Error error) {
                                     Log.e("job service","onerror....."+error.getConnectionException());
                                     isservice = false;
+                                    dataBase.deletebookcontentdate();
+                                    //SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd");
+                                    /*String date = dataBase.getBookContentDate();
+                                    if(date != null){
+                                        dataBase.updateBookContentDate("",1);
+                                    }else{
+                                        //Log.e("content download","date......................."+format1.format(Utils.date));
+                                        dataBase.insertBookContentUpdateDate("");
+                                    }*/
                                     //isservice = true;
                                     // JobService.enqueueWork(context1,url,version);
                                     /*Bundle bundle = new Bundle();
