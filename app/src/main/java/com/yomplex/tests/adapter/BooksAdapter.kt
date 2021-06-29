@@ -50,42 +50,107 @@ class BooksAdapter(val context: Context, val bookslist: ArrayList<Books>, val bo
         }else{
             holder.unreadRL1.visibility = View.INVISIBLE
         }
-        var path = File(books.thumbnail)
         var dr: Drawable? = null
-        //Log.e("books adapter","path.exists()...."+path.exists())
-        if(path.exists()){
+        try{
+           // Log.e("books adapter","books.thumbnail...."+books.thumbnail)
+            if(books.thumbnail != null){
+                //Log.e("books adapter","books.thumbnail...if block....."+books.thumbnail)
+                var path = File(books.thumbnail)
 
-            val fileInputStream = FileInputStream(path)
+                //Log.e("books adapter","path.exists()...."+path.exists())
+                if(path.exists()){
+                    Log.e("books adapter","books.thumbnail...if path exist....."+books.thumbnail)
+                    val fileInputStream = FileInputStream(path)
 
-            val svg: SVG = SVG.getFromInputStream(fileInputStream)
-
-
-
-            // Create a Bitmap to render our SVG to
-            val bm = Bitmap.createBitmap((svg.documentWidth).toInt(), (svg.documentHeight).toInt(), Bitmap.Config.ARGB_8888)
-            // Create a Canvas to use for rendering
-            val canvas = Canvas(bm)
-            // Now render the SVG to the Canvas
-
-            canvas.save();
-            // Now render the SVG to the Canvas
-            svg.renderToCanvas(canvas)
-
-            canvas.restore()
+                    val svg: SVG = SVG.getFromInputStream(fileInputStream)
 
 
-            dr = BitmapDrawable(bm)
-            holder.bookRL.background = dr
 
-        }else{
-       // Log.e("books adapter","books category...."+books.category)
+                    // Create a Bitmap to render our SVG to
+                    val bm = Bitmap.createBitmap((svg.documentWidth).toInt(), (svg.documentHeight).toInt(), Bitmap.Config.ARGB_8888)
+                    // Create a Canvas to use for rendering
+                    val canvas = Canvas(bm)
+                    // Now render the SVG to the Canvas
+
+                    canvas.save();
+                    // Now render the SVG to the Canvas
+                    svg.renderToCanvas(canvas)
+
+                    canvas.restore()
+
+
+                    dr = BitmapDrawable(bm)
+                    holder.bookRL.background = dr
+
+                }else{
+                    //Log.e("books adapter","books.thumbnail...else path exist....."+books.thumbnail)
+                    // Log.e("books adapter","books category...."+books.category)
+                    var str:String = "Books1/"+books.category+"/"+books.folderName+"/thumbnail.svg"
+                    //Log.e("books adapter","str...."+str)
+                    try{
+                        val svg: SVG = SVG.getFromAsset(context.assets,str)
+
+
+
+                        // Create a Bitmap to render our SVG to
+                        val bm = Bitmap.createBitmap((svg.documentWidth).toInt(), (svg.documentHeight).toInt(), Bitmap.Config.ARGB_8888)
+                        // Create a Canvas to use for rendering
+                        val canvas = Canvas(bm)
+                        // Now render the SVG to the Canvas
+
+                        canvas.save();
+                        // Now render the SVG to the Canvas
+                        svg.renderToCanvas(canvas)
+
+                        canvas.restore()
+
+
+                        dr = BitmapDrawable(bm)
+                        holder.bookRL.background = dr
+
+                    }catch (e:Exception){
+                        //Log.e("books adapter","books.thumbnail...if path exist....."+books.thumbnail)
+                        holder.unreadRL1.visibility = View.INVISIBLE
+                        holder.bookRL.background = context.resources.getDrawable(R.drawable.ic_dummy)
+                    }
+
+                }
+            }else{
+                 //Log.e("books adapter","books category...else block...."+books.category)
+                var str:String = "Books1/"+books.category+"/"+books.folderName+"/thumbnail.svg"
+                //Log.e("books adapter","str...."+str)
+                try{
+                    val svg: SVG = SVG.getFromAsset(context.assets,str)
+
+
+
+                    // Create a Bitmap to render our SVG to
+                    val bm = Bitmap.createBitmap((svg.documentWidth).toInt(), (svg.documentHeight).toInt(), Bitmap.Config.ARGB_8888)
+                    // Create a Canvas to use for rendering
+                    val canvas = Canvas(bm)
+                    // Now render the SVG to the Canvas
+
+                    canvas.save();
+                    // Now render the SVG to the Canvas
+                    svg.renderToCanvas(canvas)
+
+                    canvas.restore()
+
+
+                    dr = BitmapDrawable(bm)
+                    holder.bookRL.background = dr
+
+                }catch (e:Exception){
+                    holder.unreadRL1.visibility = View.INVISIBLE
+                    holder.bookRL.background = context.resources.getDrawable(R.drawable.ic_dummy)
+                }
+            }
+        }catch (e:Exception){
+             Log.e("books adapter","catch block......."+books.category)
             var str:String = "Books1/"+books.category+"/"+books.folderName+"/thumbnail.svg"
-        //Log.e("books adapter","str...."+str)
+            //Log.e("books adapter","str...."+str)
             try{
                 val svg: SVG = SVG.getFromAsset(context.assets,str)
-
-
-
                 // Create a Bitmap to render our SVG to
                 val bm = Bitmap.createBitmap((svg.documentWidth).toInt(), (svg.documentHeight).toInt(), Bitmap.Config.ARGB_8888)
                 // Create a Canvas to use for rendering
@@ -106,8 +171,9 @@ class BooksAdapter(val context: Context, val bookslist: ArrayList<Books>, val bo
                 holder.unreadRL1.visibility = View.INVISIBLE
                 holder.bookRL.background = context.resources.getDrawable(R.drawable.ic_dummy)
             }
-
         }
+
+
 
 
 

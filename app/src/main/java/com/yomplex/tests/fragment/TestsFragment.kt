@@ -952,6 +952,12 @@ class TestsFragment: Fragment(),View.OnClickListener, TestClickListener,
 
 
                     }
+            }else{
+                databaseHandler!!.updatetestcontentdownloadstatus(0,topicname.toLowerCase())
+                        if(isNetworkConnected()) {
+                            downloadServiceFromBackground(activity!!,db)
+                        }
+                readFileFromAssetsNew(topicname.toLowerCase(),filename,originalfilename)
             }
 
 
