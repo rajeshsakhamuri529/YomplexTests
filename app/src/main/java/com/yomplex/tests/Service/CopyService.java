@@ -87,7 +87,7 @@ public class CopyService extends JobIntentService {
         enqueueWork(context1, CopyService.class, DOWNLOAD_JOB_ID, intent);
 
     }
-    private static void copyFile(InputStream in, OutputStream out,String filename) throws IOException {
+    private static void copyFile(InputStream in, OutputStream out,String filename,String category) throws IOException {
        try{
            byte[] buffer = new byte[1024];
            int read;
@@ -95,31 +95,36 @@ public class CopyService extends JobIntentService {
                out.write(buffer, 0, read);
            }
 
-           dataBase.updatebooksreadfilestatusfromlocal(0,filename.replace(".zip",""));
-           boolean iszip = Utils.unpackZip(dirpath+"/Books/",filename);
+           //dataBase.updatebooksreadfilestatusfromlocal(0,filename.replace(".zip",""));
+           boolean iszip = Utils.unpackZip(dirpath+"/Books/"+category+"/",filename);
            if(iszip){
-               File dirFile = new File(context1.getCacheDir(),"Books/"+filename);
+               File dirFile = new File(context1.getCacheDir(),"Books/"+category+"/"+filename);
                dirFile.delete();
                // File dirFile1 = new File(context1.getCacheDir(),"Books/"+category+"/"+title.toLowerCase().replace(" ","-").replace("'","")+"/thumbnail.svg");
-               dataBase.updatebooksversionFromLocal("1",filename.replace(".zip",""));
+               //dataBase.updatebooksversionFromLocal("1",filename.replace(".zip",""));
 
 
-               String path = context1.getCacheDir().toString()+"/Books/"+filename.replace(".zip","");
+               String path = context1.getCacheDir().toString()+"/Books/"+category+"/"+filename.replace(".zip","");
                Log.e("Files", "Path: " + path);
-               File directory = new File(path);
+
+               String p = path+"/thumbnail.svg";
+               Log.e("Files", "thumbnail path......:" + p);
+               dataBase.updatebooksLocal(p,1,1,filename.replace(".zip",""),category);
+
+              /* File directory = new File(path);
                File[] files = directory.listFiles();
                Log.e("Files", "Size: "+ files.length);
                for (int i = 0; i < files.length; i++)
                {
                    Log.e("Files", "FileName:" + files[i].getName());
                    String p = path+"/"+files[i].getName()+"/thumbnail.svg";
-
+                   Log.e("Files", "thumbnail path......:" + p);
                    dataBase.updatebooksLocal(p,1,1,files[i].getName(),filename.replace(".zip",""));
 
-                   /*dataBase.updatebooksthumbnail(p,files[i].getName(),filename.replace(".zip",""));
+                   *//*dataBase.updatebooksthumbnail(p,files[i].getName(),filename.replace(".zip",""));
                    dataBase.updatebookscopystatus(1,files[i].getName(),filename.replace(".zip",""));
-                   dataBase.updatebooksreadfilestatus(1,files[i].getName(),filename.replace(".zip",""));*/
-               }
+                   dataBase.updatebooksreadfilestatus(1,files[i].getName(),filename.replace(".zip",""));*//*
+               }*/
             /*SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd");
             String date = dataBase.getBookContentDate();
             if(date != null){
@@ -128,7 +133,7 @@ public class CopyService extends JobIntentService {
                 //Log.e("content download","date......................."+format1.format(Utils.date));
                 dataBase.insertBookContentUpdateDate(format1.format(Utils.date));
             }*/
-               dataBase.updatebooksdownloadstatusfromlocal(1,filename.replace(".zip",""));
+               dataBase.updatebooksdownloadstatusfromlocal(1,category,filename.replace(".zip",""));
 
 
            }
@@ -192,7 +197,14 @@ public class CopyService extends JobIntentService {
                                 // Moving all the files on external SD
                                 try {
                                     in = assetManager.open("Books" + "/" +filename);
-                                    out = new FileOutputStream(context1.getCacheDir() + "/Books" + "/" + filename);
+                                    Log.e("copy service","filename......"+filename);
+
+                                    String category = dataBase.getBooksCategory(filename.replace(".zip",""));
+                                    File folder1 = new File(context1.getCacheDir() + "/Books"+ "/" + category);
+                                    if (!folder1.exists()) {
+                                        success = folder1.mkdir();
+                                    }
+                                    out = new FileOutputStream(context1.getCacheDir() + "/Books" + "/" + category + "/" + filename);
                                     Log.i("WEBVIEW", context1.getCacheDir() + "/Books" + "/" + filename);
                                     /*Runnable runnable = new Runnable()
                                     {
@@ -206,7 +218,7 @@ public class CopyService extends JobIntentService {
                                             }
                                         }
                                     };*/
-                                    copyFile(in, out,filename);
+                                    copyFile(in, out,filename,category);
                                     /*new Thread(new Runnable()
                                     {
                                         @Override

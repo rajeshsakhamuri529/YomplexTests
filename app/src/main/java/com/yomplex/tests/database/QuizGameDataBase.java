@@ -558,6 +558,40 @@ public class QuizGameDataBase extends SQLiteOpenHelper {
         return statusList;
     }
 
+    public String getBooksCategory(String Id) {
+        //DailyChallenge dailyChallenge=new DailyChallenge();
+        //Log.e("quiz database","getChallengeForDate....fromdate..."+fromdate);
+        String version = "";
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT * FROM " + TABLE_BOOKS + " WHERE " + KEY_FOLDER_NAME + "=?";
+        Cursor cur = db.rawQuery(query, new String[]{Id});
+
+        //Cursor cur = db.rawQuery("SELECT * FROM " + TABLE_QUIZ_WITH_TIMER_FINAL + " WHERE " + KEY_TITLE + "='" + title+"' AND "+KEY_PRESENT_DATE + " ='"+pdate+"' AND "+KEY_TYPE_OF_PLAY +"= '"+typeofplay+"'", new String[]{});
+        if (cur.moveToFirst()) {
+            do {
+                /*TestDownload testDownload=new TestDownload();
+                testDownload.setTestdownloadstatus((cur.getInt(cur.getColumnIndex(KEY_TEST_DOWNLOAD_STATUS))));
+                testDownload.setTesturl((cur.getString(cur.getColumnIndex(KEY_TEST_CONTENT_URL))));
+                testDownload.setTesttype((cur.getString(cur.getColumnIndex(KEY_TEST_TYPE))));
+                testDownload.setTestversion((cur.getString(cur.getColumnIndex(KEY_TEST_CONTENT_VERSION))));*/
+
+                version = ((cur.getString(cur.getColumnIndex(KEY_CATEGORY))));
+
+
+
+            } while (cur.moveToNext());
+        }
+
+        cur.close();
+        db.close();
+
+        //  Log.e("quiz game database","answers.........."+answers);
+        // return contact
+        Log.e("dash board","booksJsonString...version......."+version);
+        return version;
+    }
+
     public int getAllBooksCount() {
         //DailyChallenge dailyChallenge=new DailyChallenge();
         //Log.e("quiz database","getChallengeForDate....fromdate..."+fromdate);
@@ -690,19 +724,27 @@ public class QuizGameDataBase extends SQLiteOpenHelper {
         return updatevalue;
 
     }
-    public int updatebooksdownloadstatusfromlocal(int status, String category) {
+    public int updatebooksdownloadstatusfromlocal(int status, String category,String foldername) {
         Log.e("quiz game database","updatetestcontentdownloadstatus...statys.....type..."+status);
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
         //values.put(KEY_NAME, contact.getName());
         values.put(KEY_BOOK_DOWNLOAD_STATUS, status);
-        int updatevalue = db.update(TABLE_BOOKS, values, KEY_CATEGORY+" =?",
-                new String[] { category });
+
+        int updatevalue = db.update(TABLE_BOOKS, values, KEY_FOLDER_NAME + " = ? AND "+KEY_CATEGORY+" =?",
+                new String[] { String.valueOf(foldername),category });
+
         // updating row
         db.close();
         // updating row
         return updatevalue;
+
+
+
+
+
+
     }
     public int updatebooksdownloadstatus(int status,String title, String category) {
         Log.e("quiz game database","updatetestcontentdownloadstatus...statys.....type..."+status+"....."+title);

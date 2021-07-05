@@ -904,5 +904,37 @@ public class Utils {
         return hasBeenScheduled ;
     }
 
+    /**
+     * Check if an asset exists. This will fail if the asset has a size < 1 byte.
+     * @param context
+     * @param path
+     * @return TRUE if the asset exists and FALSE otherwise
+     */
+    public static boolean assetExists(Context context, String path) {
+        boolean bAssetOk = false;
+        try {
+            InputStream stream = context.getAssets().open(path);
+            stream.close();
+            bAssetOk = true;
+            /*final String[] assets = context.getAssets().list(path);
+            for (String asset : assets){
+                if (asset.equals(category)){
+                    bAssetOk = true;
+                }else{
+                    bAssetOk = false;
+                }
+
+            }*/
+
+
+
+        } catch (FileNotFoundException e) {
+            Log.w("IOUtilities", "assetExists failed: "+e.toString());
+        } catch (IOException e) {
+            Log.w("IOUtilities", "assetExists failed: "+e.toString());
+        }
+        return bAssetOk;
+    }
+
 
 }

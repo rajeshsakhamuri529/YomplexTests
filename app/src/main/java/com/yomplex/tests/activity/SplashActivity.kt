@@ -1,27 +1,19 @@
 package com.yomplex.tests.activity
 
+
 import android.app.Activity
 import android.content.DialogInterface
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
-
 import android.os.Bundle
 import android.os.Handler
 import android.os.PersistableBundle
-
 import android.util.Log
-
-
-
-import androidx.core.content.ContextCompat.getSystemService
-import android.icu.lang.UCharacter.GraphemeClusterBreak.T
 import androidx.appcompat.app.AlertDialog
-import com.google.common.reflect.TypeToken
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.analytics.ktx.logEvent
-import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
 import com.google.gson.Gson
 import com.yomplex.tests.R
@@ -31,6 +23,8 @@ import com.yomplex.tests.database.QuizGameDataBase
 import com.yomplex.tests.model.Books
 import com.yomplex.tests.utils.ForceUpdateChecker
 import com.yomplex.tests.utils.Utils
+import java.io.*
+import java.util.*
 
 
 class SplashActivity : BaseActivity(), ForceUpdateChecker.OnUpdateNeededListener {
@@ -126,6 +120,7 @@ class SplashActivity : BaseActivity(), ForceUpdateChecker.OnUpdateNeededListener
             getWindow().setNavigationBarColor(getResources().getColor(R.color.colorbottomnav));
         }
     }
+
     private fun startcopyService(mainActivity: Activity) {
         CopyService.enqueueWork(mainActivity)
     }

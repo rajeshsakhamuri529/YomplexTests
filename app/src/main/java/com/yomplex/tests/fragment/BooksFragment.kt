@@ -19,6 +19,9 @@ import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
+import com.downloader.Error
+import com.downloader.OnDownloadListener
+import com.downloader.PRDownloader
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.analytics.ktx.logEvent
@@ -35,8 +38,10 @@ import com.yomplex.tests.model.Books
 import com.yomplex.tests.utils.*
 import kotlinx.android.synthetic.main.books_fragment.*
 import kotlinx.android.synthetic.main.books_fragment.view.*
-import java.io.*
-import java.net.MalformedURLException
+import java.io.DataInputStream
+import java.io.File
+import java.io.FileOutputStream
+import java.io.InputStream
 import java.net.URL
 import java.text.SimpleDateFormat
 
@@ -454,13 +459,51 @@ class BooksFragment: Fragment(), BooksClickListener {
 
             }
         }else {
-            //
-            if(isNetworkConnected()) {
-                Toast.makeText(activity!!,"Please wait, Book downloading...",Toast.LENGTH_SHORT).show()
-                Thread(Runnable { DownloadFiles(book.id,book.sourceUrl,book.category,book.folderName) }).start()
+            //Log.e("books fragment","assets exist or not......"+Utils.assetExists(activity!!,"Books1/"+book.category+"/"+book.folderName+"/index.html"))
+            if(Utils.assetExists(activity!!,"Books1/"+book.category+"/"+book.folderName+"/index.html")){
+                if(status == 1){
+                    if(book.readfilestatus == 1){
+                        // view.startAnimation(buttonClick)
+                        //buttonEffect(view,true)
+                        databaseHandler!!.updateBooksReadStatus(status,book.title,book.category)
+                        var unreadList1 = databaseHandler!!.getAllBooksWithUnread()
+                        txt_unread.text = "Unread ("+unreadList1.size+")"
+
+                        val i = Intent(activity, OpenBookActivity::class.java)
+                        i.putExtra("title", book.title)
+                        i.putExtra("category", book.category)
+                        i.putExtra("foldername", book.folderName)
+                        startActivity(i)
+                        (activity as Activity).overridePendingTransition(0, 0)
+                    }else{
+                        //Toast.makeText(activity!!,"status 1 else...."+book.readfilestatus,Toast.LENGTH_SHORT).show()
+                    }
+
+                }else{
+                    if(book.readfilestatus == 1){
+                        // view.startAnimation(buttonClick)
+                        //buttonEffect(view,true)
+                        val i = Intent(activity, OpenBookActivity::class.java)
+                        i.putExtra("title", book.title)
+                        i.putExtra("category", book.category)
+                        i.putExtra("foldername", book.folderName)
+                        startActivity(i)
+                        (activity as Activity).overridePendingTransition(0, 0)
+                    }else{
+                        //Toast.makeText(activity!!,"status 0 else...."+book.readfilestatus,Toast.LENGTH_SHORT).show()
+                    }
+
+                }
             }else{
-                nointernetDialog()
+                if(isNetworkConnected()) {
+                    Toast.makeText(activity!!,"Please wait, Book downloading...",Toast.LENGTH_SHORT).show()
+                    downdata(book.id,book.sourceUrl,book.category,book.folderName)
+                    //Thread(Runnable { DownloadFiles(book.id,book.sourceUrl,book.category,book.folderName) }).start()
+                 }else{
+                     nointernetDialog()
+                 }
             }
+
 
         }
 
@@ -468,6 +511,60 @@ class BooksFragment: Fragment(), BooksClickListener {
 
 
 
+    }
+
+    private fun downdata(id:String,url:String,category: String,foldername:String){
+        val dirpath = File((activity!!.getCacheDir())!!.absolutePath)
+
+        val downloadId = PRDownloader.download(url, dirpath.absolutePath+"/Books/"+category, "/$foldername.zip")
+                .build()
+                .setOnStartOrResumeListener {
+                    Log.e("downdata", "onStartOrResume.....")
+
+                }
+                .setOnPauseListener { Log.e("downdata", "onPause.....") }
+                .setOnCancelListener { Log.e("downdata", "onCancel.....") }
+                .setOnProgressListener { progress ->
+                    Log.e(
+                            "downdata",
+                            "onProgress.....$progress")
+
+                }
+                .start(object : OnDownloadListener {
+                    override fun onDownloadComplete() {
+                        Log.e("downdata", "onDownloadComplete.....")
+                        val iszip = Utils.unpackZip(dirpath.absolutePath + "/Books/" + category, "/$foldername.zip")
+                        if(iszip){
+                            val dirFile = File(activity!!.cacheDir, "Books/$category/$foldername.zip")
+                            dirFile.delete()
+                            val dirFile1 = File(activity!!.cacheDir, "Books/$category/$foldername/thumbnail.svg")
+
+                            databaseHandler!!.updatebooksreadfilestatusbasedonId(1, id)
+                            databaseHandler!!.updatebooksdownloadstatusbasedonId(1, id)
+                            databaseHandler!!.updatebooksthumbnailbasedonId(dirFile1.absolutePath, id)
+                            activity!!.runOnUiThread {
+                                Toast.makeText(activity!!,"Download completed.",Toast.LENGTH_SHORT).show()
+                                unreadList = databaseHandler!!.getAllBooks()
+
+                                adapter = BooksAdapter(context!!,unreadList!!,this@BooksFragment)
+
+                                view!!.rcv_books.adapter = adapter
+                                //adapter!!.notifyDataSetChanged()
+                            }
+                        }
+                    }
+
+                    override fun onError(error: Error) {
+
+                        Log.e("downdata", "onerror.....$error")
+
+
+                    }
+
+
+
+
+                })
     }
 
 

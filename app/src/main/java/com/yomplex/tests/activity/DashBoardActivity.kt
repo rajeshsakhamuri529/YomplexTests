@@ -17,9 +17,6 @@ import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
-import com.downloader.Error
-import com.downloader.OnDownloadListener
-import com.downloader.PRDownloader
 import com.google.android.gms.analytics.GoogleAnalytics
 import com.google.android.gms.analytics.Tracker
 import com.google.android.gms.tasks.OnCompleteListener
@@ -36,12 +33,14 @@ import com.google.firebase.remoteconfig.ktx.remoteConfigSettings
 import com.google.gson.Gson
 import com.yomplex.tests.R
 import com.yomplex.tests.Service.BooksDownloadService
+import com.yomplex.tests.Service.CopyService
 import com.yomplex.tests.Service.JobService
 import com.yomplex.tests.database.QuizGameDataBase
 import com.yomplex.tests.fragment.BooksFragment
 import com.yomplex.tests.fragment.ReviewFragment
 import com.yomplex.tests.fragment.SettingFragment
 import com.yomplex.tests.fragment.TestsFragment
+import com.yomplex.tests.model.Books
 import com.yomplex.tests.model.PlayCount
 import com.yomplex.tests.model.TestDownload
 import com.yomplex.tests.model.UserContentVersion
@@ -51,7 +50,7 @@ import com.yomplex.tests.utils.SharedPrefs
 import com.yomplex.tests.utils.Utils
 import com.yomplex.tests.utils.Utils.getPlayer
 import kotlinx.android.synthetic.main.activity_dashboard.*
-import java.io.File
+import java.io.*
 import java.util.*
 
 
@@ -136,6 +135,50 @@ class DashBoardActivity : BaseActivity(),
 
         //for adding books into database
         try{
+
+            var statuslist = databaseHandler!!.getbookscopystatusList()
+            if(statuslist.size > 0){
+                if(statuslist.contains(0)){
+                    //startcopyService(this@SplashActivity)
+                }else{
+                    try{
+                        val booksJsonString = Utils.loadJSONFromAsset(this@DashBoardActivity, "books.json")
+                        Log.e("dash board", "booksJsonString...$booksJsonString")
+                        val gsonFile = Gson()
+                        val userListType = object : com.google.gson.reflect.TypeToken<ArrayList<Books?>?>() {}.type
+                        val booksCountmodel = gsonFile.fromJson<ArrayList<Books>>(booksJsonString, userListType)
+
+                        for (i in 0 until booksCountmodel.size) {
+                            val booksCount = booksCountmodel[i]
+                            val count = databaseHandler!!.getBooksCount(booksCount.id)
+                            if (count == 0) {
+                                Log.e("dash board", "booksJsonString...count.......$count")
+                                databaseHandler!!.insertBooks(booksCount)
+                                staryCopyAssetsToLocal(booksCount)
+                            }else{
+                                val dbversion = databaseHandler!!.getBooksVersion(booksCount.id)
+                                Log.e("dash board", "dbversion.......$dbversion")
+                                Log.e("dash board", "booksCount.version.......$booksCount.version")
+                                if(dbversion < booksCount.version){
+                                    Log.e("dash board", "dbversion.....else..$dbversion")
+                                    staryCopyAssetsToLocal(booksCount)
+                                }
+                            }
+                        }
+
+
+                    }catch (e:Exception){
+
+                    }
+
+
+
+
+
+                }
+            }else{
+                //startcopyService(this@SplashActivity)
+            }
            // downloadServiceFromBackground(this@DashBoardActivity,db)
 
 
@@ -892,6 +935,78 @@ class DashBoardActivity : BaseActivity(),
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             getWindow().setNavigationBarColor(getResources().getColor(R.color.colorbottomnav));
         }
+    }
+
+    private fun staryCopyAssetsToLocal(book:Books){
+        Log.e("dash board","staryCopyAssetsToLocal.......")
+
+
+                try {
+                    val assetManager = assets
+
+                    var inputstream : InputStream?
+                    var out: OutputStream?
+                    inputstream = assetManager.open("Books/"+book.folderName+".zip")
+                    out = FileOutputStream(cacheDir.absolutePath + "/Books" + "/"+book.category+"/"+book.folderName+".zip")
+                    //Log.i("WEBVIEW", cacheDir.absolutePath + "/Books" + "/" + filename)
+                    //copyFile(inputstream, out, filename)
+
+                    val buffer = ByteArray(1024)
+                    var read: Int = 0
+                    while (inputstream.read(buffer).also({ read = it }) != -1) {
+                        out.write(buffer, 0, read)
+                    }
+
+                    inputstream.close()
+                    inputstream = null
+                    out.flush()
+                    out.close()
+                    out = null
+
+
+                    //dataBase.updatebooksreadfilestatusfromlocal(0,filename.replace(".zip",""));
+                    val iszip = Utils.unpackZip(cacheDir.absolutePath + "/Books/" + book.category + "/", book.folderName+".zip")
+                    if(iszip){
+                        val dirFile = File(cacheDir.absolutePath,"/Books/" + book.category + "/"+book.folderName+".zip")
+                        dirFile.delete()
+
+                        // File dirFile1 = new File(context1.getCacheDir(),"Books/"+category+"/"+title.toLowerCase().replace(" ","-").replace("'","")+"/thumbnail.svg");
+                        //dataBase.updatebooksversionFromLocal("1",filename.replace(".zip",""));
+                        val path = cacheDir.absolutePath + "/Books/" + book.category + "/" + book.folderName
+                        Log.e("Files", "Path: $path")
+
+                        val p = "$path/thumbnail.svg"
+                        databaseHandler!!.updatebooksValues(
+                            book.id,
+                            book.version,
+                            1,
+                            1,
+                            p,
+                            book.title,
+                            book.sourceUrl,
+                            book.sortorder,
+                            book.publishedOn,
+                            book.category,
+                            book.visibility
+                        )
+                    }
+
+                } catch (e: IOException) {
+                    Log.e("ERROR", "Failed to copy asset file:....", e)
+                } finally {
+                    // Edit 3 (after MMs comment)
+                    /*try {
+                                        in.close();
+                                        in = null;
+                                        out.flush();
+                                        out.close();
+                                        out = null;
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    }*/
+                }
+
+
     }
     private fun downloadServiceFromBackground(
         mainActivity: Activity, db: FirebaseFirestore
