@@ -118,6 +118,8 @@ public class ContentDownloadService extends JobIntentService {
                             Log.e("grade activity", "else....testcontentlist.size......"+testcontentlist.size());
 
                             for(int i = 0;i < (documentSnapshot.getData().size() - 5);i++){
+                                Log.e("grade activity", "for loop...(documentSnapshot.getData().size() - 5)..."+(documentSnapshot.getData().size() - 5));
+                                Log.e("grade activity", "for loop...i value..."+i);
                                 if(i == 0){
                                     String version = documentSnapshot.getData().get("Calculus1Version").toString();
                                     String url = documentSnapshot.getData().get("Calculus1Url").toString();
@@ -126,12 +128,12 @@ public class ContentDownloadService extends JobIntentService {
                                     for(int j = 0; j < testcontentlist.size();j++){
                                         Log.e("grade activity", "else...testcontentlist.get(j).getTestversion()...."+testcontentlist.get(j).getTestversion());
                                         if(testcontentlist.get(j).getTesttype().equals("calculus1")){
-                                            if(testcontentlist.get(j).getTestversion().equals(version)) {
+                                            if(Integer.parseInt(testcontentlist.get(j).getTestversion()) < Integer.parseInt(version)) {
                                                 Log.e("grade activity", "i==0....if......"+version);
-                                                break;
+                                                //break;
                                                 //downloadDataFromBackground(this@GradeActivity,url,version,"basic")
 
-                                            }else{
+                                           // }else{
                                                 dataBase.updatetestcontentdownloadstatus(0,"calculus1");
                                                 Intent intent = new Intent(context1, ContentDownloadService.class);
                                                 intent.putExtra(URL, url);
@@ -151,12 +153,12 @@ public class ContentDownloadService extends JobIntentService {
                                     String url = documentSnapshot.getData().get("AlgebraUrl").toString();
                                     for(int j = 0; j < testcontentlist.size();j++){
                                         if(testcontentlist.get(j).getTesttype().equals("algebra")){
-                                            if(testcontentlist.get(j).getTestversion().equals(version)) {
+                                            if(Integer.parseInt(testcontentlist.get(j).getTestversion()) < Integer.parseInt(version)) {
                                                 Log.e("grade activity", "i==1....if......"+version);
                                                 //downloadDataFromBackground(this@GradeActivity,url,version,"basic")
-                                                break;
+                                               // break;
 
-                                            }else{
+                                            //}else{
                                                 dataBase.updatetestcontentdownloadstatus(0,"algebra");
                                                 Intent intent = new Intent(context1, ContentDownloadService.class);
                                                 intent.putExtra(URL, url);
@@ -173,12 +175,12 @@ public class ContentDownloadService extends JobIntentService {
                                     String url = documentSnapshot.getData().get("Calculus2Url").toString();
                                     for(int j = 0; j < testcontentlist.size();j++){
                                         if(testcontentlist.get(j).getTesttype().equals("calculus2")){
-                                            if(testcontentlist.get(j).getTestversion().equals(version)) {
+                                            if(Integer.parseInt(testcontentlist.get(j).getTestversion()) < Integer.parseInt(version)) {
                                                 Log.e("grade activity", "i==2....if......"+version);
                                                 //downloadDataFromBackground(this@GradeActivity,url,version,"basic")
-                                                break;
+                                              //  break;
 
-                                            }else{
+                                           // }else{
                                                 dataBase.updatetestcontentdownloadstatus(0,"calculus2");
                                                 Intent intent = new Intent(context1, ContentDownloadService.class);
                                                 intent.putExtra(URL, url);
@@ -195,12 +197,12 @@ public class ContentDownloadService extends JobIntentService {
                                     String url = documentSnapshot.getData().get("GeometryUrl").toString();
                                     for(int j = 0; j < testcontentlist.size();j++){
                                         if(testcontentlist.get(j).getTesttype().equals("geometry")){
-                                            if(testcontentlist.get(j).getTestversion().equals(version)) {
+                                            if(Integer.parseInt(testcontentlist.get(j).getTestversion()) < Integer.parseInt(version)) {
                                                 Log.e("grade activity", "i==3....if......"+version);
                                                 //downloadDataFromBackground(this@GradeActivity,url,version,"basic")
-                                                break;
+                                             //   break;
 
-                                            }else{
+                                           // }else{
                                                 dataBase.updatetestcontentdownloadstatus(0,"geometry");
                                                 Intent intent = new Intent(context1, ContentDownloadService.class);
                                                 intent.putExtra(URL, url);
@@ -217,12 +219,12 @@ public class ContentDownloadService extends JobIntentService {
                                     String url = documentSnapshot.getData().get("BasicUrl").toString();
                                     for(int j = 0; j < testcontentlist.size();j++){
                                         if(testcontentlist.get(j).getTesttype().equals("other")){
-                                            if(testcontentlist.get(j).getTestversion().equals(version)) {
+                                            if(Integer.parseInt(testcontentlist.get(j).getTestversion()) < Integer.parseInt(version)) {
                                                 Log.e("grade activity", "i==3....if......"+version);
                                                 //downloadDataFromBackground(this@GradeActivity,url,version,"basic")
-                                                break;
+                                             //   break;
 
-                                            }else{
+                                           // }else{
                                                 dataBase.updatetestcontentdownloadstatus(0,"other");
                                                 Intent intent = new Intent(context1, ContentDownloadService.class);
                                                 intent.putExtra(URL, url);

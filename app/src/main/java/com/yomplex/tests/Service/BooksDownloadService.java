@@ -188,27 +188,30 @@ public class BooksDownloadService extends JobIntentService {
                                     if(visibility.equals("1")){
                                         String dbversion = dataBase.getBooksVersion(Id);
                                         dataBase.updatebookssortorderbasedonId(sortorder,Id);
-                                        if(version.equals(dbversion)) {
-                                            Log.e("books download", "i==0....if......"+version);
-                                            //break;
-                                            //downloadDataFromBackground(this@GradeActivity,url,version,"basic")
+                                        if(dbversion != null){
+                                            if(Integer.parseInt(dbversion) < Integer.parseInt(version)) {
+                                                // Log.e("books download", "i==0....if......"+version);
+                                                //break;
+                                                //downloadDataFromBackground(this@GradeActivity,url,version,"basic")
 
-                                        }else{
-                                            isservice = true;
-                                            dataBase.updatebooksdownloadstatusbasedonId(0,Id);
-                                            Intent intent = new Intent(context1, BooksDownloadService.class);
-                                            intent.putExtra(URL, url);
-                                            intent.putExtra("sortorder", sortorder);
-                                            intent.putExtra("publishedon", PublishedOn);
-                                            intent.putExtra("version", version);
-                                            intent.putExtra("title", title);
-                                            intent.putExtra("category", category);
-                                            intent.putExtra("foldername", foldername);
-                                            intent.putExtra("id", Id);
-                                            intent.putExtra("visibility", visibility);
-                                            intent.setAction(ACTION_DOWNLOAD);
-                                            enqueueWork(context1, BooksDownloadService.class, DOWNLOAD_JOB_ID, intent);
+                                                //}else{
+                                                isservice = true;
+                                                dataBase.updatebooksdownloadstatusbasedonId(0,Id);
+                                                Intent intent = new Intent(context1, BooksDownloadService.class);
+                                                intent.putExtra(URL, url);
+                                                intent.putExtra("sortorder", sortorder);
+                                                intent.putExtra("publishedon", PublishedOn);
+                                                intent.putExtra("version", version);
+                                                intent.putExtra("title", title);
+                                                intent.putExtra("category", category);
+                                                intent.putExtra("foldername", foldername);
+                                                intent.putExtra("id", Id);
+                                                intent.putExtra("visibility", visibility);
+                                                intent.setAction(ACTION_DOWNLOAD);
+                                                enqueueWork(context1, BooksDownloadService.class, DOWNLOAD_JOB_ID, intent);
+                                            }
                                         }
+
                                     }else{
                                         dataBase.updatebooksvisibilitybasedonId("0",Id);
                                         dataBase.updatebooksversionbasedonId(version,Id);
